@@ -2,16 +2,17 @@
 
 Status: RESEARCH / OPEN
 
-This document records a narrower architectural question that emerged after the executable-representation experiments.
+This document records the narrower architectural question that emerged after the executable-representation and online hot-swap experiments.
 
 ## 1. Scope
 
-The project is no longer asking only whether a machine can modify executable state. It now distinguishes:
+The project distinguishes:
 
 ```text
-program/value mutation
-    -> executable structure mutation
-    -> modification of the modification mechanism
+parameter mutation
+    -> executable-structure mutation
+    -> reusable executable structure
+    -> offline/meta-level modification
     -> online causal reflection
 ```
 
@@ -21,68 +22,52 @@ This is a research target, not an established requirement for intelligence.
 
 ## 2. Important correction: homoiconicity is sufficient, not necessary
 
-A unified code/data representation plus `eval` is a convenient minimal construction for self-reference in Lisp-like systems, but it is not a theorem-level prerequisite for computational self-reference.
+A unified code/data representation plus `eval` is a convenient construction for self-reference in Lisp-like systems, but it is not a theorem-level prerequisite for computational self-reference.
 
 Kleene's recursion theorem applies to acceptable programming systems more generally. A system can obtain fixed points without being homoiconic and without exposing a primitive named `eval`.
+
+The stronger invariant is:
+
+> the system has some effective representation/encoding through which computation can obtain or transform a description that can affect subsequent execution.
+
+## 3. Offline versus online modification
+
+### Offline structural modification
+
+A system produces a new program/artifact and a later execution starts from that artifact or checkpoint.
+
+### Online causal reflection
+
+A running execution reifies or accesses execution state, control, program structure, interpreter behavior, or meta-level policy; modifies it; and then continues using the modified representation without requiring an external restart.
+
+The causal criterion is:
+
+```text
+reified or exposed execution machinery
+    -> modify
+    -> modified representation participates in later transitions
+    -> observable behavior changes
+```
+
+A side-channel description that is never consulted by future execution does not satisfy this criterion.
+
+## 4. Reflective towers are a model, not necessarily the minimum implementation
+
+3-Lisp provides a canonical reflective-tower model in which interpreters are themselves expressed in the reflective language. Semantics for reflective towers can also be given without requiring a literal infinite concrete tower.
 
 Therefore:
 
 ```text
-homoiconicity + eval
+online reflection != infinite interpreter tower
 ```
 
-is one simple construction of self-reference, not the universal minimum.
-
-The stronger invariant is:
-
-> the system must have some effective representation/encoding through which a computation can denote, transform, or otherwise obtain a description of a computation that can affect subsequent execution.
-
-## 3. Offline versus online modification
-
-The project distinguishes:
-
-### Offline structural modification
-
-A system produces a new program/artifact, terminates or checkpoints, and a later execution starts from the new artifact.
-
-Examples include program synthesis, library learning, evolutionary algorithm search, and many recursive self-improvement systems.
-
-### Online causal reflection
-
-A running execution reifies or accesses a representation of execution state, control, program structure, interpreter behavior, or meta-level policy; a modification is made; and the modified representation participates in the continuation of the same execution without requiring a fresh external generation step.
-
-The causal criterion is stronger than introspection:
-
-```text
-reified state
-    -> modify
-    -> modified state participates in subsequent execution
-    -> observable behavior changes
-```
-
-A side-channel description of the running system does not satisfy this criterion.
-
-## 4. Reflective towers are a model, not necessarily the minimum implementation
-
-3-Lisp provides a canonical reflective-tower model in which interpreters are themselves expressed in the reflective language. Smith's work explicitly uses the tower construction.
-
-Wand and Friedman showed that useful semantics of the reflective tower can be given without literally requiring an infinite concrete tower of interpreters.
-
-Therefore this research should not hard-code:
-
-```text
-online reflection == infinite interpreter tower
-```
-
-The engineering question is instead:
-
-> what is the smallest operational mechanism that gives causal access to, and modification of, the execution machinery while preserving a well-defined continuation?
+The engineering question is the smallest operational mechanism that gives causal access to execution machinery while preserving a well-defined continuation.
 
 ## 5. Reflection and causal connection
 
-Following the reflection literature, the important property is not merely self-description but causal relevance.
+The important property is not self-description alone but causal relevance.
 
-A candidate reflective mechanism must make it possible to distinguish:
+The experiment must distinguish:
 
 ```text
 inspect-only representation
@@ -94,67 +79,86 @@ from:
 causally connected representation
 ```
 
-The latter changes subsequent execution when modified.
+The latter changes a later transition under a minimal-pair test.
 
-This becomes an experimental invariant for Machine.
+## 6. Relation to practical reflective systems
 
-## 6. Relation to CLOS-style reflection
+Metaobject protocols provide a concrete example in which meta-level execution policy is exposed as programmable structure and can affect ordinary execution.
 
-Metaobject protocols provide a practical example of customizable meta-level behavior whose effects are causally connected to ordinary object operations. They are evidence that meta-level execution policy can be exposed as programmable structure.
+They are useful precedent, not proof that an arbitrary evaluator can rewrite itself online.
 
-They should not be treated as proof that an arbitrary evaluator can rewrite itself online. A MOP and a self-modifying universal evaluator are different capabilities.
+## 7. Working capability frontier
 
-## 7. Research ladder
+The project should not treat reflection as an infinite ladder of increasingly remote meta-evaluators. Once the evaluator/transition mechanism is itself represented in the machine state, the same reify/modify/install semantics can in principle be applied again through the fixed substrate.
 
-Current working ladder:
+Therefore the main research axes after causal reflection are better expressed as independent dimensions:
 
 ```text
-L0  fixed execution
-L1  parameter mutation
-L2  executable-structure mutation
-L3  reusable learned executable structures
-L4  offline/meta-level self-modification
-L5  online causal reflection
-L6  online modification of the mechanism that modifies execution
+Dimension A — executable depth
+  parameter -> structure -> reusable structure -> evaluator/transition mechanism
+
+Dimension B — temporal continuity
+  offline -> checkpointed -> same-process online
+
+Dimension C — adaptation
+  fixed proposal -> search -> history-dependent proposal -> contextual proposal
+
+Dimension D — structural discovery
+  fixed candidate palette -> recomposition -> reusable learned structures
+
+Dimension E — meta-modification
+  fixed proposer -> modified proposer/modifier
 ```
 
-The project has experimental evidence around L1-L2, literature baselines around L3-L4, and has not yet implemented or falsified L5-L6.
+Current evidence:
+
+- parameter/executable mutation: experimentally supported;
+- reusable learned executable structures: literature baseline, not built here;
+- online hot-swap: experimentally supported;
+- history-dependent and explicit-context credit: experimentally supported;
+- causal evaluator reflection: not yet demonstrated;
+- context discovery: not yet demonstrated;
+- modification of the proposer/modifier: not yet demonstrated.
 
 ## 8. What must not be assumed
 
 This document does not assume:
 
-- that reflection is required for intelligence;
-- that self-reference requires homoiconicity;
-- that an infinite tower is physically necessary;
-- that online self-modification is preferable to offline self-modification;
-- that causal reflection produces useful adaptation without an external evaluation condition;
-- that reflective systems solve the limits of self-justification identified in formal logic.
+- reflection is required for intelligence;
+- self-reference requires homoiconicity;
+- an infinite tower is physically necessary;
+- online self-modification is preferable to offline modification;
+- causal reflection automatically produces useful adaptation;
+- formal self-reference results directly determine the engineering architecture.
 
 ## 9. Minimal experiment candidate
 
-A useful next experiment is a tiny interpreter with an explicitly reifiable execution state:
+Use a tiny interpreter with an explicitly reifiable execution state:
 
 ```text
 E(R, S, K) -> continuation
 ```
 
-where `R` is executable representation, `S` is operational state, and `K` is the continuation/control state.
-
-A reflective operation may produce:
+with an experimental reflective state:
 
 ```text
-reify(R, S, K) -> description
-modify(description) -> description'
-install(description') -> updated execution context
+Q = <R, S, K, rho>
 ```
 
-The decisive test is not whether `description'` exists. It is whether the *same ongoing run* continues with an execution rule measurably changed by `description'`.
+A candidate reflective operation may expose:
 
-A fixed baseline must execute the same task without reflective modification under the same resource budget.
+```text
+reify(Q) -> description
+modify(description) -> description'
+install(description') -> Q'
+```
+
+`modify` need not be a primitive; it may be ordinary computation over reified data.
+
+The decisive test is whether the same ongoing run continues with an execution rule measurably changed by `description'`.
 
 ## 10. Current question
 
 > What is the smallest fixed substrate that permits a running machine to modify the executable mechanism that determines its own subsequent transitions, with causal continuity and observable replay?
 
-This question is narrower than machine intelligence and should be answered before adding learning or higher-order self-improvement mechanisms.
+This question is narrower than machine intelligence and should be answered before claiming higher-order self-improvement.
