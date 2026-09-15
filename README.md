@@ -8,6 +8,14 @@ This repository is defining an **implementation-independent machine model** befo
 
 The project does not assume that a machine should think, feel, attend, remember, or reason in human terms. Human concepts may describe observations later, but they are not accepted as architectural primitives without machine-level evidence.
 
+## Research origin
+
+The current experiments grew out of earlier questions about machine identity, goals, feelings, operational significance, adaptation, and the difference between human descriptions and machine mechanisms.
+
+- `docs/RESEARCH-ORIGIN.md` — conceptual lineage, including the airplane thought experiment and the early questions about feelings, goals, executable behavior, experience, and reflection
+
+This document is provenance, not evidence. The origin questions motivate experiments but do not establish their answers.
+
 ## Current research question
 
 > What is the smallest fixed substrate that permits executable state to change its own future operating regime, while consequences and retained history can affect subsequent changes?
@@ -64,6 +72,7 @@ reconfigurability
 
 ## Current documents
 
+- `docs/RESEARCH-ORIGIN.md` — conceptual lineage and original questions
 - `docs/ABSTRACT-MACHINE.md` — implementation-independent model
 - `docs/FOUNDATION.md` — current principles and claim frontier
 - `docs/EXPERIMENT-V0.md` — falsifiable experimental program
