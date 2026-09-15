@@ -8,6 +8,12 @@ Status: RESEARCH / OPEN HYPOTHESES
 
 The project deliberately studies machine-operational capabilities rather than starting from the category of "intelligence".
 
+## Research origin
+
+The current research grew from earlier questions about goals, feelings, identity, operational significance, adaptation, and the difference between human descriptions and machine mechanisms. Those questions are preserved in `docs/RESEARCH-ORIGIN.md`.
+
+The origin layer is provenance, not evidence. Human concepts may motivate a machine-native question without prescribing the mechanism that answers it.
+
 ## Non-goals
 
 This repository does not begin by implementing human-like thinking, emotion, attention, personality, memory, planning, or general intelligence as first-class concepts.
@@ -31,6 +37,7 @@ Human concepts may describe observed behavior after the fact, but they are not a
 13. Search/adaptation procedures must not be credited to mutable representation merely because the representation is mutable.
 14. Learning claims require matched history-erased/shuffled controls.
 15. Context-sensitive learning must distinguish supplied context labels from context discovered from machine-observable state.
+16. Human descriptions such as feeling or motivation may be retained as functional questions, but must be translated into machine-operational variables before becoming architectural claims.
 
 ## Current architectural classification
 
@@ -60,6 +67,39 @@ The causal role of each remains conditional on fair ablations and matched budget
 - Experience / accumulation
 
 These alter how future operation is evaluated, generated, constrained, or scheduled.
+
+## Operational significance
+
+An original project question was why some events or conditions should alter future machine operation more strongly than others.
+
+Human descriptions of such changes may use words such as:
+
+```text
+fear
+urgency
+curiosity
+motivation
+attention
+```
+
+The current machine-native formulation is narrower:
+
+> What mechanism changes the operational significance of a state, consequence, or predicted consequence so that it alters subsequent transition policy?
+
+Candidate variables include:
+
+```text
+state deviation
+consequence estimate
+cost / irreversibility
+uncertainty
+resource pressure
+history
+context
+persistence / decay
+```
+
+This is an open research direction. None of these variables is being declared equivalent to a human emotion, and no emotion-like primitive has been added to the abstract model.
 
 ## Current experimental frontier
 
@@ -172,3 +212,4 @@ The stronger operational target is:
 - Does regime modification generalize rather than merely improve search?
 - Can useful goalless operation exist without hidden objective injection?
 - Which state should persist, decay, or be discarded for cumulative adaptation?
+- Can changes in operational significance be induced by machine-observable consequence, cost, uncertainty, or regime shift without importing a human emotion primitive?
