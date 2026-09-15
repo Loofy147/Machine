@@ -1,50 +1,78 @@
 # Machine
 
-Machine-native intelligence research.
+Machine-native computation / adaptation research.
 
 ## Current phase
 
-This repository is defining an **implementation-independent machine model** before selecting a language, runtime, or model architecture.
+This repository is defining an **implementation-independent machine model** before committing to a language, runtime, model architecture, or anthropomorphic cognitive vocabulary.
 
-The project does **not** assume that a machine should think, feel, attend, remember, or reason in human terms. Human concepts may later describe observed behavior, but they are not accepted as architectural primitives without evidence that the machine needs them.
+The project does not assume that a machine should think, feel, attend, remember, or reason in human terms. Human concepts may describe observations later, but they are not accepted as architectural primitives without machine-level evidence.
 
-### Current research question
+## Current research question
 
-> What is the smallest set of machine-native state transitions and executable operations that can produce reusable, adaptive behavior?
+> What is the smallest fixed substrate that permits executable state to change its own future operating regime, while consequences and retained history can affect subsequent changes?
 
-### Baseline hypothesis
+The broader question of machine intelligence remains deliberately downstream of this operational question.
+
+## Current claim frontier
+
+### Experimentally supported in tested regimes
+
+- Executable representations can be changed and subsequently produce different behavior.
+- Mutable executable representation is a capability for adaptation, but does not itself provide a search advantage.
+- Continuous same-process evaluator hot-swap works in the current prime-stream harness.
+- Outcome history bound to operator identity can causally change proposal policy over a fixed candidate palette.
+- Context-indexed history can preserve useful credit when a previously encountered context returns, provided the context is supplied explicitly.
+
+### Not established
+
+- context discovery;
+- reusable learned executable structure;
+- self-discovery of the adaptation mechanism;
+- causal reflection of the evaluator/transition semantics;
+- general-purpose machine intelligence.
+
+## Core separation
 
 ```text
-State
-  -> represent change
-  -> choose an available operation
-  -> execute
-  -> observe consequence
-  -> alter operation structure when needed
-  -> State'
+implementation language
+    != operational representation
+    != operational semantics
+    != physical substrate
 ```
 
-This is a hypothesis, not a final architecture.
+Python, Rust, C, a VM, an interpreter, native code, or another substrate may be used as research instruments. None is assumed to be the machine's native definition.
 
-## Important separation
+Likewise:
 
-`Machine model != implementation language`
-
-Python, Rust, C, a VM, a graph executor, or another substrate may be used later as research instruments. None is assumed to be the machine's native substrate.
+```text
+reconfigurability
+    != adaptation
+    != learning
+    != reusable learning
+    != causal reflection
+```
 
 ## Research gates
 
-1. Define the abstract state-transition semantics.
-2. Prove that the semantics are independent of any specific implementation language.
-3. Build at least two different execution substrates for the same semantics.
-4. Compare whether the semantics produce the same observable behavior across substrates.
-5. Only then investigate learning, persistent operation, recomposition, and transfer.
+1. Stabilize the abstract transition semantics.
+2. Test the same semantics on independent execution substrates.
+3. Validate adaptive mechanisms with controlled ablations and matched budgets.
+4. Test contextual credit without supplying context labels.
+5. Test reusable executable structure on genuinely held-out task families.
+6. Implement the smallest causal-reflection substrate only after the preceding semantics are sufficiently stable.
 
 ## Current documents
 
 - `docs/ABSTRACT-MACHINE.md` — implementation-independent model
-- `docs/FOUNDATION.md` — principles, boundaries, and current hypotheses
+- `docs/FOUNDATION.md` — current principles and claim frontier
 - `docs/EXPERIMENT-V0.md` — falsifiable experimental program
+- `docs/EXPERIMENT-REVIEW-9-MECHANISMS.md` — nine-mechanism ablation review
+- `docs/EXPERIMENT-B-CLEAN.md` — clean mutable-executable-representation experiment
+- `docs/EXPERIMENT-ONLINE-REFLECTIVE-LEARNING.md` — online reflective-learning design and boundary
+- `docs/EXPERIMENT-CONTEXTUAL-CREDIT.md` — context-indexed credit experiment
+- `docs/REFLECTION-FRONTIER.md` — causal-reflection boundary
+- `docs/INTERACTION-OPERATING-MODE.md` — project interaction/evidence discipline
 - `docs/OPEN-QUESTIONS.md` — unresolved questions
 
-The Python implementation previously used for the initial scaffold is intentionally not part of the current baseline. A future implementation belongs under an explicitly named research-harness boundary.
+The repository remains research-first. Implementation code should be introduced only as an explicitly named experimental substrate with reproducible evidence attached to its claims.
