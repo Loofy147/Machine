@@ -24,86 +24,90 @@ Those may emerge later as compositions, but none is accepted as a primitive mere
 8. Persistent state should preserve future utility and meaning, not merely bytes.
 9. Remembering does not imply activation; activation does not imply influence.
 10. Generality is an open hypothesis: it may belong to the machine's ability to acquire and compose capabilities rather than to possession of one universal intelligence.
+11. Experimental relevance does not imply architectural primitivity. An ablation can show that a mechanism matters within a regime without proving that the mechanism is fundamental or universal.
+12. Mechanisms should be separated by causal role before being named primitives: execution structure, operation-space modulation, and regime adaptation are currently distinct research layers.
 
-## Primitive candidate set
+## Current architectural classification
 
-The initial candidate set is deliberately small.
+The latest nine-mechanism experiment suggests that a flat primitive list is misleading. The current classification is provisional:
 
-### State
+### Structural execution
 
-A persistent or transient machine condition that can affect later operations and can itself change.
+These define what it means for an executable machine to change state.
 
-Conceptual contract:
+- State
+- Operation / Transformation
+- Transition
+- Control / scheduling
 
-```text
-State_t -> State_{t+1}
-```
+The presence of these elements is partly definitional: removing them may remove the runnable system rather than cleanly ablate a capability.
 
-### Represent
+### Operation-space modulation
 
-Convert an input, observation, or state fragment into a representation that available operations can act upon.
+These alter which executable paths are available or how they are formed.
 
-```text
-represent(input, state) -> representation
-```
+- Invocation constraints
+- Variation / branching
+- Composition
 
-Representation is not required to be linguistic.
+Their causal value can be tested without removing execution semantics entirely.
 
-### Select
+### Regime adaptation
 
-Choose one or more executable operations from the currently available operation set.
+These alter how the machine evaluates or modifies future operation.
 
-```text
-select(state, operations, history) -> selection
-```
+- Evaluation / testing
+- Reformation
+- Experience / accumulation
 
-`Select` is not defined as human attention. It is an operational allocation decision.
+These are candidates for mechanisms that change the operating regime rather than simply execute an operation.
 
-### Operate
+## Experience hypothesis
 
-Execute a concrete operation over a representation and state.
+A recent accumulation ablation exposed a limitation of context-free experience. A single score attached to an operation name can promote an operation because it worked elsewhere, even when it is unsuitable in the current state.
 
-```text
-operate(operation, representation, state) -> result
-```
-
-Operations may be functions, programs, tools, transformations, queries, simulations, comparisons, or other executable units.
-
-### Observe
-
-Extract operationally relevant consequences from execution.
+Candidate representation:
 
 ```text
-observe(state, operation, result) -> observation
+experience ~= (operation, context/state conditions, transition, consequence)
 ```
 
-The observation is an artifact for subsequent state transition, not a claim about inner experience.
-
-### Recompose
-
-Change the arrangement, choice, or representation of operations when the current operating path is insufficient.
+rather than:
 
 ```text
-recompose(history, observation, operations) -> new_operation_graph
+experience ~= score(operation)
 ```
 
-`Recompose` is a primary research target, not an implementation detail.
+Status: HYPOTHESIS. This must be experimentally compared against operation-only accumulation before entering the abstract model.
+
+## Reconsidering the baseline candidate set
+
+The previous six-element candidate set (`State`, `Represent`, `Select`, `Operate`, `Observe`, `Recompose`) remains useful as a provisional vocabulary, but it should no longer be treated as six equivalent primitives.
+
+In particular:
+
+- `Represent` may be an operation or state transformation rather than a mandatory stage.
+- `Select` may be better understood as transition scheduling/control.
+- `Operate` may be the general execution semantics behind all executable operations.
+- `Observe` may be one class of state/result transformation rather than a human-like perceptual faculty.
+- `Recompose` may be a family of regime-changing mechanisms, including composition, variation, and reformation.
+
+The next experiments must determine whether these distinctions are merely vocabulary or correspond to irreducible causal mechanisms.
 
 ## Baseline operational loop
 
-The smallest proposed loop is:
+The current abstract loop therefore remains deliberately weak:
 
 ```text
 State
-  -> Represent
-  -> Select
-  -> Operate
-  -> Observe
-  -> Recompose
+  -> determine executable transition
+  -> execute operation
+  -> obtain consequence
+  -> update state and/or operation structure
   -> State'
 ```
 
-This is a hypothesis, not an assertion that these are the final primitives.
+Representation, branching, composition, evaluation, and experience may participate in this loop, but none is assumed to execute on every cycle.
 
 ## Goalless operation
 
@@ -133,16 +137,19 @@ Do not define success as the presence of a component named `intelligence`.
 
 Initial operational criterion:
 
-> Can a small machine, through operation, observation, and recomposition, acquire reusable behavior on tasks and conditions that were not explicitly encoded as fixed procedures?
+> Can a small machine, through executable transitions and changes to its operating regime, acquire reusable behavior on tasks and conditions that were not explicitly encoded as fixed procedures?
 
 If not, the hypothesis fails.
 
 ## Current unknowns
 
-- Whether six primitives are sufficient.
-- Whether `Observe` and `Recompose` should be split further.
+- Whether the structural execution layer can be reduced further.
+- Whether operation-space modulation requires all of invocation constraints, variation, and composition.
+- Whether evaluation/testing can be useful when its signal is reliable and downstream-sensitive.
+- Whether contextual experience outperforms operation-only accumulation.
+- Whether reformation decomposes into independent regime-changing mechanisms.
 - Whether state must have multiple timescales.
 - Whether goalless operation can produce useful direction without hidden objectives.
-- Whether recomposition produces generalization rather than merely search.
+- Whether regime modification produces generalization rather than merely search.
 - Whether a coherent persistent identity is necessary for cumulative learning.
 - Whether an LLM is useful as one operation among many rather than as the machine's cognitive core.
