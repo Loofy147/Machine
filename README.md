@@ -14,6 +14,7 @@ The current experiments grew out of earlier questions about machine identity, go
 
 - `docs/RESEARCH-ORIGIN.md` — conceptual lineage, including the airplane thought experiment and the early questions about feelings, goals, executable behavior, experience, and reflection
 - `docs/OPERATIONAL-PHENOMENA.md` — human-described phenomena translated into candidate machine-operational relations and discriminating experiments
+- `docs/INTELLIGENCE-QUESTIONS.md` — deeper questions about representation, significance, learning, reachable capability space, continuity, and the limits imposed by the machine's own architecture
 
 These documents are provenance and research framing, not evidence. Origin questions motivate experiments but do not establish their answers.
 
@@ -87,14 +88,17 @@ reconfigurability
 3. Test the same semantics on independent execution substrates.
 4. Validate adaptive mechanisms with controlled ablations and matched budgets.
 5. Test contextual credit without supplying context labels.
-6. Test operational significance, persistence/decay, and prediction-error mechanisms as machine-native relations rather than named human faculties.
+6. Test operational significance, persistence/decay, prediction error, suppression, ambiguity retention, and model-revision mechanisms as machine-native relations rather than named human faculties.
 7. Test reusable executable structure on genuinely held-out task families.
-8. Implement the smallest causal-reflection substrate only after the preceding semantics are sufficiently stable.
+8. Test continuity/lineage effects separately from simple retained statistics.
+9. Implement the smallest causal-reflection substrate only after the preceding semantics are sufficiently constrained.
 
 ## Current documents
 
 - `docs/RESEARCH-ORIGIN.md` — conceptual lineage and original questions
 - `docs/OPERATIONAL-PHENOMENA.md` — candidate machine-native relations for human-described operational phenomena
+- `docs/OPERATIONAL-RELATIONS.md` — candidate relations, dependencies, and experimental ordering
+- `docs/INTELLIGENCE-QUESTIONS.md` — deeper machine-intelligence questions and discriminating directions
 - `docs/ABSTRACT-MACHINE.md` — implementation-independent model
 - `docs/FOUNDATION.md` — current principles and claim frontier
 - `docs/EXPERIMENT-V0.md` — falsifiable experimental program
