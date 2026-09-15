@@ -4,152 +4,171 @@ Status: RESEARCH / OPEN HYPOTHESES
 
 ## Core question
 
-> What is the smallest composable set of machine-native operations that can produce behavior we would describe as intelligent, without directly encoding human cognitive primitives?
+> What is the smallest composable set of machine-native operations that can produce reusable adaptive behavior without importing human cognitive mechanisms as architectural primitives?
+
+The project deliberately studies machine-operational capabilities rather than starting from the category of "intelligence".
 
 ## Non-goals
 
 This repository does not begin by implementing human-like thinking, emotion, attention, personality, memory, planning, or general intelligence as first-class concepts.
 
-Those may emerge later as compositions, but none is accepted as a primitive merely because humans use the corresponding concept.
+Human concepts may describe observed behavior after the fact, but they are not architectural primitives without machine-level evidence.
 
 ## Working principles
 
 1. Machines should be machines, not human clones.
-2. Abstract the function we need, not the human mechanism that appears to perform it.
+2. Abstract the function required, not the human mechanism associated with it.
 3. Knowledge is not the same as the ability to use knowledge during operation.
-4. Operation should not require a semantic task or explicit goal in every cycle.
-5. A state transition may be driven by change, consequence, availability, conflict, uncertainty, or other operational conditions without requiring a human-style goal.
+4. A transition need not require a semantic task objective on every cycle.
+5. State transition may be driven by operational conditions such as change, consequence, availability, conflict, uncertainty, failure, or resource pressure.
 6. The machine should be able to change how it operates, not only what it stores.
-7. A failed or surprising operation is evidence about the current operating regime, not merely a request to repeat the same computation.
+7. A failed or surprising operation is evidence about the current operating regime.
 8. Persistent state should preserve future utility and meaning, not merely bytes.
 9. Remembering does not imply activation; activation does not imply influence.
-10. Generality is an open hypothesis: it may belong to the machine's ability to acquire and compose capabilities rather than to possession of one universal intelligence.
-11. Experimental relevance does not imply architectural primitivity. An ablation can show that a mechanism matters within a regime without proving that the mechanism is fundamental or universal.
-12. Mechanisms should be separated by causal role before being named primitives: execution structure, operation-space modulation, and regime adaptation are currently distinct research layers.
+10. Generality is an open hypothesis and may belong to capability acquisition/composition rather than one universal mechanism.
+11. Experimental relevance does not imply architectural primitivity or universality.
+12. Mechanisms should be separated by causal role before being named primitives.
+13. Search/adaptation procedures must not be credited to mutable representation merely because the representation is mutable.
+14. Learning claims require matched history-erased/shuffled controls.
+15. Context-sensitive learning must distinguish supplied context labels from context discovered from machine-observable state.
 
 ## Current architectural classification
 
-The latest nine-mechanism experiment suggests that a flat primitive list is misleading. The current classification is provisional:
+The nine-mechanism experiment indicates that a flat primitive list is misleading. The current classification is provisional.
 
 ### Structural execution
-
-These define what it means for an executable machine to change state.
 
 - State
 - Operation / Transformation
 - Transition
 - Control / scheduling
 
-The presence of these elements is partly definitional: removing them may remove the runnable system rather than cleanly ablate a capability.
+These are partly definitional: deleting them may delete executability rather than ablate a separable capability.
 
 ### Operation-space modulation
-
-These alter which executable paths are available or how they are formed.
 
 - Invocation constraints
 - Variation / branching
 - Composition
 
-Their causal value can be tested without removing execution semantics entirely.
+The causal role of each remains conditional on fair ablations and matched budgets.
 
 ### Regime adaptation
-
-These alter how the machine evaluates or modifies future operation.
 
 - Evaluation / testing
 - Reformation
 - Experience / accumulation
 
-These are candidates for mechanisms that change the operating regime rather than simply execute an operation.
+These alter how future operation is evaluated, generated, constrained, or scheduled.
 
-## Experience hypothesis
+## Current experimental frontier
 
-A recent accumulation ablation exposed a limitation of context-free experience. A single score attached to an operation name can promote an operation because it worked elsewhere, even when it is unsuitable in the current state.
+### Established within tested regimes
 
-Candidate representation:
+- Executable representations can be modified and produce different future behavior.
+- Mutable executable representation is a substrate capability for adaptation; it does not itself provide an adaptive search advantage.
+- Search dynamics can dominate performance in a small mutable instruction space.
+- Continuous same-process evaluator hot-swap is experimentally supported in the current prime-stream harness.
+- History bound to operator identity can causally change proposal policy over a fixed candidate palette.
+- Context-indexed history preserves useful operator credit when the same context recurs after another context intervenes, when context labels are supplied.
 
-```text
-experience ~= (operation, context/state conditions, transition, consequence)
-```
+### Important negative results / corrections
 
-rather than:
+- The nine-mechanism result does not justify a flat nine-primitive architecture.
+- Variation's measured effect is confounded by the poor single-path fallback selector.
+- Invocation gating combined multiple functions and must be decomposed.
+- No-testing outperforming full-testing shows that noisy evaluation can hurt in this regime; it does not show evaluation is intrinsically harmful.
+- Scalar operation-only accumulation can become harmful when weighted strongly.
+- Mutable executable state does not establish learning, reusable structure, or intelligence.
+- The current online prime experiment does not establish causal reflection of the evaluator because its live source representation is external to the evaluator state.
 
-```text
-experience ~= score(operation)
-```
+## Contextual experience
 
-Status: HYPOTHESIS. This must be experimentally compared against operation-only accumulation before entering the abstract model.
-
-## Reconsidering the baseline candidate set
-
-The previous six-element candidate set (`State`, `Represent`, `Select`, `Operate`, `Observe`, `Recompose`) remains useful as a provisional vocabulary, but it should no longer be treated as six equivalent primitives.
-
-In particular:
-
-- `Represent` may be an operation or state transformation rather than a mandatory stage.
-- `Select` may be better understood as transition scheduling/control.
-- `Operate` may be the general execution semantics behind all executable operations.
-- `Observe` may be one class of state/result transformation rather than a human-like perceptual faculty.
-- `Recompose` may be a family of regime-changing mechanisms, including composition, variation, and reformation.
-
-The next experiments must determine whether these distinctions are merely vocabulary or correspond to irreducible causal mechanisms.
-
-## Baseline operational loop
-
-The current abstract loop therefore remains deliberately weak:
+The current best-supported experience hypothesis is no longer merely that "memory should be contextual". The narrower experimentally supported result is:
 
 ```text
-State
-  -> determine executable transition
-  -> execute operation
-  -> obtain consequence
-  -> update state and/or operation structure
-  -> State'
+(context, operation) -> outcome history
 ```
 
-Representation, branching, composition, evaluation, and experience may participate in this loop, but none is assumed to execute on every cycle.
+can preserve useful credit where:
+
+```text
+operation -> global outcome history
+```
+
+would mix incompatible regimes.
+
+The latest controlled experiment used explicit `REPEAT` and `UNIQUE` labels and measured a real performance crossover between `memo_cache` and `math_isqrt`. Therefore the result establishes context-conditioned credit in the tested policy layer.
+
+It does **not** establish context discovery. The next experiment must derive regime features from machine-observable state/event history rather than receiving the regime label from the harness.
+
+## Reconsidering the earlier primitive vocabulary
+
+The earlier candidate set (`State`, `Represent`, `Select`, `Operate`, `Observe`, `Recompose`) remains useful as vocabulary but not as an architectural commitment.
+
+- `Represent` may be an executable transformation.
+- `Select` may reduce to scheduling/control.
+- `Operate` may be the general transition semantics.
+- `Observe` may be a state/result relation rather than a perceptual faculty.
+- `Recompose` may be a family containing variation, composition, and reformation.
+
+## Current machine cycle
+
+```text
+S
+ -> determine executable transition
+ -> execute
+ -> obtain consequence
+ -> update state and/or operation structure
+ -> S'
+```
+
+Optional mechanisms participate only when required by the regime.
+
+## Reconfigurability vs adaptation vs learning
+
+These claims remain explicitly separate:
+
+```text
+reconfigurability
+  != adaptation procedure
+  != learning
+  != reusable learning
+  != self-discovery of the adaptation mechanism
+  != causal reflection
+```
+
+Evidence for one must not silently promote the status of another.
+
+## Reflection frontier
+
+The current target is a narrower machine capability:
+
+> a single ongoing computational process reifies executable state or execution machinery, modifies a representation that actually participates in future transitions, safely commits the change, and continues execution without external restart.
+
+The current hot-swap experiment reaches online executable replacement but not this stronger causal-reflection criterion.
 
 ## Goalless operation
 
-The system must be able to remain operational without receiving a semantic task such as "solve X".
-
-This does not imply arbitrary randomness. A transition can be driven by operational conditions such as:
-
-- state change,
-- environmental change,
-- failed execution,
-- unexpected consequence,
-- missing information,
-- resource pressure,
-- available experiment,
-- inconsistency,
-- or another machine-native transition condition.
-
-The distinction is:
-
-```text
-semantic goal != required condition for state transition
-```
+A transition may be driven by machine-native conditions without a semantic task objective on every cycle. This remains an open experimental question rather than an established capability.
 
 ## Intelligence criterion
 
 Do not define success as the presence of a component named `intelligence`.
 
-Initial operational criterion:
+The stronger operational target is:
 
-> Can a small machine, through executable transitions and changes to its operating regime, acquire reusable behavior on tasks and conditions that were not explicitly encoded as fixed procedures?
-
-If not, the hypothesis fails.
+> Can a small machine acquire reusable operational structure under conditions not explicitly encoded as fixed procedures, while the mechanism responsible for that adaptation remains auditable?
 
 ## Current unknowns
 
-- Whether the structural execution layer can be reduced further.
-- Whether operation-space modulation requires all of invocation constraints, variation, and composition.
-- Whether evaluation/testing can be useful when its signal is reliable and downstream-sensitive.
-- Whether contextual experience outperforms operation-only accumulation.
-- Whether reformation decomposes into independent regime-changing mechanisms.
-- Whether state must have multiple timescales.
-- Whether goalless operation can produce useful direction without hidden objectives.
-- Whether regime modification produces generalization rather than merely search.
-- Whether a coherent persistent identity is necessary for cumulative learning.
-- Whether an LLM is useful as one operation among many rather than as the machine's cognitive core.
+- Can the structural execution layer be reduced further?
+- Which operation-space mechanisms are causally necessary under fair controls?
+- Can context be discovered from machine state rather than supplied labels?
+- Can contextual credit improve cumulative regret rather than only configuration persistence?
+- Can reusable executable structure be learned across genuinely held-out tasks?
+- Can an online machine causally modify the evaluator/transition mechanism while preserving the same continuation?
+- Can the proposer/modifier itself be modified without introducing an unexamined fixed meta-layer?
+- Does regime modification generalize rather than merely improve search?
+- Can useful goalless operation exist without hidden objective injection?
+- Which state should persist, decay, or be discarded for cumulative adaptation?
