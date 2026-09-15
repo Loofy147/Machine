@@ -13,8 +13,9 @@ The project does not assume that a machine should think, feel, attend, remember,
 The current experiments grew out of earlier questions about machine identity, goals, feelings, operational significance, adaptation, and the difference between human descriptions and machine mechanisms.
 
 - `docs/RESEARCH-ORIGIN.md` — conceptual lineage, including the airplane thought experiment and the early questions about feelings, goals, executable behavior, experience, and reflection
+- `docs/OPERATIONAL-PHENOMENA.md` — human-described phenomena translated into candidate machine-operational relations and discriminating experiments
 
-This document is provenance, not evidence. The origin questions motivate experiments but do not establish their answers.
+These documents are provenance and research framing, not evidence. Origin questions motivate experiments but do not establish their answers.
 
 ## Current research question
 
@@ -38,7 +39,8 @@ The broader question of machine intelligence remains deliberately downstream of 
 - reusable learned executable structure;
 - self-discovery of the adaptation mechanism;
 - causal reflection of the evaluator/transition semantics;
-- general-purpose machine intelligence.
+- general-purpose machine intelligence;
+- general machine-native implementations of phenomena described as emotion, curiosity, urgency, identity, or self-preservation.
 
 ## Core separation
 
@@ -54,6 +56,23 @@ Python, Rust, C, a VM, an interpreter, native code, or another substrate may be 
 Likewise:
 
 ```text
+human phenomenon
+    != human mechanism
+    != machine primitive
+```
+
+A useful research path is:
+
+```text
+human-described phenomenon
+    -> operational effect
+    -> machine-native candidate relation
+    -> controlled experiment
+```
+
+And:
+
+```text
 reconfigurability
     != adaptation
     != learning
@@ -64,15 +83,18 @@ reconfigurability
 ## Research gates
 
 1. Stabilize the abstract transition semantics.
-2. Test the same semantics on independent execution substrates.
-3. Validate adaptive mechanisms with controlled ablations and matched budgets.
-4. Test contextual credit without supplying context labels.
-5. Test reusable executable structure on genuinely held-out task families.
-6. Implement the smallest causal-reflection substrate only after the preceding semantics are sufficiently stable.
+2. Preserve reproducible evidence artifacts for completed experiments.
+3. Test the same semantics on independent execution substrates.
+4. Validate adaptive mechanisms with controlled ablations and matched budgets.
+5. Test contextual credit without supplying context labels.
+6. Test operational significance, persistence/decay, and prediction-error mechanisms as machine-native relations rather than named human faculties.
+7. Test reusable executable structure on genuinely held-out task families.
+8. Implement the smallest causal-reflection substrate only after the preceding semantics are sufficiently stable.
 
 ## Current documents
 
 - `docs/RESEARCH-ORIGIN.md` — conceptual lineage and original questions
+- `docs/OPERATIONAL-PHENOMENA.md` — candidate machine-native relations for human-described operational phenomena
 - `docs/ABSTRACT-MACHINE.md` — implementation-independent model
 - `docs/FOUNDATION.md` — current principles and claim frontier
 - `docs/EXPERIMENT-V0.md` — falsifiable experimental program
