@@ -1,23 +1,23 @@
 # Online Reflective Learning Experiment
 
-Status: EXPERIMENT DESIGN / OPEN
+Status: EXPERIMENTALLY_SUPPORTED / LIMITED — reflection target still OPEN
 
 ## Purpose
 
 Test the smallest continuously executing machine that can:
 
-1. reify its live execution state;
-2. produce a candidate change to the evaluator represented in that state;
-3. probe the candidate without destroying the current execution state;
+1. reify or access executable state;
+2. produce a candidate change to the operation used by the live process;
+3. validate the candidate without destroying the current execution state;
 4. commit or reject the candidate;
-5. retain probe history as ordinary state;
-6. use that history to change the distribution of future candidate changes.
+5. retain outcome history as ordinary state;
+6. use that history to alter future candidate proposals.
 
 This experiment does not assume intelligence, thinking, planning, attention, memory, or an agent abstraction.
 
-## Core state
+## Core target
 
-Use a CEK-like state extended with an evaluator value:
+The stronger target remains a causally reflective state such as:
 
 ```text
 Q = <R, S, K, rho, H>
@@ -25,13 +25,15 @@ Q = <R, S, K, rho, H>
 
 where:
 
-- `R` = current expression / executable control;
-- `S` = ordinary environment/state;
+- `R` = executable control / current expression;
+- `S` = ordinary operational state;
 - `K` = continuation;
-- `rho` = current evaluator representation;
-- `H` = retained history of candidate/probe/outcome records.
+- `rho` = evaluator/transition machinery represented in the state under test;
+- `H` = retained candidate/probe/outcome history.
 
-The fixed substrate supplies the base transition relation `E` that interprets the current state and, in the experimental construction, consults `rho` for ordinary redex dispatch.
+The fixed substrate supplies transition semantics `E`.
+
+The critical question is whether `rho` is actually part of the causal state consulted by future transitions, rather than merely an external source artifact.
 
 ## Candidate transition
 
@@ -41,38 +43,111 @@ reify(Q) -> d
 propose(d, H) -> d'
 probe(Q, d') -> result'
 commit(Q, d') -> Q'
-rollback(snapshot) -> Q
 ```
 
-`propose` is not a primitive assumption. It is the mechanism under test and may initially be a fixed mutation procedure.
+`propose` is not assumed to be a primitive. It may initially be an explicit fixed mutation procedure.
+
+## What has now been experimentally demonstrated
+
+### A — Continuous online executable replacement
+
+A long-lived Python process used a trusted prime-counting reference, an external `CURRENT` source file, isolated subprocess validation, and hot reload into the same process.
+
+The live stream continued across accepted evaluator replacements while accumulated process state was preserved.
+
+**Status: EXPERIMENTALLY_SUPPORTED.**
+
+This establishes online hot-swap of an executable operation within one process.
+
+### B — History-dependent proposal policy
+
+A fixed candidate palette was paired with outcome history. A controlled ablation compared history-enabled, history-erased, and history-shuffled policies.
+
+Correctly binding outcome history to operator identity materially reduced bad proposals relative to matched history-free or shuffled controls.
+
+**Status: EXPERIMENTALLY_SUPPORTED, fixed candidate palette.**
+
+This is credit assignment / policy adaptation, not discovery of new executable structure.
+
+### C — Context-indexed credit
+
+A subsequent experiment compared:
+
+```text
+(context, operator) -> history
+```
+
+against:
+
+```text
+operator -> global history
+```
+
+The measured streams contained a real performance crossover: `memo_cache` was best in REPEAT, while `math_isqrt` was best in UNIQUE.
+
+For 60 seeds and block sequence `REPEAT -> UNIQUE -> REPEAT -> UNIQUE`, the recurring REPEAT block showed:
+
+| Policy | memo weight at block start | memo active fraction | reacquire generation |
+|---|---:|---:|---:|
+| context-aware | 0.667 ± 0.000 | 0.989 ± 0.017 | 0.55 ± 0.83 |
+| context-blind | 0.102 ± 0.013 | 0.956 ± 0.048 | 2.22 ± 2.40 |
+
+Welch-style normal approximation gave:
+
+```text
+weight:  t = +326.35, p ≈ 0
+active:  t = +5.08,   p = 3.773e-07
+```
+
+**Status: EXPERIMENTALLY_SUPPORTED, TESTBED-SPECIFIC.**
+
+This establishes context-conditioned credit when the context label is supplied.
+
+## Critical limitations of the current online system
+
+The current prime-stream implementation does **not** yet satisfy causal procedural reflection.
+
+1. `reify_current_source()` reads external source text; it does not reify the live evaluator, continuation, and state as one causal description.
+2. Python's evaluation semantics remain external and fixed.
+3. Candidate operators are a fixed human-written palette; the system does not synthesize arbitrary new operators or executable structures.
+4. Candidate validation occurs outside the live execution path, so the current result demonstrates safe hot-swap rather than destructive online trial and rollback.
+5. History records candidate trials, but the current proposer can exclude the active operator, which can alter long-run credit behavior.
+6. Context labels in the contextual experiment were supplied by the harness; context was not discovered from machine state.
+7. Candidate performance profiles in the contextual experiment were precomputed; the policy experiment therefore isolates credit assignment rather than full online learning from live execution.
+
+These limitations are part of the result, not cleanup items to hide.
 
 ## Target property: online causal reflection
 
-A successful run must satisfy all of these:
+A successful reflective implementation must satisfy all of these:
 
 ### Continuity
 
-`install/commit` occurs inside one execution trace. The experiment must not serialize a new program to a fresh process and restart from an initial state.
+`commit` occurs inside one execution trace. The experiment must not create a fresh process and restart from an initial state.
 
 ### Evaluator change
 
-A minimal-pair probe must show that the same test expression has different transition behavior under `rho_pre` and `rho_post` while ordinary test inputs are held constant.
+A minimal-pair probe must show different transition behavior under `rho_pre` and `rho_post` with the same ordinary test input.
 
 ### Causal use
 
-The evaluator representation installed after commitment must be the representation actually consulted by subsequent execution. A descriptive copy that is never consulted fails the experiment.
+The installed evaluator representation must be the representation actually consulted by subsequent execution.
+
+### Observable effect
+
+Changing the reified representation must change a later transition or result in a controlled minimal pair.
 
 ### Reproducibility
 
-The committed evaluator description must be closed over its intended state and portable into a fresh equivalent machine state. Replaying the same description under matched initial conditions must reproduce its transition behavior.
+The committed representation should be replayable under matched initial conditions where portability is part of the claim being tested.
 
 ## Safety / commitment
 
-Because the process is continuous, failed evaluator changes cannot be allowed to destroy the only live process.
+Because the process is continuous, failed evaluator changes cannot destroy the only live execution state.
 
-The experiment therefore requires a non-destructive commitment mechanism. The implementation may use checkpoint/rollback, copy-on-write state, speculative execution, or an equivalent mechanism.
+The implementation may use checkpoint/rollback, copy-on-write, speculative execution, shadow state, or another mechanism.
 
-The abstraction being tested is:
+The abstraction under test is:
 
 ```text
 candidate
@@ -80,7 +155,7 @@ candidate
   -> commit | reject
 ```
 
-Not a specific checkpoint implementation.
+not a particular checkpoint implementation.
 
 ## Learning condition
 
@@ -90,87 +165,59 @@ Selection alone is:
 propose -> probe -> accept/reject
 ```
 
-Learning requires historical observations to change future proposals.
+Learning requires historical observations to alter future proposals.
 
-Primary test:
-
-```text
-P(success_{t+1} | H_t)
-```
-
-must improve relative to a matched history-independent control, after controlling for candidate-space exhaustion and changing task difficulty.
-
-A stronger causal comparison is:
+The minimum causal control is:
 
 ```text
 history-aware proposer
 vs
-same proposer with matched/shuffled/erased history
+same proposer with erased or shuffled history
 ```
 
-under the same candidate budget.
+with matched candidate budgets and task streams.
 
-## Experimental conditions
+## Context-discovery condition
 
-### C0 — Fixed evaluator
+The next contextual experiment must remove the supplied `REPEAT` / `UNIQUE` label.
 
-No modification of `rho`.
+Instead derive a context signature from machine-observable state or recent event history, for example:
 
-### C1 — Online evaluator mutation, no history use
+```text
+recent recurrence
+value distribution
+transition statistics
+resource/load pattern
+```
 
-`rho` can change, but candidate generation is history-independent.
+Then compare:
 
-This isolates reflection + selection from learning.
+```text
+history erased
+history global
+history indexed by supplied context
+history indexed by machine-derived context
+```
 
-### C2 — Online evaluator mutation with history
-
-`rho` can change and the proposer reads prior `(candidate, probe, outcome)` records.
-
-This tests cumulative adaptation.
-
-### C3 — Offline control
-
-The same candidate-generation and evaluation logic operates in separate processes/episodes.
-
-This separates online continuity from ordinary evolutionary iteration.
+Primary metrics should include cumulative regret, accepted improvements, bad proposals, and recovery time after hidden regime changes.
 
 ## Candidate program family
 
-Use a deliberately small evaluator language whose semantics are deterministic and whose mutations are inspectable.
+Use a deliberately small deterministic evaluator language whose mutations are inspectable.
 
-A suitable first task is prime counting or another bounded integer stream where:
+Prime counting remains a useful first substrate because it provides:
 
-- one implementation is trusted;
-- at least one candidate mutation is measurably faster;
-- at least one candidate mutation is intentionally incorrect;
-- failures are detectable by a trusted reference;
-- the live workload can continue across accepted changes.
+- a trusted reference;
+- valid faster variants;
+- intentionally incorrect variants;
+- measurable cost differences;
+- a live stream that can continue across accepted changes.
 
-Do not use timing as the only correctness signal.
-
-Correctness must be checked against trusted reference outputs; timing is secondary evidence about performance.
-
-## Live continuity test
-
-Run a long-lived event stream:
-
-```text
-input_1 -> evaluator_0
-input_2 -> evaluator_0
-...
-probe candidate
-commit rho_1
-input_n -> evaluator_1
-...
-```
-
-The process must remain alive across the evaluator change.
-
-The event log must prove which evaluator was active for each event.
+Correctness must be separated from performance. Timing is secondary evidence.
 
 ## Versioned transition record
 
-Every state transition relevant to adaptation should emit a compact record:
+Relevant adaptation transitions should emit compact evidence such as:
 
 ```text
 {
@@ -187,68 +234,33 @@ Every state transition relevant to adaptation should emit a compact record:
 }
 ```
 
-The record is evidence, not the machine's internal explanation.
-
-## Mutation operators
-
-Start with a tiny explicit set:
-
-- replace operator body with a known valid variant;
-- replace with an intentionally buggy variant;
-- change a bounded parameter;
-- compose two existing evaluator fragments.
-
-Do not introduce open-ended code generation in the first experiment.
-
-## Reference / validation separation
-
-Use two sets:
-
-```text
-validation inputs
-    used for candidate probes
-
-held-out inputs
-    never used to choose a candidate
-```
-
-A candidate is only considered an improvement if it passes correctness on validation and its held-out behavior remains correct.
-
-## Measurements
-
-Primary:
-
-- continuous execution preserved: yes/no;
-- causal evaluator change: yes/no;
-- correctness after commitment;
-- proposal success rate over time;
-- held-out correctness;
-- performance change after commitment.
-
-Secondary:
-
-- proposal entropy;
-- rejected/accepted ratio;
-- rollback rate;
-- lineage diversity;
-- history contribution above matched history-free control.
+The record is evidence, not an internal explanation.
 
 ## Falsifiers
 
-The experiment fails to establish online reflective learning if any of the following remains true:
+The stronger claim of online reflective learning is not established if:
 
-1. the process must restart after evaluator replacement;
+1. evaluator replacement requires a restart;
 2. changing `rho` does not change subsequent transition semantics;
-3. the installed `rho` is not causally consulted;
-4. history-aware proposal is not better than a matched history-free control;
-5. improvement exists only on probe inputs and fails on held-out inputs;
-6. performance gains are explained entirely by candidate-space enumeration or increasing compute;
-7. the trusted reference cannot reliably distinguish the intentionally buggy candidate.
+3. the installed `rho` is never causally consulted;
+4. history-aware proposal provides no improvement over a matched history-free control;
+5. improvements occur only on probe inputs and fail on held-out inputs;
+6. apparent improvement is fully explained by fixed candidate enumeration or extra compute;
+7. the trusted reference cannot reliably reject intentionally incorrect candidates;
+8. contextual gains disappear when the regime label is removed.
 
 ## Non-goals
 
-This experiment does not attempt to establish intelligence, consciousness, generality, human-like reasoning, or unbounded self-improvement.
+This experiment does not attempt to establish consciousness, general intelligence, human-like reasoning, or unbounded self-improvement.
 
-It tests one machine-native capability:
+It isolates machine-native capabilities in increasing order:
 
-> Can a single ongoing executable process change the rule that determines its future execution, safely commit that change, and learn from the consequences of doing so?
+```text
+continuous execution
+-> executable replacement
+-> history-dependent proposal
+-> context-conditioned credit
+-> context discovery
+-> causal evaluator reflection
+-> modification of the modification mechanism
+```
