@@ -3,6 +3,8 @@
 **Status:** PRE-REGISTRATION CANDIDATE  
 **Parent:** `docs/experiment/EXPERIMENT_PROTOCOL_v0.1_INITIAL_FREEZE_CANDIDATE.md`  
 **Primary-comparison freeze:** `docs/experiment/PRIMARY_COMPARISON_FREEZE_V0.1.md`  
+**Margin semantics:** `docs/experiment/DECISION_UTILITY_SEMANTICS_V0.1.md`  
+**Margin review:** `docs/experiment/MARGIN_JUSTIFICATION_V0.1_REVIEWED.md`  
 **Scope:** confirmatory comparison hierarchy, estimands, transfer arms, thresholds, multiplicity, decision rules, and sample-size determination.
 
 ## 1. Confirmatory scope
@@ -105,6 +107,8 @@ Primary superiority criterion:
 \theta_D > \delta_D.
 \]
 
+`delta_D` is the smallest positive probability-scale improvement that is operationally important under the frozen case-mix and decision-utility contract; it is not selected from study outcomes.
+
 ## 6. Probe-policy transfer estimand
 
 Let \(C_P\) be a pre-declared probe-cost measure.
@@ -119,21 +123,34 @@ This is a policy-efficiency estimand, not a correctness estimand. It is secondar
 
 ## 7. Repair-transfer estimand
 
-Let \(C_R\) be the pre-declared repair-search cost, such as candidate evaluations until the first independently validated sufficient repair.
+Let \(C_R\) be the pre-declared repair-search cost under the independent validation contract.
 
 \[
 \theta_R = E[C_R\mid T_b^{transfer}] - E[C_R\mid T_b^{baseline}].
 \]
 
-Primary dissociation condition:
+The primary equivalence region is generally:
 
 \[
-|\theta_R| < \delta_R.
+-\delta_R^- < \theta_R < \delta_R^+.
 \]
 
-The repair search mechanism, action vocabulary, validation procedure, and budget are identical across arms. The transfer artifact cannot modify these components.
+Interpretation:
 
-If the cost distribution requires a transformed, ratio, quantile, or other robust estimand, that choice must be frozen before confirmatory collection.
+- `delta_R+` = largest practically negligible increase in repair cost;
+- `delta_R-` = largest practically negligible decrease treated as equivalent for the stated dissociation claim.
+
+A symmetric special case may be declared later:
+
+\[
+|\theta_R|<\delta_R,
+\]
+
+but only when the operational contract explicitly justifies symmetry.
+
+The repair search mechanism, action vocabulary, validation procedure, cost unit, censoring/timeout rule, and budget are identical across arms. The transfer artifact cannot modify these components.
+
+If the final cost distribution requires a transformed, ratio, quantile, or other robust estimand, that choice must be frozen before confirmatory collection.
 
 ## 8. Validation-transfer estimand
 
@@ -153,7 +170,7 @@ This remains secondary unless promoted under a pre-specified confirmatory family
 
 ## 9. Primary dissociation criterion
 
-The confirmatory WHAT/HOW claim can be confirmed only when both are satisfied:
+The confirmatory WHAT/HOW claim can be confirmed only when both primary criteria pass under the frozen analysis:
 
 \[
 \boxed{\theta_D>\delta_D}
@@ -162,23 +179,26 @@ The confirmatory WHAT/HOW claim can be confirmed only when both are satisfied:
 and:
 
 \[
-\boxed{|\theta_R|<\delta_R}.
+\boxed{-\delta_R^-<\theta_R<\delta_R^+}.
 \]
 
-Neither criterion may be satisfied by substituting another mechanism pair, difficulty stratum, generator family, or exploratory result.
+No alternate mechanism pair, difficulty stratum, generator family, or exploratory result may be substituted.
+
+The symmetric `|theta_R| < delta_R` form is not assumed unless it is explicitly frozen as an operational consequence of the margin review.
 
 ## 10. Thresholds
 
-No numerical \(\delta\) is inherited from previous exploratory results.
+No numerical margin is inherited from previous exploratory results.
 
-Each margin must be defined as a smallest practically important effect (SPIE) on its native scale:
+Required definitions:
 
-- \(\delta_D\): minimum useful absolute change in diagnostic success probability;
-- \(\delta_P\): maximum practically negligible change in probe cost if policy equivalence is tested;
-- \(\delta_R\): maximum practically negligible change in repair-search cost;
-- \(\delta_V\): minimum useful validation-transfer effect if used confirmatorily.
+- `delta_D`: smallest useful absolute change in diagnostic success probability under the frozen decision-utility mapping;
+- `delta_R+`: largest practically negligible increase in repair-search cost;
+- `delta_R-`: largest practically negligible decrease treated as equivalent if a two-sided equivalence claim is retained;
+- `delta_P`: maximum practically negligible change in probe cost if policy equivalence is later made confirmatory;
+- `delta_V`: minimum useful validation-transfer effect if later made confirmatory.
 
-The repository currently lacks an independent utility/cost/safety specification sufficient to justify numerical SPIE values. Therefore the numerical margins are intentionally **OPEN** and constitute a pre-confirmatory blocker. They must not be chosen from calibration or exploratory outcomes.
+The repository currently lacks an independent utility/cost/safety specification sufficient to justify numerical values. Therefore the primary margins remain **OPEN** and are a pre-confirmatory blocker.
 
 ## 11. Primary analysis and inference convention
 
@@ -186,9 +206,9 @@ For the primary diagnostic superiority test:
 
 - two-sided confidence intervals are reported for estimation;
 - the superiority decision uses the pre-specified one-sided lower confidence bound at \(\alpha=0.05\);
-- target power for sample-size planning is **0.90**, unless a new preregistration version explicitly changes it before confirmatory data collection.
+- target power for sample-size planning is **0.90**, unless a new preregistration version changes it before confirmatory data collection.
 
-For the repair-equivalence criterion, use a pre-specified TOST-equivalent inference at \(\alpha=0.05\), corresponding to a 90% confidence interval for the equivalence decision once \(\delta_R\) is numerically frozen.
+For the repair-equivalence criterion, use pre-specified TOST-equivalent inference at \(\alpha=0.05\). With a symmetric margin this corresponds to a 90% confidence interval lying wholly inside `[-delta_R, +delta_R]`; with asymmetric margins it must lie wholly inside `[-delta_R-, +delta_R+]`.
 
 The point-estimator/model family must be fixed before confirmatory data collection; if clustering or repeated measures are present, the analysis must model that structure rather than assume independent observations.
 
@@ -196,11 +216,11 @@ The point-estimator/model family must be fixed before confirmatory data collecti
 
 Sample size is determined only after estimands, margins, and the primary analysis are frozen.
 
-For binary outcomes, use a declared two-arm design sized for the frozen \(\delta_D\), type-I error, 0.90 target power, baseline event-rate assumptions, and design effect.
+For binary outcomes, use a declared two-arm design sized for the frozen `delta_D`, type-I error, 0.90 target power, baseline event-rate assumptions, and design effect.
 
-For repair-cost equivalence, use the frozen cost estimand, equivalence margin, and declared matched/hierarchical model with conservative nuisance assumptions.
+For repair-cost equivalence, use the frozen cost estimand, equivalence bounds, censoring/timeout rule, and declared matched/hierarchical model with conservative nuisance assumptions.
 
-No numerical \(N\) is frozen while the primary margins remain OPEN.
+No numerical `N` is frozen while the primary margins remain OPEN.
 
 ## 13. Calibration / confirmatory separation
 
@@ -244,7 +264,7 @@ For each estimand report:
 
 - point estimate;
 - confidence interval;
-- pre-declared margin;
+- pre-declared margin or bounds;
 - analysis population;
 - generator/design strata;
 - clustering structure;
@@ -253,7 +273,7 @@ For each estimand report:
 - calibration versus confirmatory data origin;
 - transfer-artifact provenance and version.
 
-`Unknown` twin-audit cases remain represented in overall \(P_0\) accounting but do not enter twin-specific estimands requiring established identifiability.
+`Unknown` twin-audit cases remain represented in overall `P0` accounting but do not enter twin-specific estimands requiring established identifiability.
 
 ## 17. Freeze checklist
 
@@ -264,15 +284,16 @@ Already frozen at design level:
 3. exact estimand formulas and scales;
 4. primary policy arm `S2`;
 5. transfer-arm isolation and repair-controller equality;
-6. \(\alpha=0.05\) and 0.90 target power;
+6. alpha = 0.05 and 0.90 target power;
 7. calibration/confirmatory separation;
 8. multiplicity rule;
 9. decision/reporting rules.
 
 Still OPEN and blocking final confirmatory freeze:
 
-10. numerical \(\delta_D,\delta_P,\delta_R,\delta_V\) where applicable;
-11. nuisance assumptions and numerical sample size derived from the frozen margins;
-12. exact model/estimator family if not fully determined by the final data structure.
+10. numerical `delta_D` and repair-equivalence bounds `delta_R-/delta_R+`;
+11. any secondary margins if they are promoted to confirmatory endpoints;
+12. nuisance assumptions and numerical sample size derived from the frozen margins;
+13. exact model/estimator family if not fully determined by the final data structure.
 
-**Status:** Primary comparison and arm structure are frozen at design level. Final statistical freeze is blocked only by the explicitly identified margin/nuisance specifications, not by the mechanism-pair choice.
+**Status:** Primary comparison and arm structure are frozen at design level. Final statistical freeze is blocked only by the explicitly identified margin/utility/nuisance specifications, not by the mechanism-pair choice.
