@@ -2,7 +2,8 @@
 
 **Status:** DESIGN CONTRACT — NUMERICAL VALUES OPEN
 **Parent:** `PRIMARY_COMPARISON_FREEZE_V0.1.md`
-**Scope:** pre-specification of how practical-effect margins are justified without using confirmatory outcomes.
+**Statistical plan:** `STATISTICAL_COMPARISON_PLAN_v0.1.md`
+**External methodological basis:** ICH E9 / E9(R1); EMA draft guideline on non-inferiority and equivalence comparisons (2025). See repository research notes or the official sources listed below.
 
 ## 1. Purpose
 
@@ -10,7 +11,7 @@ The confirmatory margins must represent differences that are practically meaning
 
 This document freezes the derivation procedure before confirmatory data. It does **not** invent numerical margins where the repository has no independent operational basis for them.
 
-This is consistent with statistical guidance that equivalence/non-inferiority margins are design features that should be pre-specified and justified independently of observed study results. citeturn731124search24turn731124search25
+The methodological principle is that equivalence/non-inferiority margins are design features that should be pre-specified and justified independently of observed study results.
 
 ## 2. Decision variables
 
@@ -106,7 +107,7 @@ The following are not valid ways to select `δ`:
 - choosing a margin as an arbitrary percentage solely because it is conventional;
 - widening the margin after observing low power.
 
-Margin choice must be independent of study outcomes. citeturn731124search24turn731124search26
+Margin choice must remain independent of study outcomes.
 
 ## 7. Required pre-confirmatory inputs
 
@@ -157,3 +158,13 @@ scientific estimand
 ```
 
 rather than reversing the chain from observed data or desired statistical convenience.
+
+## References
+
+1. ICH E9, *Statistical Principles for Clinical Trials*.
+2. ICH E9(R1), *Estimands and Sensitivity Analysis in Clinical Trials*.
+3. EMA, *Draft guideline on non-inferiority and equivalence comparisons in clinical trials* (first published 13 November 2025; consultation closed 31 May 2026).
+
+Official sources:
+- https://www.ema.europa.eu/en/non-inferiority-equivalence-comparisons-clinical-trials-scientific-guideline
+- https://www.fda.gov/regulatory-information/search-fda-guidance-documents/e9r1-statistical-principles-clinical-trials-addendum-estimands-and-sensitivity-analysis-clinical
