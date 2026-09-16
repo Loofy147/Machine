@@ -141,102 +141,114 @@ Pre-declared repair-search resource cost from search start to the first independ
 
 Safety constraints are modeled as an admissible set/invariant, not as an arbitrary monetary value by default.
 
-## 5. Decision-first derivation path
+## 5. Decision-first operational use case
 
-The remaining numerical margins are now governed by an explicit operational-decision path rather than by statistical convenience.
-
-The working operational loop is:
+The working bounded laboratory decision loop is now explicit:
 
 ```text
 observe failure
-  -> identify mechanism
-  -> choose probe/search regime
-  -> repair
-  -> independently validate
-  -> accept / reject / escalate
+  -> diagnostic probing
+  -> mechanism decision
+  -> fixed repair/search regime
+  -> independent validation
+  -> VALIDATED_RECOVERY / VALIDATED_NO_RECOVERY / ESCALATE_TIMEOUT / ESCALATE_SAFETY
 ```
 
-The derivation separates:
+Diagnostic correctness is separated from downstream repair success. A repair that happens to work does not retroactively make the diagnosis correct.
 
-1. diagnostic capability;
-2. downstream decision consequence;
-3. resource, delay, and safety consequence.
+The operational utility is represented as a vector before any scalar projection:
 
-For target case class `i`:
+```text
+recovery outcome
+validation outcome
+probe units
+repair-search units
+delay/decision units
+safety/admissibility status
+```
+
+Any scalar utility or practical margin must be derived from a pre-study contract, not from confirmatory outcomes.
+
+## 6. Lessons carried forward from first experiments
+
+The following exploratory observations are now explicit design constraints:
+
+1. mutable executable representation is a substrate capability, not by itself evidence of an adaptive algorithm;
+2. search dynamics can dominate substrate effects, so the repair/search controller must remain identical across primary arms;
+3. noisy evaluation can hurt, so probe actions are resource-bearing decisions rather than free information;
+4. context-free accumulation can misapply historical experience, so the transfer artifact is bounded, versioned, and auditable;
+5. failure detection, fault localization, intervention selection, and post-intervention generalization are separate capabilities and endpoints;
+6. structural/representation expansion must incur explicit resource cost;
+7. bundled mechanism roles must not be mistaken for single primitives.
+
+These are constraints derived from exploratory evidence, not confirmatory effects.
+
+## 7. Target-strata operationalization
+
+The primary target remains fresh `Zb` cases. Candidate predeclared strata are:
+
+- failure severity;
+- context-change magnitude;
+- probe informativeness;
+- history length;
+- repair recoverability.
+
+An initial four-row worksheet is recorded in:
+
+`docs/experiment/TARGET_STRATA_AND_EPISODE_SPEC_V0.1.md`
+
+The stratum weights and numerical utility values remain open and must be frozen before confirmatory generation.
+
+## 8. Decision-first derivation path
+
+The remaining numerical margins are governed by the operational decision rather than statistical convenience.
+
+For stratum `s`:
 
 \[
-V_{D,i}=U_i(\text{correct diagnosis + downstream process})-U_i(\text{incorrect diagnosis + downstream process}).
+V_{D,s}=U_s(\text{correct diagnosis + fixed downstream process})-U_s(\text{incorrect diagnosis + fixed downstream process}).
 \]
 
-A generic decision-value representation is:
+Population-level decision consequence is represented generically as:
 
 \[
-\Delta U_D=\sum_i w_i\,\Delta p_i\,V_{D,i}-C_{transfer}-\Delta Risk.
+\Delta U_D=\sum_s w_s\,\Delta p_s\,V_{D,s}-C_{transfer}-\Delta Risk.
 \]
 
-This is a pre-study decision model, not a statistical identity. The terms must be fixed or justified independently of confirmatory outcomes.
-
-Under the explicitly declared homogeneous special case:
+Only where the case mix and utility model justify a stable scalar mapping should a single `delta_D` be derived. The homogeneous formula remains a special case:
 
 \[
-\Delta U_D=\theta_DV_D-C_{deploy,incremental}
+\delta_D=\frac{B_{D,min}+C_{transfer}+\Delta Risk}{V_D}.
 \]
 
-and the minimum qualifying probability effect is:
-
-\[
-\delta_D=\frac{B_{D,min}+C_{deploy,incremental}}{V_D}.
-\]
-
-This formula is not the default for heterogeneous case mixes.
-
-For repair, the preferred operational equivalence region remains:
+For repair, the preferred equivalence region remains:
 
 \[
 -\delta_R^-<\theta_R<\delta_R^+.
 \]
 
-The new durable decision worksheet is recorded in:
+## 9. Confirmed blocker: numerical operational contract
 
-`docs/experiment/DECISION_USE_CASE_AND_MARGIN_DERIVATION_V0.1.md`
+The operational pathway is now concrete, but its numerical values are not frozen.
 
-## 6. Confirmed blocker: operational contract
+Remaining inputs:
 
-The repository audit now explicitly records that it does **not** contain an external operational contract sufficient to assign numerical practical margins.
+1. final target-stratum set;
+2. stratum weights `w_s`;
+3. case/stratum diagnostic utility `V_D,s`;
+4. `C_P`, `C_R`, and optional `C_V` unit definitions;
+5. aggregate resource conversion, if required;
+6. minimum operational benefit `B_D,min`;
+7. transfer overhead/risk treatment;
+8. admissibility/safety bounds;
+9. repair timeout/censoring/failure rule;
+10. numerical `delta_D` if justified;
+11. numerical `delta_R+/-`;
+12. nuisance assumptions, estimator/model family where required, and `N`.
 
-Specifically, it currently lacks a pre-study specification of:
+No number is authorized merely because it makes the pilot or desired power convenient.
 
-- the real or declared decision context in which diagnosis is used;
-- target case-mix weights;
-- downstream value difference between correct and incorrect diagnosis;
-- acceptable incremental resource/delay cost;
-- safety or irreversibility bounds;
-- repair-cost unit and practical-equivalence thresholds.
-
-This is a **design-input gap**, not an empirical finding about the machine.
-
-Canonical audit:
-
-`docs/experiment/DECISION_USE_CASE_GAP_AUDIT_V0.1.md`
-
-The project must not fabricate these values from exploratory results or from desired statistical power.
-
-## 7. What is not frozen yet
-
-The following remain explicit blockers:
-
-1. operational contract: deployment-linked, bounded laboratory contract, or methodological-only claim;
-2. target case-mix/utility weighting for `delta_D`;
-3. numerical operational values needed to derive `delta_D`;
-4. repair-cost unit/conversion rule;
-5. numerical `delta_R+` and, if required, `delta_R-`;
-6. repair timeout/censoring/failure rule;
-7. any applicable safety bounds;
-8. nuisance assumptions for sample size;
-9. numerical sample size `N`;
-10. final estimator/model family where data structure does not determine it automatically.
-
-## 8. Freeze order
+## 10. Freeze order
 
 ```text
 G_spec
@@ -245,9 +257,9 @@ G_spec
   -> primary mechanism pair/direction
   -> estimands
   -> operational decision use case
+  -> target strata / pre-generation case mix
   -> practical margins
   -> primary analysis
-  -> pre-generation strata
   -> external nuisance calibration
   -> confirmatory freeze
   -> instantiate E
@@ -255,9 +267,9 @@ G_spec
   -> locked analysis
 ```
 
-The realized `E` must never be allowed to retroactively select the primary pair, estimands, margins, or analysis.
+The realized `E` must never be allowed to retroactively select the primary pair, estimands, margins, case mix, or analysis.
 
-## 9. Documentation lineage
+## 11. Documentation lineage
 
 | Document | Role | Status |
 |---|---|---|
@@ -265,26 +277,16 @@ The realized `E` must never be allowed to retroactively select the primary pair,
 | `PRIMARY_COMPARISON_FREEZE_V0.1.md` | primary pair and transfer-arm contract | design frozen except numerical margins |
 | `STATISTICAL_COMPARISON_PLAN_v0.1.md` | estimands, inference, multiplicity, N rules | candidate; blocked by margins/nuisance inputs |
 | `DECISION_UTILITY_SEMANTICS_V0.1.md` | operational meaning and units of utility/cost inputs | design contract |
-| `DECISION_USE_CASE_AND_MARGIN_DERIVATION_V0.1.md` | decision-first operational path and margin worksheet | current; numeric inputs open |
-| `DECISION_USE_CASE_GAP_AUDIT_V0.1.md` | audit proving the current operational-input gap | current blocker |
+| `DECISION_USE_CASE_AND_MARGIN_DERIVATION_V0.1.md` | earlier decision-first worksheet | historical |
+| `DECISION_USE_CASE_AND_MARGIN_DERIVATION_V0.2.md` | concrete bounded operational contract | current working contract |
+| `DECISION_USE_CASE_GAP_AUDIT_V0.1.md` | audit of initial operational-input gap | historical blocker; superseded by bounded-lab contract path |
+| `TARGET_STRATA_AND_EPISODE_SPEC_V0.1.md` | target strata and complete episode specification | current design worksheet |
 | `MARGIN_JUSTIFICATION_V0.1.md` | initial margin derivation contract | superseded by reviewed semantics |
 | `MARGIN_JUSTIFICATION_V0.1_REVIEWED.md` | reviewed margin derivation and blockers | current margin contract |
 | this file | durable cross-document control ledger | current |
 
-## 10. Methodological references
+## 12. Status
 
-The margin discipline follows the general principle that equivalence/non-inferiority margins should be pre-specified and substantively justified, with equivalence assessed against the declared interval using confidence intervals.
+**CURRENT STATE:** primary question, transfer structure, bounded laboratory operational use case, and target-episode structure are documented; practical numerical margins, case-mix weights, and sample-size inputs remain open.
 
-References:
-
-1. ICH E9, *Statistical Principles for Clinical Trials*.
-2. ICH E9(R1), *Estimands and Sensitivity Analysis in Clinical Trials*.
-3. FDA, *Non-Inferiority Clinical Trials* (2016).
-
-These references justify the design principle; they do not supply numerical values for this machine experiment.
-
-## 11. Status
-
-**CURRENT STATE:** primary question and transfer structure are frozen at design level; the decision-first operational path is documented; an explicit operational-contract gap has been confirmed; statistical margin semantics have been audited and tightened; numerical margins and sample size remain open.
-
-The repository must not enter confirmatory generation/run until the blockers in §7 are either populated and frozen or explicitly moved to a new preregistered version with documented rationale.
+The repository must not enter confirmatory generation/run until the remaining blockers are either populated and frozen or explicitly moved to a new preregistered version with documented rationale.
