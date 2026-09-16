@@ -192,6 +192,14 @@ Three diagnostic policies are defined:
 
 Their resource budgets must be declared and comparable before execution.
 
+The primary confirmatory policy is:
+
+\[
+\boxed{\pi_S=S2}
+\]
+
+S0/S1 remain exploratory unless an additional multiplicity-controlled confirmatory family is frozen in advance.
+
 Interpretation:
 
 - `pi0 → pi1`: value of one diagnostic intervention;
@@ -261,10 +269,20 @@ Clone fidelity must pass bounded validation before confirmatory execution relyin
 Exactly one primary transfer direction is frozen **before confirmatory data collection and before any calibration capable of revealing pair-specific empirical outcomes that could influence pair selection**:
 
 \[
-(Z_a^*\rightarrow Z_b^*)
+\boxed{Z_a^*\rightarrow Z_b^*}
 \]
 
-Its selection rule is based on frozen operator semantics/mechanism theory, not prior outcomes.
+with the frozen definitions:
+
+\[
+Z_a^*=\texttt{persistence/decay-fault}
+\]
+
+\[
+Z_b^*=\texttt{context-discrimination-fault}.
+\]
+
+The definitions, contamination rule, transfer-arm contract, and rationale are specified in `PRIMARY_COMPARISON_FREEZE_V0.1.md`. Selection is based on frozen mechanism semantics, not prior outcomes.
 
 All other pairwise contrasts and secondary metrics are exploratory unless a multiplicity-controlled confirmatory family is frozen in advance.
 
@@ -349,4 +367,4 @@ After confirmatory freeze:
 - no redefining of `P0` from observed outcomes;
 - no use of realized `E` results to retroactively alter the frozen confirmatory question.
 
-**Status:** Initial-freeze candidate. Empirical results remain external to this specification.
+**Status:** Initial-freeze candidate. Primary comparison and transfer-arm structure are frozen at design level; numerical practical-effect margins and final nuisance/sample-size specifications remain open.
