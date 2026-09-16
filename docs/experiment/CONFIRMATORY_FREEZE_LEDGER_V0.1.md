@@ -141,7 +141,66 @@ Pre-declared repair-search resource cost from search start to the first independ
 
 Safety constraints are modeled as an admissible set/invariant, not as an arbitrary monetary value by default.
 
-## 5. What is not frozen yet
+## 5. Decision-first derivation path
+
+The remaining numerical margins are now governed by an explicit operational-decision path rather than by statistical convenience.
+
+The working operational loop is:
+
+```text
+observe failure
+  -> identify mechanism
+  -> choose probe/search regime
+  -> repair
+  -> independently validate
+  -> accept / reject / escalate
+```
+
+The derivation separates:
+
+1. diagnostic capability;
+2. downstream decision consequence;
+3. resource, delay, and safety consequence.
+
+For target case class `i`:
+
+\[
+V_{D,i}=U_i(\text{correct diagnosis + downstream process})-U_i(\text{incorrect diagnosis + downstream process}).
+\]
+
+A generic decision-value representation is:
+
+\[
+\Delta U_D=\sum_i w_i\,\Delta p_i\,V_{D,i}-C_{transfer}-\Delta Risk.
+\]
+
+This is a pre-study decision model, not a statistical identity. The terms must be fixed or justified independently of confirmatory outcomes.
+
+Under the explicitly declared homogeneous special case:
+
+\[
+\Delta U_D=\theta_DV_D-C_{deploy,incremental}
+\]
+
+and the minimum qualifying probability effect is:
+
+\[
+\delta_D=\frac{B_{D,min}+C_{deploy,incremental}}{V_D}.
+\]
+
+This formula is not the default for heterogeneous case mixes.
+
+For repair, the preferred operational equivalence region remains:
+
+\[
+-\delta_R^-<\theta_R<\delta_R^+.
+\]
+
+The new durable decision worksheet is recorded in:
+
+`docs/experiment/DECISION_USE_CASE_AND_MARGIN_DERIVATION_V0.1.md`
+
+## 6. What is not frozen yet
 
 The following remain explicit blockers:
 
@@ -155,7 +214,7 @@ The following remain explicit blockers:
 8. numerical sample size `N`;
 9. final estimator/model family where data structure does not determine it automatically.
 
-## 6. Freeze order
+## 7. Freeze order
 
 ```text
 G_spec
@@ -163,6 +222,7 @@ G_spec
   -> P0
   -> primary mechanism pair/direction
   -> estimands
+  -> operational decision use case
   -> practical margins
   -> primary analysis
   -> pre-generation strata
@@ -175,7 +235,7 @@ G_spec
 
 The realized `E` must never be allowed to retroactively select the primary pair, estimands, margins, or analysis.
 
-## 7. Documentation lineage
+## 8. Documentation lineage
 
 | Document | Role | Status |
 |---|---|---|
@@ -183,11 +243,12 @@ The realized `E` must never be allowed to retroactively select the primary pair,
 | `PRIMARY_COMPARISON_FREEZE_V0.1.md` | primary pair and transfer-arm contract | design frozen except numerical margins |
 | `STATISTICAL_COMPARISON_PLAN_v0.1.md` | estimands, inference, multiplicity, N rules | candidate; blocked by margins/nuisance inputs |
 | `DECISION_UTILITY_SEMANTICS_V0.1.md` | operational meaning and units of utility/cost inputs | design contract |
+| `DECISION_USE_CASE_AND_MARGIN_DERIVATION_V0.1.md` | decision-first operational path and margin worksheet | current; numeric inputs open |
 | `MARGIN_JUSTIFICATION_V0.1.md` | initial margin derivation contract | superseded by reviewed semantics |
 | `MARGIN_JUSTIFICATION_V0.1_REVIEWED.md` | reviewed margin derivation and blockers | current margin contract |
 | this file | durable cross-document control ledger | current |
 
-## 8. Methodological references
+## 9. Methodological references
 
 The margin discipline follows the general principle that equivalence/non-inferiority margins should be pre-specified and substantively justified, with equivalence assessed against the declared interval using confidence intervals.
 
@@ -199,8 +260,8 @@ References:
 
 These references justify the design principle; they do not supply numerical values for this machine experiment.
 
-## 9. Status
+## 10. Status
 
-**CURRENT STATE:** primary question and transfer structure are frozen at design level; statistical margin semantics have been audited and tightened; numerical margins and sample size remain open.
+**CURRENT STATE:** primary question and transfer structure are frozen at design level; the decision-first operational path is now documented; statistical margin semantics have been audited and tightened; numerical margins and sample size remain open.
 
-The repository must not enter confirmatory generation/run until the blockers in §5 are either populated and frozen or explicitly moved to a new preregistered version with documented rationale.
+The repository must not enter confirmatory generation/run until the blockers in §6 are either populated and frozen or explicitly moved to a new preregistered version with documented rationale.
