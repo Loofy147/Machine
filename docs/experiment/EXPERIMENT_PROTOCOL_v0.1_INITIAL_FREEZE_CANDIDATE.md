@@ -82,13 +82,15 @@ The audit version `v` is frozen and records at minimum:
 - search budget;
 - random seed, where applicable;
 - date/time of freeze;
-- specification version used by the audit.
+- specification version used by the audit;
+- declared state/observation domain;
+- declared train/test or item-generation space.
 
 ### Interpretation
 
 - **Constructible:** a legal construction/witness exists under the declared specification and budget.
-- **Provably Impossible:** impossibility is established relative to the declared state/observation/probe domain, not merely observed as a failed search.
-- **Unknown:** the audit did not establish either of the above.
+- **Provably Impossible:** impossibility is established **relative to the complete declared audit contract**: the specified `(Zi, Zj, E, Obs)`, state/observation/probe domains, item-generation or train/test space, and any declared search/resource bound on which the proof depends. This is a local result, not a claim of general impossibility outside that contract.
+- **Unknown:** the audit did not establish either of the above. A failed search under a finite budget is not, by itself, an impossibility proof.
 
 `Unknown` is **not discarded silently**. It remains represented in `P0` and is excluded only from estimands that explicitly require established twin identifiability.
 
@@ -139,6 +141,8 @@ The benchmark must not encode `Z` deterministically through injector/generator i
 
 Held-out generator families are required for transport claims.
 
+For the confirmatory freeze, the **generator specification/contract** may be defined before the primary comparison, but the concrete family `E` need not be instantiated or built yet. Realized `E` families are constructed only after the confirmatory question, estimands, practical-effect bounds, and primary analysis have been frozen.
+
 ## 7. Witness-construction process audit
 
 The audit result (`Constructible / Provably Impossible / Unknown`) is distinct from the construction path.
@@ -159,7 +163,7 @@ C^*_{info}=\min_A Cost_{info}(A)
 
 must not be used as post-hoc inclusion filters for confirmatory analysis.
 
-Difficulty/risk strata are defined by pre-generation design variables. Their empirical calibration is measured afterwards.
+Difficulty/risk strata are defined by pre-generation design variables. Any external calibration may estimate nuisance quantities or assess feasibility, but may not use observed confirmatory outcomes to redefine the primary pair, estimands, or practical-effect bounds.
 
 The protocol distinguishes at least:
 
@@ -254,7 +258,7 @@ Clone fidelity must pass bounded validation before confirmatory execution relyin
 
 ## 13. Confirmatory comparison hierarchy
 
-Exactly one primary transfer direction is frozen before confirmatory data collection:
+Exactly one primary transfer direction is frozen **before confirmatory data collection and before any calibration capable of revealing pair-specific empirical outcomes that could influence pair selection**:
 
 \[
 (Z_a^*\rightarrow Z_b^*)
@@ -312,20 +316,29 @@ Overall system curves on `P0` may be reported separately from twin-specific caus
 
 ## 17. Freeze order
 
+The confirmatory sequence is:
+
 \[
 \boxed{
-G
+G_{spec}
 \rightarrow M^{(v)}
 \rightarrow P_0
-\rightarrow design\ strata
-\rightarrow item\ calibration
-\rightarrow primary\ comparison
-\rightarrow estimands/thresholds
-\rightarrow freeze
-\rightarrow confirmatory\ run
+\rightarrow (Z_a^*,Z_b^*)
+\rightarrow estimands
+\rightarrow \delta
+\rightarrow primary\ analysis
+\rightarrow pre-generation\ design\ strata
+\rightarrow external\ calibration\ (nuisance\ only)
+\rightarrow confirmatory\ freeze
+\rightarrow instantiate\ E
+\rightarrow confirmatory\ generation/run
 \rightarrow analysis
 }
 \]
+
+Here `G_spec` is the frozen generator specification/contract, not the realized generator-family set `E`. `E` is intentionally not instantiated until the primary question and statistical decision structure are frozen.
+
+External calibration may estimate nuisance quantities such as baseline rates, variance/dispersion, clustering/design effects, or feasibility of predeclared design strata. It must not select or replace the primary pair, redefine the estimands, or choose practical-effect margins from observed outcomes.
 
 After confirmatory freeze:
 
@@ -333,6 +346,7 @@ After confirmatory freeze:
 - no post-hoc exclusion to improve the confirmatory result;
 - no change to estimand definitions or practical-effect bounds;
 - no redefinition of `Z`;
-- no redefining of `P0` from observed outcomes.
+- no redefining of `P0` from observed outcomes;
+- no use of realized `E` results to retroactively alter the frozen confirmatory question.
 
 **Status:** Initial-freeze candidate. Empirical results remain external to this specification.
