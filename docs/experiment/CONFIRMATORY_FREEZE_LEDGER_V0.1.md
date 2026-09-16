@@ -143,7 +143,7 @@ Safety constraints are modeled as an admissible set/invariant, not as an arbitra
 
 ## 5. Decision-first operational use case
 
-The working bounded laboratory decision loop is now explicit:
+The working bounded-laboratory decision loop is now explicit:
 
 ```text
 observe failure
@@ -183,7 +183,17 @@ The following exploratory observations are now explicit design constraints:
 
 These are constraints derived from exploratory evidence, not confirmatory effects.
 
-## 7. Target-strata operationalization
+## 7. Canonical target case
+
+One concrete fresh-target fixture is now specified for decision derivation:
+
+`docs/experiment/CANONICAL_OPERATIONAL_CASE_ZB_CONTEXT_MERGE_V0.1.md`
+
+The case models a `Zb` context-discrimination fault where history remains valid but is addressed through an insufficient context key. The diagnostic boundary, probe family, repair boundary, validation boundary, terminal decisions, measurement record, and falsifiers are explicitly defined there.
+
+This case is a design fixture, not confirmatory data and not evidence that all `Zb` cases behave this way.
+
+## 8. Target-strata operationalization
 
 The primary target remains fresh `Zb` cases. Candidate predeclared strata are:
 
@@ -193,15 +203,9 @@ The primary target remains fresh `Zb` cases. Candidate predeclared strata are:
 - history length;
 - repair recoverability.
 
-An initial four-row worksheet is recorded in:
+The canonical case is one fixture within that larger population. Stratum weights and numerical utility values remain open.
 
-`docs/experiment/TARGET_STRATA_AND_EPISODE_SPEC_V0.1.md`
-
-The stratum weights and numerical utility values remain open and must be frozen before confirmatory generation.
-
-## 8. Decision-first derivation path
-
-The remaining numerical margins are governed by the operational decision rather than statistical convenience.
+## 9. Decision-first derivation path
 
 For stratum `s`:
 
@@ -215,11 +219,7 @@ Population-level decision consequence is represented generically as:
 \Delta U_D=\sum_s w_s\,\Delta p_s\,V_{D,s}-C_{transfer}-\Delta Risk.
 \]
 
-Only where the case mix and utility model justify a stable scalar mapping should a single `delta_D` be derived. The homogeneous formula remains a special case:
-
-\[
-\delta_D=\frac{B_{D,min}+C_{transfer}+\Delta Risk}{V_D}.
-\]
+Only where the case mix and utility model justify a stable scalar mapping should a single `delta_D` be derived. The homogeneous formula remains a special case.
 
 For repair, the preferred equivalence region remains:
 
@@ -227,11 +227,7 @@ For repair, the preferred equivalence region remains:
 -\delta_R^-<\theta_R<\delta_R^+.
 \]
 
-## 9. Confirmed blocker: numerical operational contract
-
-The operational pathway is now concrete, but its numerical values are not frozen.
-
-Remaining inputs:
+## 10. Remaining blockers
 
 1. final target-stratum set;
 2. stratum weights `w_s`;
@@ -248,7 +244,7 @@ Remaining inputs:
 
 No number is authorized merely because it makes the pilot or desired power convenient.
 
-## 10. Freeze order
+## 11. Freeze order
 
 ```text
 G_spec
@@ -269,7 +265,7 @@ G_spec
 
 The realized `E` must never be allowed to retroactively select the primary pair, estimands, margins, case mix, or analysis.
 
-## 11. Documentation lineage
+## 12. Documentation lineage
 
 | Document | Role | Status |
 |---|---|---|
@@ -277,16 +273,15 @@ The realized `E` must never be allowed to retroactively select the primary pair,
 | `PRIMARY_COMPARISON_FREEZE_V0.1.md` | primary pair and transfer-arm contract | design frozen except numerical margins |
 | `STATISTICAL_COMPARISON_PLAN_v0.1.md` | estimands, inference, multiplicity, N rules | candidate; blocked by margins/nuisance inputs |
 | `DECISION_UTILITY_SEMANTICS_V0.1.md` | operational meaning and units of utility/cost inputs | design contract |
-| `DECISION_USE_CASE_AND_MARGIN_DERIVATION_V0.1.md` | earlier decision-first worksheet | historical |
-| `DECISION_USE_CASE_AND_MARGIN_DERIVATION_V0.2.md` | concrete bounded operational contract | current working contract |
-| `DECISION_USE_CASE_GAP_AUDIT_V0.1.md` | audit of initial operational-input gap | historical blocker; superseded by bounded-lab contract path |
-| `TARGET_STRATA_AND_EPISODE_SPEC_V0.1.md` | target strata and complete episode specification | current design worksheet |
+| `DECISION_USE_CASE_AND_MARGIN_DERIVATION_V0.1.md` | decision-first worksheet | current general framework |
+| `DECISION_USE_CASE_GAP_AUDIT_V0.1.md` | audit of initial operational-input gap | historical blocker; retained for lineage |
+| `CANONICAL_OPERATIONAL_CASE_ZB_CONTEXT_MERGE_V0.1.md` | concrete bounded-lab Zb case | current design fixture |
 | `MARGIN_JUSTIFICATION_V0.1.md` | initial margin derivation contract | superseded by reviewed semantics |
 | `MARGIN_JUSTIFICATION_V0.1_REVIEWED.md` | reviewed margin derivation and blockers | current margin contract |
 | this file | durable cross-document control ledger | current |
 
-## 12. Status
+## 13. Status
 
-**CURRENT STATE:** primary question, transfer structure, bounded laboratory operational use case, and target-episode structure are documented; practical numerical margins, case-mix weights, and sample-size inputs remain open.
+**CURRENT STATE:** primary question, transfer structure, bounded-laboratory operational use case, and one canonical `Zb` case are documented; practical numerical margins, case-mix weights, and sample-size inputs remain open.
 
 The repository must not enter confirmatory generation/run until the remaining blockers are either populated and frozen or explicitly moved to a new preregistered version with documented rationale.
