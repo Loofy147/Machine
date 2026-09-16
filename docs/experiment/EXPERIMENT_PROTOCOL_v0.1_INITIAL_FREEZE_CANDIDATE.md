@@ -316,13 +316,17 @@ The confirmatory WHAT/HOW dissociation is successful only if:
 \boxed{\theta_D>\delta_D}
 \]
 
-and:
+and the pre-specified repair-cost equivalence region contains the confidence interval for `theta_R`:
 
 \[
-\boxed{|\theta_R|<\delta_R}
+\boxed{-\delta_R^-<\theta_R<\delta_R^+}
 \]
 
-under the pre-specified inference procedures.
+or, only if explicitly justified as symmetric,
+
+\[
+\boxed{|\theta_R|<\delta_R}.
+\]
 
 A favorable exploratory pair may never replace the frozen primary comparison.
 
