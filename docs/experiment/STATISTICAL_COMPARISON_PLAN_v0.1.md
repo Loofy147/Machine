@@ -6,13 +6,13 @@
 
 ## 1. Confirmatory scope
 
-Exactly one confirmatory transfer direction will be frozen before confirmatory data collection:
+Exactly one confirmatory transfer direction will be frozen before confirmatory data collection and before any calibration capable of revealing pair-specific empirical outcomes:
 
 \[
 (Z_a^* \rightarrow Z_b^*)
 \]
 
-The pair must be selected from untouched mechanism classes using frozen operator semantics/mechanism theory, not prior empirical performance.
+The pair must be selected from mechanism classes using frozen operator semantics/mechanism theory, not prior empirical performance.
 
 Previously explored classes/cases are excluded from confirmatory data whenever prior exposure could reveal the selected contrast or its expected outcome. They remain exploratory.
 
@@ -137,11 +137,11 @@ Each margin must be defined as a smallest practically important effect (SPIE) on
 - \(\delta_R\): maximum practically negligible change in repair-search cost;
 - \(\delta_V\): minimum useful validation-transfer effect if used confirmatorily.
 
-The justification must come from system-level utility, cost, or safety constraints, not from observed confirmatory outcomes.
+The justification must come from system-level utility, cost, or safety constraints, not from observed confirmatory outcomes and not from calibration outcomes.
 
 ## 10. Sample-size determination
 
-Sample size is determined only after estimands and margins are frozen.
+Sample size is determined only after estimands, margins, and the primary analysis are frozen.
 
 For binary outcomes, use a declared two-arm design sized for the target \(\delta\), type-I error, power, baseline event rate assumptions, and design effect.
 
@@ -149,19 +149,23 @@ For equivalence on cost/count outcomes, use the planned matched/hierarchical mod
 
 If observations are clustered by mechanism class, generator family, case, or repeated run, the analysis and sample-size calculation must reflect the declared clustering rather than assume independent observations.
 
-No numerical \(N\) is frozen until calibration supplies defensible nuisance estimates from data excluded from confirmatory observations.
+No numerical \(N\) is frozen until external calibration supplies defensible nuisance estimates from data excluded from confirmatory observations. Such calibration may inform variance, baseline rates, clustering/design effects, or feasible predeclared design strata; it may not select the primary pair, alter the estimands, or choose \(\delta\).
 
 ## 11. Calibration / confirmatory separation
 
-A separate calibration set may estimate:
+A separate calibration set may estimate only pre-specified nuisance/design quantities, such as:
 
 - baseline event rates;
 - variance/dispersion;
 - cluster/design effects;
 - feasible difficulty/risk strata;
-- feasibility of proposed \(\delta\) values.
+- execution/resource feasibility of an already frozen design.
 
-Calibration observations cannot be reused as confirmatory observations and cannot be used to replace the frozen primary pair after confirmation begins.
+Calibration observations cannot be reused as confirmatory observations.
+
+Calibration cannot be used to choose or replace the primary pair, redefine the target population, alter estimand formulas, change the primary analysis, or select practical-effect margins from observed outcomes.
+
+If a proposed design proves infeasible during calibration, the result is recorded as a design-feasibility finding. It does not authorize silent replacement of the confirmatory question; any design change creates a new pre-registered version before confirmatory collection.
 
 ## 12. Multiple comparisons
 
