@@ -34,6 +34,7 @@ The broader question of machine intelligence remains deliberately downstream of 
 - Continuous same-process evaluator hot-swap works in the current prime-stream harness.
 - Outcome history bound to operator identity can causally change proposal policy over a fixed candidate palette.
 - Context-indexed history can preserve useful credit when a previously encountered context returns, provided the context is supplied explicitly.
+- The error-source-localization v0 harness reproducibly separates lower-level injected faults from a representation ceiling under the declared deterministic fixture; this is a harness result, not evidence of causal reflection.
 
 ### Not established
 
@@ -41,7 +42,7 @@ The broader question of machine intelligence remains deliberately downstream of 
 - reusable learned executable structure;
 - self-discovery of the adaptation mechanism;
 - causal reflection of the evaluator/transition semantics;
-- deterministic source localization of failure across representation, model, policy, and operation layers;
+- machine-discovered localization of representation/partition failure rather than success by supplied intervention structure;
 - general-purpose machine intelligence;
 - general machine-native implementations of phenomena described as emotion, curiosity, urgency, identity, or self-preservation.
 
@@ -91,7 +92,7 @@ reconfigurability
 4. Validate adaptive mechanisms with controlled ablations and matched budgets.
 5. Test contextual credit without supplying context labels.
 6. Test operational significance, persistence/decay, prediction error, suppression, ambiguity retention, and model-revision mechanisms as machine-native relations rather than named human faculties.
-7. Test deterministic error-source localization: distinguish local operation/policy/model failure from representation/partition failure under matched interventions.
+7. Implement deterministic error-source localization under matched interventions; then remove fixed intervention priors, introduce hidden fault switching, and charge explicit representation cost.
 8. Test reusable executable structure on genuinely held-out task families.
 9. Test continuity/lineage effects separately from simple retained statistics.
 10. Implement the smallest causal-reflection substrate only after the preceding semantics are sufficiently constrained.
@@ -110,6 +111,9 @@ reconfigurability
 - `docs/EXPERIMENT-ONLINE-REFLECTIVE-LEARNING.md` — online reflective-learning design and boundary
 - `docs/EXPERIMENT-CONTEXTUAL-CREDIT.md` — context-indexed credit experiment
 - `docs/EXPERIMENT-ERROR-SOURCE-LOCALIZATION.md` — deterministic fault-localization and representation-partition experiment
+- `experiments/error-source-localization/PROTOCOL.md` — executable v0 protocol and controls
+- `experiments/error-source-localization/harness.py` — deterministic harness
+- `experiments/error-source-localization/RESULTS-V0.md` — first reproducible run and interpretation boundary
 - `docs/REFLECTION-FRONTIER.md` — causal-reflection boundary
 - `docs/INTERACTION-OPERATING-MODE.md` — project interaction/evidence discipline
 - `docs/OPEN-QUESTIONS.md` — unresolved questions
