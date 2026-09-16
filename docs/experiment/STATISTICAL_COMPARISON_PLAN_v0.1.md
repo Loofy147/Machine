@@ -2,17 +2,18 @@
 
 **Status:** PRE-REGISTRATION CANDIDATE  
 **Parent:** `docs/experiment/EXPERIMENT_PROTOCOL_v0.1_INITIAL_FREEZE_CANDIDATE.md`  
+**Primary-comparison freeze:** `docs/experiment/PRIMARY_COMPARISON_FREEZE_V0.1.md`  
 **Scope:** confirmatory comparison hierarchy, estimands, transfer arms, thresholds, multiplicity, decision rules, and sample-size determination.
 
 ## 1. Confirmatory scope
 
-Exactly one confirmatory transfer direction will be frozen before confirmatory data collection and before any calibration capable of revealing pair-specific empirical outcomes:
+Exactly one confirmatory transfer direction is frozen before confirmatory data collection and before any calibration capable of revealing pair-specific empirical outcomes:
 
 \[
-(Z_a^* \rightarrow Z_b^*)
+\boxed{\texttt{persistence/decay-fault}\rightarrow\texttt{context-discrimination-fault}}
 \]
 
-The pair must be selected from mechanism classes using frozen operator semantics/mechanism theory, not prior empirical performance.
+The pair and direction are selected from frozen operator semantics/mechanism theory, not prior empirical performance. The exact definitions and transfer-arm contract are recorded in `PRIMARY_COMPARISON_FREEZE_V0.1.md`.
 
 Previously explored classes/cases are excluded from confirmatory data whenever prior exposure could reveal the selected contrast or its expected outcome. They remain exploratory.
 
@@ -22,9 +23,14 @@ No post-outcome search over pairs is permitted for the primary claim.
 
 Mechanism classes are defined extensionally by operator semantics. Observed performance, previous success, or benchmark convenience cannot define class membership.
 
-Algebraically/extensionally equivalent operators within the declared domain are assigned to the same functional-equivalence class before sampling. The class taxonomy is frozen before confirmatory generation.
+For the primary pair:
 
-Any proposed arithmetic-versus-bitwise contrast must document the semantic distinction under the declared domain rather than merely rely on operator names.
+- `persistence/decay-fault` = historical influence persists beyond the declared validity regime while context indexing remains fixed;
+- `context-discrimination-fault` = historical information is merged or addressed across distinct operating contexts despite the persistence rule remaining fixed.
+
+Functionally equivalent implementations belong to the same class. The taxonomy and causal intervention contracts are frozen before confirmatory generation.
+
+The hidden fault label is never available to the system under test, and injector identity must not serve as a deterministic proxy for class identity within the observation boundary.
 
 ## 3. Diagnostic-policy arms
 
@@ -34,11 +40,48 @@ Three policies are distinct:
 - **S1:** exactly one probe selected before observing its result;
 - **S2:** sequential/adaptive probe selection conditioned on prior observations.
 
+**Primary policy:**
+
+\[
+\boxed{S2}
+\]
+
+S0 and S1 remain exploratory unless a separate multiplicity-controlled confirmatory family is frozen before collection.
+
 Resource budgets and permitted action spaces are frozen before execution.
 
-S0, S1, and S2 answer different questions and are not interchangeable.
+## 4. Transfer arms
 
-## 4. Diagnostic-transfer estimand
+The target population contains fresh `context-discrimination-fault` cases only.
+
+### `T_b^baseline`
+
+The baseline arm receives:
+
+- fresh target cases;
+- identical initial state and observation boundary;
+- the same S2 policy interface and probe budget;
+- no diagnostic artifact transferred from source-class training;
+- the same repair controller, action vocabulary, validation procedure, and repair budget used by the transfer arm.
+
+### `T_b^transfer`
+
+The transfer arm is identical except that it receives a frozen diagnostic artifact learned from designated source-class (`persistence/decay-fault`) training episodes.
+
+The transfer artifact is restricted to diagnostic identification and/or probe-selection capability. It must not encode:
+
+- target labels;
+- target-case outcomes;
+- target-specific repair candidates;
+- target-specific repair shortcuts;
+- hidden fault labels;
+- generator identifiers that deterministically reveal the target class.
+
+The repair controller and repair-search budget remain identical between arms.
+
+Therefore the primary comparison isolates transfer of **diagnostic WHAT/HOW-of-probing capability**, not direct transfer of a repair procedure.
+
+## 5. Diagnostic-transfer estimand
 
 Let:
 
@@ -46,15 +89,15 @@ Let:
 Y_D=\mathbf 1\{\hat Z=Z\}
 \]
 
-under a specified policy and evaluation population.
+under the primary S2 policy and the declared analysis population.
 
-For the primary transfer direction, the confirmatory diagnostic-transfer estimand is defined as a **transfer-increment against the corresponding frozen-policy baseline on matched fresh target cases**:
+For the frozen target class:
 
 \[
-\theta_D = P(Y_D=1\mid T_{b}^{transfer}) - P(Y_D=1\mid T_{b}^{baseline}).
+\theta_D = P(Y_D=1\mid T_b^{transfer}) - P(Y_D=1\mid T_b^{baseline}).
 \]
 
-`baseline` and `transfer` must be defined operationally before data collection; they must share the same target mechanism population, design strata, budget, and evaluation conditions. The only intended difference is the availability of the transferred diagnostic knowledge/policy component under study.
+Both arms use the same fresh target population, design strata, budget, observation boundary, and evaluation conditions. The only intended treatment difference is availability of the frozen transferred diagnostic artifact.
 
 Primary superiority criterion:
 
@@ -62,25 +105,21 @@ Primary superiority criterion:
 \theta_D > \delta_D.
 \]
 
-## 5. Probe-policy transfer estimand
+## 6. Probe-policy transfer estimand
 
-Let \(C_P\) be a pre-declared probe-cost measure (for example probe count or normalized probe cost).
-
-For the specified policy-transfer comparison:
+Let \(C_P\) be a pre-declared probe-cost measure.
 
 \[
 \theta_P = E[C_P\mid T_b^{transfer,S2}] - E[C_P\mid T_b^{baseline,S2}].
 \]
 
-The sign convention is fixed so that a negative value indicates lower cost under transfer.
+A negative value denotes lower probe cost under transfer.
 
-This measures **policy efficiency**, not diagnostic correctness. It does not by itself establish WHAT-learning.
+This is a policy-efficiency estimand, not a correctness estimand. It is secondary unless explicitly promoted through a pre-specified multiplicity-controlled family.
 
-If policy equivalence is made confirmatory, the margin \(\delta_P\) and equivalence procedure must be frozen before collection.
+## 7. Repair-transfer estimand
 
-## 6. Repair-transfer estimand
-
-Let \(C_R\) be a pre-declared repair-search cost, such as candidate evaluations until the first independently validated sufficient repair.
+Let \(C_R\) be the pre-declared repair-search cost, such as candidate evaluations until the first independently validated sufficient repair.
 
 \[
 \theta_R = E[C_R\mid T_b^{transfer}] - E[C_R\mid T_b^{baseline}].
@@ -92,9 +131,11 @@ Primary dissociation condition:
 |\theta_R| < \delta_R.
 \]
 
-If the chosen cost distribution is strongly skewed or heavy-tailed, a ratio, transformed, quantile, or other robust estimand may replace the raw mean difference; that choice must be frozen before confirmatory collection.
+The repair search mechanism, action vocabulary, validation procedure, and budget are identical across arms. The transfer artifact cannot modify these components.
 
-## 7. Validation-transfer estimand
+If the cost distribution requires a transformed, ratio, quantile, or other robust estimand, that choice must be frozen before confirmatory collection.
+
+## 8. Validation-transfer estimand
 
 Let:
 
@@ -108,9 +149,9 @@ Define:
 \theta_V=P(Y_V=1\mid T_b^{transfer})-P(Y_V=1\mid T_b^{baseline}).
 \]
 
-This is a validation-transfer effect and is distinct from replay/plausibility success.
+This remains secondary unless promoted under a pre-specified confirmatory family.
 
-## 8. Primary dissociation criterion
+## 9. Primary dissociation criterion
 
 The confirmatory WHAT/HOW claim can be confirmed only when both are satisfied:
 
@@ -124,9 +165,9 @@ and:
 \boxed{|\theta_R|<\delta_R}.
 \]
 
-Neither criterion may be satisfied by substituting the best exploratory pair or stratum.
+Neither criterion may be satisfied by substituting another mechanism pair, difficulty stratum, generator family, or exploratory result.
 
-## 9. Thresholds
+## 10. Thresholds
 
 No numerical \(\delta\) is inherited from previous exploratory results.
 
@@ -137,21 +178,31 @@ Each margin must be defined as a smallest practically important effect (SPIE) on
 - \(\delta_R\): maximum practically negligible change in repair-search cost;
 - \(\delta_V\): minimum useful validation-transfer effect if used confirmatorily.
 
-The justification must come from system-level utility, cost, or safety constraints, not from observed confirmatory outcomes and not from calibration outcomes.
+The repository currently lacks an independent utility/cost/safety specification sufficient to justify numerical SPIE values. Therefore the numerical margins are intentionally **OPEN** and constitute a pre-confirmatory blocker. They must not be chosen from calibration or exploratory outcomes.
 
-## 10. Sample-size determination
+## 11. Primary analysis and inference convention
+
+For the primary diagnostic superiority test:
+
+- two-sided confidence intervals are reported for estimation;
+- the superiority decision uses the pre-specified one-sided lower confidence bound at \(\alpha=0.05\);
+- target power for sample-size planning is **0.90**, unless a new preregistration version explicitly changes it before confirmatory data collection.
+
+For the repair-equivalence criterion, use a pre-specified TOST-equivalent inference at \(\alpha=0.05\), corresponding to a 90% confidence interval for the equivalence decision once \(\delta_R\) is numerically frozen.
+
+The point-estimator/model family must be fixed before confirmatory data collection; if clustering or repeated measures are present, the analysis must model that structure rather than assume independent observations.
+
+## 12. Sample-size determination
 
 Sample size is determined only after estimands, margins, and the primary analysis are frozen.
 
-For binary outcomes, use a declared two-arm design sized for the target \(\delta\), type-I error, power, baseline event rate assumptions, and design effect.
+For binary outcomes, use a declared two-arm design sized for the frozen \(\delta_D\), type-I error, 0.90 target power, baseline event-rate assumptions, and design effect.
 
-For equivalence on cost/count outcomes, use the planned matched/hierarchical model and equivalence margin with conservative variance assumptions.
+For repair-cost equivalence, use the frozen cost estimand, equivalence margin, and declared matched/hierarchical model with conservative nuisance assumptions.
 
-If observations are clustered by mechanism class, generator family, case, or repeated run, the analysis and sample-size calculation must reflect the declared clustering rather than assume independent observations.
+No numerical \(N\) is frozen while the primary margins remain OPEN.
 
-No numerical \(N\) is frozen until external calibration supplies defensible nuisance estimates from data excluded from confirmatory observations. Such calibration may inform variance, baseline rates, clustering/design effects, or feasible predeclared design strata; it may not select the primary pair, alter the estimands, or choose \(\delta\).
-
-## 11. Calibration / confirmatory separation
+## 13. Calibration / confirmatory separation
 
 A separate calibration set may estimate only pre-specified nuisance/design quantities, such as:
 
@@ -159,27 +210,25 @@ A separate calibration set may estimate only pre-specified nuisance/design quant
 - variance/dispersion;
 - cluster/design effects;
 - feasible difficulty/risk strata;
-- execution/resource feasibility of an already frozen design.
+- execution/resource feasibility of the already frozen design.
 
 Calibration observations cannot be reused as confirmatory observations.
 
-Calibration cannot be used to choose or replace the primary pair, redefine the target population, alter estimand formulas, change the primary analysis, or select practical-effect margins from observed outcomes.
+Calibration cannot choose or replace the primary pair, redefine the target population, alter estimand formulas, change the primary analysis, or select practical-effect margins from observed outcomes.
 
-If a proposed design proves infeasible during calibration, the result is recorded as a design-feasibility finding. It does not authorize silent replacement of the confirmatory question; any design change creates a new pre-registered version before confirmatory collection.
+If the frozen design proves infeasible during calibration, that result is recorded as a design-feasibility finding. It does not authorize silent replacement of the confirmatory question; any design change creates a new pre-registered version before confirmatory collection.
 
-## 12. Multiple comparisons
+## 14. Multiple comparisons
 
 Exactly one transfer direction is primary.
 
-All other class pairs, generator contrasts, difficulty strata, secondary metrics, and diagnostic-policy contrasts are exploratory unless a multiplicity-controlled confirmatory family is frozen in advance.
+All other class pairs, the reverse direction, generator contrasts, difficulty strata, secondary metrics, and S0/S1 policy contrasts are exploratory unless a multiplicity-controlled confirmatory family is frozen in advance.
 
 No post-outcome scan is permitted to promote a successful pair to primary.
 
-If later work requires multiple confirmatory pairs, use a pre-specified gatekeeping/closed-testing plan or another appropriate multiplicity-control method fixed before data collection.
+## 15. Decision rule
 
-## 13. Decision rule
-
-**CONFIRM** only when the primary superiority and equivalence criteria both pass under the pre-specified analysis.
+**CONFIRM** only when both primary criteria pass under the frozen analysis.
 
 Otherwise:
 
@@ -189,7 +238,7 @@ Failure to confirm is not interpreted as proof of the opposite hypothesis.
 
 Exploratory findings remain explicitly exploratory.
 
-## 14. Reporting
+## 16. Reporting
 
 For each estimand report:
 
@@ -201,23 +250,29 @@ For each estimand report:
 - clustering structure;
 - exclusions with their pre-specified reasons;
 - confirmatory/exploratory status;
-- calibration versus confirmatory data origin.
+- calibration versus confirmatory data origin;
+- transfer-artifact provenance and version.
 
 `Unknown` twin-audit cases remain represented in overall \(P_0\) accounting but do not enter twin-specific estimands requiring established identifiability.
 
-## 15. Freeze checklist
+## 17. Freeze checklist
 
-Before confirmatory execution, freeze:
+Already frozen at design level:
 
-1. \((Z_a^*,Z_b^*)\) and selection rationale;
-2. mechanism taxonomy and operator semantics;
+1. primary direction and pair;
+2. mechanism taxonomy and causal intervention definitions;
 3. exact estimand formulas and scales;
-4. applicable \(\delta_D,\delta_P,\delta_R,\delta_V\);
-5. analysis confidence level and power target;
-6. nuisance assumptions used for sample size;
-7. primary policy arm;
-8. calibration/confirmatory separation;
-9. multiplicity/gatekeeping rule;
-10. decision/reporting rules.
+4. primary policy arm `S2`;
+5. transfer-arm isolation and repair-controller equality;
+6. \(\alpha=0.05\) and 0.90 target power;
+7. calibration/confirmatory separation;
+8. multiplicity rule;
+9. decision/reporting rules.
 
-**Status:** Candidate for joint review with the parent experiment protocol. Final confirmatory freeze occurs only after all ten items are populated and independently checked.
+Still OPEN and blocking final confirmatory freeze:
+
+10. numerical \(\delta_D,\delta_P,\delta_R,\delta_V\) where applicable;
+11. nuisance assumptions and numerical sample size derived from the frozen margins;
+12. exact model/estimator family if not fully determined by the final data structure.
+
+**Status:** Primary comparison and arm structure are frozen at design level. Final statistical freeze is blocked only by the explicitly identified margin/nuisance specifications, not by the mechanism-pair choice.
