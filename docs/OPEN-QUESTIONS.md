@@ -62,3 +62,12 @@ These questions are intentionally unresolved. They are research targets, not req
 32. What experiment would show that learned executable structure gives no transfer beyond fresh search?
 33. What experiment would show that causal reflection adds no capability beyond ordinary external hot-swap?
 34. What experiment would show that a proposed machine-native primitive is only a vocabulary choice rather than an irreducible mechanism?
+
+## Reflection substrate — newly separated questions
+
+35. What exactly is the smallest reflected mechanism: compound dispatch, evaluator, or full transition semantics?
+36. What object-language representation is sufficient to reify the relevant environment and continuation state without leaving critical structure opaque?
+37. What installation semantics are required: jump, resume, tail transfer, or explicit level shift?
+38. When does a host-language bootstrap hook remain part of the fixed substrate rather than becoming a hidden non-machine special case?
+39. Can the dispatch-only reflection seam be implemented on an independent substrate with the same abstract transition semantics?
+40. Does causal dispatch reflection provide any capability beyond ordinary rebinding under matched controls?
