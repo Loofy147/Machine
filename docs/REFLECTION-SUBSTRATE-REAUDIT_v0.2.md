@@ -48,23 +48,23 @@ Do not promote it to a Machine result until tests and artifacts are committed.
 
 The candidate state `(C,E,K)` aligns with the standard CEK structural state: control, environment, continuation.
 
-CEK is therefore a suitable small operational substrate. Standard abstract-machine literature describes CEK states as `Exp × Env × Kont`. cite-reference:CEK
+CEK is therefore a suitable small operational substrate. Standard abstract-machine literature describes CEK states as `Exp × Env × Kont`. See: Felleisen-style CEK formulations; a representative modern exposition is Van Horn & Might, Abstracting Abstract Machines (2010), which defines CEK states as Exp × Env × Kont.
 
 ### Friedman & Wand 1984
 
 The closest direct reflection precedent is Friedman & Wand, "Reification: Reflection without Metaphysics" (1984).
 
-That work makes interpreter data structures available to the running program and allows the program to alter them. The reified material includes form/expression, environment, and continuation; the construction does not depend on a reflective tower. cite-reference:FW84
+That work makes interpreter data structures available to the running program and allows the program to alter them. The reified material includes form/expression, environment, and continuation; the construction does not depend on a reflective tower. Friedman, D. P.; Wand, M. (1984), Reification: Reflection without Metaphysics, DOI: 10.1145/800055.802051.
 
 ### Wand & Friedman 1986/1988
 
 "The Mystery of the Tower Revealed" provides a semantic account of reflective towers.
 
-It explicitly models expression/control, environment, and continuation, then introduces a metacontinuation for the upper interpreter context. It also describes reification/reflection symmetry in terms of representations of environment and continuation being converted back into live machine components. cite-reference:WF8688
+It explicitly models expression/control, environment, and continuation, then introduces a metacontinuation for the upper interpreter context. It also describes reification/reflection symmetry in terms of representations of environment and continuation being converted back into live machine components. Wand, M.; Friedman, D. P. (1986 conference version; 1988 journal version), The Mystery of the Tower Revealed: A Non-reflective Description of the Reflective Tower, DOI: 10.1007/BF01806174.
 
 ### des Rivières / Smith
 
-Their implementation work describes a level-shifting processor for procedural reflection and 3-LISP. This supports treating reflective execution context as an explicit semantic level rather than making one host-language loop the invariant. cite-reference:DRS84
+Their implementation work describes a level-shifting processor for procedural reflection and 3-LISP. This supports treating reflective execution context as an explicit semantic level rather than making one host-language loop the invariant. des Rivières, J.; Smith, B. C. (1984), The Implementation of Procedurally Reflective Languages, DOI: 10.1145/800055.802050.
 
 ## 5. Candidate's strongest defensible claim
 
@@ -143,7 +143,7 @@ Treat continuation transformation as a separate capability. The first dispatch e
 
 Install discards the current continuation and restores the snapshot continuation.
 
-This is not automatically wrong. Classical reflection work explicitly discusses continuation choice/asymmetry, while reflective-tower semantics introduce metacontinuation to represent the surrounding reflective context. cite-reference:FW84-ASYM cite-reference:WF-META
+This is not automatically wrong. Classical reflection work explicitly discusses continuation choice/asymmetry, while reflective-tower semantics introduce metacontinuation to represent the surrounding reflective context. Friedman & Wand 1984, continuation-choice asymmetry in the towerless reification model. Wand & Friedman 1986/1988, metacontinuation model for reflective tower context.
 
 Decision:
 Do not force continuation preservation prematurely. First classify the semantics as jumpy, resumptive, tail-like, or level-shifting.
