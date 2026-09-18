@@ -88,6 +88,7 @@ def verify_error_source(entry: dict) -> None:
     spec = importlib.util.spec_from_file_location("error_harness", ROOT / entry["code_path"])
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
 
     shared = {a: [1.0, 1.0] for a in module.ACTIONS}
