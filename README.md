@@ -115,7 +115,20 @@ reconfigurability
 - `experiments/error-source-localization/harness.py` — deterministic harness
 - `experiments/error-source-localization/RESULTS-V0.md` — first reproducible run and interpretation boundary
 - `docs/REFLECTION-FRONTIER.md` — causal-reflection boundary
+- `docs/REFLECTION-SUBSTRATE-LITERATURE-ALIGNMENT_v0.1.md` — literature alignment and first substrate gap audit
+- `docs/REFLECTION-SUBSTRATE-REAUDIT_v0.2.md` — current re-audit and narrow dispatch-reflection decision boundary
 - `docs/INTERACTION-OPERATING-MODE.md` — project interaction/evidence discipline
 - `docs/OPEN-QUESTIONS.md` — unresolved questions
 
 The repository remains research-first. Implementation code should be introduced only as an explicitly named experimental substrate with reproducible evidence attached to its claims.
+
+
+## Immediate reflection target
+
+The current implementation target is intentionally narrower than whole-evaluator reflection:
+
+```
+rho_dispatch = compound-procedure dispatch semantics
+```
+
+The immediate proof obligation is causal replacement of this dispatch rule during one uninterrupted computation, with matched controls. Broader evaluator reflection remains OPEN.
