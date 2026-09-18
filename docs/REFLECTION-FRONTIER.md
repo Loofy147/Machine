@@ -162,3 +162,57 @@ The decisive test is whether the same ongoing run continues with an execution ru
 > What is the smallest fixed substrate that permits a running machine to modify the executable mechanism that determines its own subsequent transitions, with causal continuity and observable replay?
 
 This question is narrower than machine intelligence and should be answered before claiming higher-order self-improvement.
+
+
+## 11. Current narrow substrate candidate
+
+The first candidate reflective interpreter proposes a narrower target than whole-evaluator reflection:
+
+```
+rho_dispatch = compound-procedure dispatch semantics
+```
+
+The candidate uses an object-language `*applier*` closure as the dispatch rule for compound procedures.
+
+The current research decision is to test this seam first rather than immediately reify the entire evaluator.
+
+The required causal chain is:
+
+```
+reify dispatch-relevant state
+  -> object-language modification
+  -> install
+  -> later compound call
+  -> modified dispatch rule is actually consulted
+  -> observable difference
+```
+
+The following are explicit controls rather than implementation details:
+
+- ordinary `set!` rebinding;
+- restart/external hot-swap;
+- extra computation or budget;
+- unrelated continuation modification;
+- hidden host-language dispatch.
+
+### Representation contract
+
+A reified state component is not considered fully reflective merely because a host object is wrapped in an object-language list.
+
+The experiment must define how the relevant environment/continuation information is represented, and how that representation is transformed back into live machine state.
+
+### Continuation / meta-level semantics
+
+The project does not require a literal single host-language loop.
+
+The stronger invariant is causal continuity with explicit continuation and, where needed, meta-continuation semantics.
+
+See:
+
+- `docs/REFLECTION-SUBSTRATE-LITERATURE-ALIGNMENT_v0.1.md`
+- `docs/REFLECTION-SUBSTRATE-REAUDIT_v0.2.md`
+
+### Immediate decision
+
+Do not broaden the reflective substrate until the narrow dispatch-only causal-reflection minimal pair passes with matched controls.
+
