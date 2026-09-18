@@ -3,11 +3,13 @@
 
 This verifier does not establish the scientific hypothesis. It verifies that:
 1. the committed harness executes successfully;
-2. its declared output matches the recorded evidence;
-3. the recorded result explicitly preserves the interpretation boundary.
+2. its output matches the machine-readable evidence manifest;
+3. the recorded result matches the same manifest;
+4. the recorded interpretation boundary is explicit.
 """
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -16,12 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HARNESS = ROOT / "experiments/confirmatory-pilot-v0.1/harness.py"
 RESULTS = ROOT / "experiments/confirmatory-pilot-v0.1/RESULTS-V0.md"
-
-EXPECTED = {
-    "theta_D": 0.462500,
-    "theta_P": -1.000000,
-    "theta_R": 0.000000,
-}
+MANIFEST = ROOT / "evidence/manifest-v0.1.json"
 
 def fail(message: str) -> None:
     raise SystemExit(f"EVIDENCE-INTEGRITY-FAIL: {message}")
@@ -33,10 +30,22 @@ def parse_metric(output: str, name: str) -> float:
     return float(match.group(1))
 
 def main() -> None:
-    if not HARNESS.is_file():
-        fail(f"missing harness: {HARNESS}")
-    if not RESULTS.is_file():
-        fail(f"missing result record: {RESULTS}")
+    for path in (HARNESS, RESULTS, MANIFEST):
+        if not path.is_file():
+            fail(f"missing required artifact: {path}")
+
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    entries = manifest.get("entries", [])
+    if len(entries) != 1:
+        fail(f"expected exactly one v0.1 manifest entry, found {len(entries)}")
+
+    entry = entries[0]
+    if entry.get("status") != "REPRODUCIBILITY_VERIFIED":
+        fail(f"unexpected evidence status: {entry.get('status')!r}")
+
+    expected = entry.get("expected")
+    if expected != {"theta_D": 0.4625, "theta_P": -1.0, "theta_R": 0.0}:
+        fail(f"manifest expected values drifted: {expected!r}")
 
     proc = subprocess.run(
         [sys.executable, str(HARNESS)],
@@ -50,10 +59,10 @@ def main() -> None:
         print(proc.stderr, file=sys.stderr)
         fail(f"harness exited with code {proc.returncode}")
 
-    for name, expected in EXPECTED.items():
+    for name, expected_value in expected.items():
         actual = parse_metric(proc.stdout, name)
-        if actual != expected:
-            fail(f"{name}: expected {expected:.6f}, got {actual:.6f}")
+        if actual != expected_value:
+            fail(f"{name}: expected {expected_value:.6f}, got {actual:.6f}")
 
     recorded = RESULTS.read_text(encoding="utf-8")
     required_fragments = (
@@ -69,7 +78,7 @@ def main() -> None:
             fail(f"recorded evidence missing required fragment: {fragment!r}")
 
     print("EVIDENCE-INTEGRITY-PASS")
-    print("confirmatory-pilot-v0.1: harness result matches recorded evidence")
+    print("confirmatory-pilot-v0.1: manifest, harness, and recorded result agree")
     print("scientific status: contract-test only; transferable learning remains unestablished")
 
 if __name__ == "__main__":
