@@ -1,0 +1,27 @@
+name: target-oblivious-frontier-v0
+
+on:
+  push:
+    branches:
+      - research/target-oblivious-frontier-v0
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Self-test
+        run: python experiments/target-oblivious-frontier/run.py --self-test
+      - name: Experiment replay
+        run: >
+          python experiments/target-oblivious-frontier/run.py
+          --m 30 --m 300 --m 3000
+          --queries 200
+          --look-depth 2
+          --out /tmp/target-oblivious-frontier.json
+      - name: Verify expected result file
+        run: test -s /tmp/target-oblivious-frontier.json
