@@ -1,0 +1,31 @@
+{
+  "schema": "machine.evidence-manifest.v0.1",
+  "branch": "research/evidence-disposition-v0",
+  "scope": "reproducibility-correction",
+  "entries": [
+    {
+      "evidence_id": "EV-PILOT-CONTRACT-V0.1-20260918",
+      "claim_id": "CL-CONTRACT-SEPARATION-DPR-V0.1",
+      "experiment": "confirmatory-pilot-v0.1",
+      "status": "REPRODUCIBILITY_VERIFIED",
+      "evidence_type": "deterministic_contract_test",
+      "code_path": "experiments/confirmatory-pilot-v0.1/harness.py",
+      "code_commit": "e2ee6221a677ee3f3af30d5ac0245914fe615967",
+      "result_path": "experiments/confirmatory-pilot-v0.1/RESULTS-V0.md",
+      "result_commit": "5d4f853f8228888c1d8ec0e945f47377ec74b0aa",
+      "command": "python3 experiments/confirmatory-pilot-v0.1/harness.py",
+      "parameters": {
+        "seed": 20260916,
+        "source_cases": 40,
+        "target_cases": 80
+      },
+      "expected": {
+        "theta_D": 0.4625,
+        "theta_P": -1.0,
+        "theta_R": 0.0
+      },
+      "scientific_boundary": "Contract plumbing only. The fixture uses context_boundary=1 for every source case, so no nontrivial source learning is established.",
+      "next_test": "Create a new experiment version with a nontrivial source distribution and require the artifact to infer a transferable property without target labels or outcomes."
+    }
+  ]
+}
