@@ -15,6 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "evidence/manifest-v0.1.json"
+CLAIMS = ROOT / "evidence/claims-v0.1.json"
 
 def fail(message: str) -> None:
     raise SystemExit(f"EVIDENCE-INTEGRITY-FAIL: {message}")
@@ -139,16 +140,26 @@ def verify_target(entry: dict) -> None:
 def main() -> None:
     if not MANIFEST.is_file():
         fail(f"missing manifest: {MANIFEST}")
+    if not CLAIMS.is_file():
+        fail(f"missing claim registry: {CLAIMS}")
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    claims = json.loads(CLAIMS.read_text(encoding="utf-8"))
     if manifest.get("schema") != "machine.evidence-manifest.v0.2":
         fail("unexpected evidence manifest schema")
 
     entries = manifest.get("entries", [])
+    claim_ids = {c.get("claim_id") for c in claims.get("claims", [])}
+    if claims.get("schema") != "machine.claim-registry.v0.1":
+        fail("unexpected claim registry schema")
+    if len(claim_ids) != 3 or None in claim_ids:
+        fail("claim registry must contain exactly three initial claim IDs")
     if len(entries) != 3:
         fail(f"expected 3 verified entries, found {len(entries)}")
 
     for entry in entries:
+        if entry.get("claim_id") not in claim_ids:
+            fail(f"manifest references unknown claim: {entry.get("claim_id")}")
         if entry.get("status") != "REPRODUCIBILITY_VERIFIED":
             fail(f"entry {entry.get('evidence_id')} is not marked reproducibility verified")
         if entry["experiment"] == "confirmatory-pilot-v0.1":
