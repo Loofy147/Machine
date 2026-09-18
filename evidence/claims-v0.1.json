@@ -1,0 +1,45 @@
+{
+  "schema": "machine.claim-registry.v0.1",
+  "branch": "research/evidence-disposition-v0",
+  "claims": [
+    {
+      "claim_id": "CL-CONTRACT-SEPARATION-DPR-V0.1",
+      "claim": "The confirmatory pilot contract can change diagnostic behavior and probe cost without changing the repair controller in the declared toy fixture.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "confirmatory-pilot-v0.1 toy contract fixture",
+      "evidence_ids": ["EV-PILOT-CONTRACT-V0.1-20260918"],
+      "limits": [
+        "context_boundary is constant at 1 for all source cases",
+        "this does not establish transferable learning",
+        "this does not establish causal mechanism identification"
+      ],
+      "next_discriminating_test": "Use a nontrivial source distribution where artifact construction must infer a transferable property without target labels or outcomes."
+    },
+    {
+      "claim_id": "CL-ERROR-HARNESS-V0",
+      "claim": "The deterministic error-source-localization v0 harness reproduces its declared aggregate recovery/localization metrics for the declared controllers and fault schedule.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "deterministic XOR fixture, 100 episodes, seed 20260916, budget 4",
+      "evidence_ids": ["EV-ERROR-SOURCE-LOCALIZATION-V0-20260918"],
+      "limits": [
+        "fault classes and intervention vocabulary are supplied by the fixture",
+        "probe uses a fixed intervention order",
+        "adaptive learns action-level history rather than a discovered fault ontology"
+      ],
+      "next_discriminating_test": "Hidden fault switching with randomized intervention-to-mechanism mapping and explicit representation cost."
+    },
+    {
+      "claim_id": "CL-TARGET-HELDOUT-INVARIANT-V0",
+      "claim": "For the declared finite target-oblivious frontier fixture, partial target-specific offline state cannot alter strict-heldout behavior when it cannot contain the realized target.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "M in {30,300,3000}, 200 queries, lookahead depth 2",
+      "evidence_ids": ["EV-TARGET-OBLIVIOUS-FRONTIER-V0-20260918"],
+      "limits": [
+        "finite graph fixture",
+        "does not establish necessity of reflection",
+        "measures resource placement rather than transition-topology change"
+      ],
+      "next_discriminating_test": "Test compact target-oblivious structures and determine whether any residual capability gap persists under matched resource bounds."
+    }
+  ]
+}
