@@ -159,7 +159,7 @@ def main() -> None:
 
     for entry in entries:
         if entry.get("claim_id") not in claim_ids:
-            fail(f"manifest references unknown claim: {entry.get("claim_id")}")
+            fail(f"manifest references unknown claim: {entry.get('claim_id')}")
         if entry.get("status") != "REPRODUCIBILITY_VERIFIED":
             fail(f"entry {entry.get('evidence_id')} is not marked reproducibility verified")
         if entry["experiment"] == "confirmatory-pilot-v0.1":
