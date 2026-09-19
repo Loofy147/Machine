@@ -1,6 +1,6 @@
 # Substrate Interpreter v0.2 — Results
 
-Status: EXPERIMENTALLY_SUPPORTED / LOCAL REPLAY
+Status: EXPERIMENTALLY_SUPPORTED / POST-REPAIR CI REPLAY
 Branch: research/substrate-interpreter-v0
 
 ## Correction from v0.1
@@ -15,72 +15,96 @@ S1:
 S2:
     S1 + direct indexed relation lookup
 
-## Baseline replay
+## Target conformance correction
 
-Commands:
+The pre-repair S2 target encoded both an absent key and a present key with value NIL as the same concrete result. Source inspection established that this violated the candidate semantic algebra:
 
-    python -m pytest -q
-    python run_audit.py
+    Miss | Hit(v)
 
-The original five-test baseline recorded:
+The target was minimally repaired to use disjoint concrete encodings:
 
-    pytest = 5 passed
+    RelationLookupMiss
+    RelationLookupHit(value)
+
+The abstract specification in `docs/S2-CANDIDATE-SPEC-v0.3.md` was not changed.
+
+## Post-repair replay
+
+The spec-derived conformance suite was replayed unchanged on commit:
+
+    6100337bb75bd180c75ac874ea1021d3bd69c792
+
+CI result:
+
+    11 passed
+    process exit = 0
+
+The suite derives its assertions from the frozen semantic contract. The conformance matrix contains 15 semantic requirement IDs; those requirements are exercised by the current 11 executable test cases.
+
+The updated interpreter audit was then executed:
+
+    python experiments/substrate-interpreter-v0.2/run_audit.py
+
+Audit result:
+
     audit exit = 0
     semantic_equivalence = true
 
-After adding the S2 property tests, a reconstructed replay of the exact source files at the recorded branch ref produced:
+A full resource-vector comparison was performed against the committed pre-replay result.
 
-    property suite = 8 passed
-    process exit = 0
+Comparison:
 
-This reconstructed replay executed the fetched repository source in a clean temporary directory. It is not a GitHub Actions run; no workflow run was registered for the commit.
-
-Five online queries:
-
-    [k4, k0, k2, missing, k3]
-
-Results:
-
-    [40, 0, 20, NIL, 30]
+    same_persistent_representation     = true / unchanged
+    offline construction_ticks         = 5 / unchanged
+    offline stored_entries             = 5 / unchanged
 
 S1 object-language traversal:
 
-    transition_ticks = 676
-    access_ticks = 291
+    results                         = [40, 0, 20, NIL, 30]
+    transition_ticks_total         = 676
+    access_ticks_total              = 291
 
 S2 direct lookup:
 
-    transition_ticks = 20
-    access_ticks = 10
+    results                         = [40, 0, 20, NIL, 30]
+    transition_ticks_total         = 20
+    access_ticks_total              = 10
 
-Offline representation:
-
-    construction_ticks = 5
-    stored_entries = 5
-
-Measured ratio:
+Measured ratios remain:
 
     transition cost = 33.8x
     access cost = 29.1x
+
+All compared resource-vector fields were exactly equal to the committed baseline.
+
+The replay is recorded by GitHub Actions run 10 (`s2-conformance-v0`) with replay artifact `s2-conformance-replay`.
 
 ## Interpretation
 
 Because the persistent relation representation is the same, this experiment removes the major representation confound present in v0.1.
 
+The post-repair replay establishes that the concrete result repair restores the required semantic distinction without changing the measured resource vector in this experiment.
+
 The observation therefore supports a narrower statement:
 
 Direct indexed lookup can provide a strong resource advantage over generic traversal under an otherwise matched substrate contract, without changing the observed relation semantics.
 
-The added property suite further pins the S2 contract:
+The S2 property/conformance suite additionally pins the current contract surface:
 
 - S2 is additive over S1;
 - tested S1 programs preserve result and machine-state contents under S2;
 - direct lookup is explicitly charged;
 - direct lookup is read-only for the current dict-backed fixture;
-- missing keys return NIL;
+- the repaired target distinguishes missing keys from valid NIL-valued hits at the concrete boundary;
 - the direct primitive itself performs no preprocessing.
 
 This is still not a computability-power separation.
+
+## Evidence disposition
+
+The earlier resource evidence may remain active because the full replay reproduced the stored vector exactly.
+
+The post-repair semantic conformance claim is now experimentally supported by execution, not merely by source inspection.
 
 ## Remaining limits
 

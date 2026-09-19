@@ -1,8 +1,9 @@
 {
-  "schema": "machine.s2-conformance-target-claims.v0.1",
+  "schema": "machine.s2-conformance-target-claims.v0.2",
   "recorded": "2026-09-19",
   "repository": "Loofy147/Machine",
   "branch": "research/substrate-interpreter-v0",
+  "verification_commit": "6100337bb75bd180c75ac874ea1021d3bd69c792",
   "semantic_source": "docs/S2-CANDIDATE-SPEC-v0.3.md",
   "protocol": "docs/S2-CONFORMANCE-FRONTIER-PROTOCOL-v0.2.md",
   "claims": [
@@ -17,16 +18,40 @@
       "claim_id": "CL-S2-TARGET-REPAIR-TAGGED-RESULT-V0.1",
       "claim": "The experimental S2 target was minimally repaired to use disjoint concrete RelationLookupMiss and RelationLookupHit(value) result encodings.",
       "status": "ESTABLISHED_BY_SOURCE_INSPECTION",
-      "scope": "current branch implementation",
+      "scope": "verification commit 6100337bb75bd180c75ac874ea1021d3bd69c792",
       "constraint": "This is a target repair derived from the specification, not a specification change."
     },
     {
       "claim_id": "CL-S2-TARGET-POST-REPAIR-CONFORMANCE-V0.1",
-      "claim": "Post-repair semantic conformance is not yet verified by execution.",
-      "status": "UNVERIFIED",
-      "limitation": "No registered GitHub Actions run and no direct local repository execution was available at inspection time.",
-      "next_discriminating_action": "Run the unchanged spec-derived conformance suite and the updated audit."
+      "claim": "Post-repair semantic conformance holds for the current executable suite under the frozen S2 candidate contract.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "evidence": {
+        "github_actions_run_id": 35466392638,
+        "workflow": "s2-conformance-v0",
+        "pytest": "11 passed",
+        "audit_exit": 0,
+        "artifact_id": 10590214678
+      },
+      "limits": [
+        "The matrix has 15 semantic requirement IDs exercised by the current 11 executable test cases.",
+        "This is verification of the current target/suite, not a universal proof over all possible implementations."
+      ]
+    },
+    {
+      "claim_id": "CL-S2-RESOURCE-VECTOR-PRESERVED-V0.1",
+      "claim": "The post-repair replay reproduces the committed resource vector exactly for the current experiment.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "evidence": {
+        "github_actions_run_id": 35466392638,
+        "same_persistent_representation": true,
+        "offline_representation": {"construction_ticks": 5, "stored_entries": 5},
+        "scan": {"transition_ticks_total": 676, "access_ticks_total": 291},
+        "direct": {"transition_ticks_total": 20, "access_ticks_total": 10},
+        "semantic_equivalence": true,
+        "resource_ratio": {"transition_ticks_scan_over_direct": 33.8, "access_ticks_scan_over_direct": 29.1},
+        "full_vector_equal_committed_baseline": true
+      }
     }
   ],
-  "next_discriminating_action": "Execute the unchanged conformance suite and audit against the repaired target; do not alter the semantic specification to obtain a pass."
+  "next_discriminating_action": "Preserve the verified resource evidence while keeping the computability-power claim explicitly out of scope; next S2 work should target the remaining specification/frontier gaps rather than reopening this repaired distinction without new counterevidence."
 }
