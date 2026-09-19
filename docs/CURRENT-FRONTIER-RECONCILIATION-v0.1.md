@@ -196,6 +196,38 @@ Still CONVERSATION-ONLY:
 
 Those remain excluded from scientific evidence until separately packaged.
 
+
+
+## 12. Refined substrate-frontier contract
+
+The frontier question is now governed by:
+docs/SUBSTRATE-FRONTIER-CONTRACT-v0.1.md
+
+The comparison must separate:
+- information available;
+- when information may be constructed or revealed;
+- representation/storage;
+- substrate access/interpretation;
+- resource cost.
+
+The minimum frontier vector remains:
+
+    (B_off, R, B_on)
+
+but direct relation mechanisms additionally require an explicit access-cost contract so that predecessor access is not treated as a free oracle.
+
+The current classification is:
+
+    target-oblivious relocation        EXPERIMENTALLY_SUPPORTED
+    direct predecessor frontier shift  EXPERIMENTALLY_SUPPORTED
+    reverse-index finite closure       EXPERIMENTALLY_SUPPORTED
+    mechanism-name capability claims   REFINED / NOT SUPPORTED
+    fixed substrate access contract    OPEN / SPECIFICATION DEBT
+
+A finite reverse-index match is an exact finite closure result, not a general closure theorem. Failure of one successor-only baseline is not a proof that every successor-only representation fails.
+
+The decisive remaining audit must inspect the actual Machine interpreter substrate and freeze its concrete state-access semantics before classifying direct predecessor access as an optimization, representation closure, or substrate extension.
+
 ## 11. Governing rule
 
 Measure the Pareto frontier first.
