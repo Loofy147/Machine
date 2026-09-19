@@ -154,15 +154,17 @@ An execution that succeeds while its recorded evidence changes is an evidence-in
 
 ## 8. Current implementation
 
-This branch introduces the first concrete gate:
+This branch contains a self-contained initial evidence package for three reproduced experiment surfaces:
 
-\`\`\`text
-tools/verify_evidence.py
-\`\`\`
+```text
+confirmatory-pilot-v0.1
+error-source-localization-v0
+target-oblivious-frontier-v0
+```
 
-It executes the confirmatory contract pilot and checks the stored result record.
+`tools/verify_evidence.py` executes each referenced harness from this branch and checks the corresponding manifest/result contract.
 
-This validates the **evidence path**, not the transfer-learning hypothesis.
+The gate validates the **evidence path**, not the underlying scientific hypotheses.
 
 ## 9. Human-to-machine research path
 
