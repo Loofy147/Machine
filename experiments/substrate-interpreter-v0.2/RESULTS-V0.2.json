@@ -1,0 +1,21 @@
+{
+  "status": "EXECUTED / LOCAL REPLAY",
+  "same_persistent_representation": true,
+  "offline_representation": {"construction_ticks": 5, "stored_entries": 5},
+  "object_language_scan": {
+    "results": [40, 0, 20, [], 30],
+    "transition_ticks_total": 676,
+    "access_ticks_total": 291
+  },
+  "object_language_direct": {
+    "results": [40, 0, 20, [], 30],
+    "transition_ticks_total": 20,
+    "access_ticks_total": 10
+  },
+  "semantic_equivalence": true,
+  "resource_ratio": {
+    "transition_ticks_scan_over_direct": 33.8,
+    "access_ticks_scan_over_direct": 29.1
+  },
+  "replay": {"pytest": "5 passed", "audit_exit": 0}
+}
