@@ -21,3 +21,41 @@ jobs:
         env:
           PYTHONPATH: experiments/s2-conformance-v0.1:experiments/substrate-interpreter-v0.2
         run: python -m pytest -q experiments/s2-conformance-v0.1
+      - name: Preserve committed resource baseline
+        run: cp experiments/substrate-interpreter-v0.2/RESULTS-V0.2.json /tmp/RESULTS-V0.2.before.json
+      - name: Run updated interpreter audit
+        run: python experiments/substrate-interpreter-v0.2/run_audit.py
+      - name: Compare full resource vector
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          before = json.loads(Path("/tmp/RESULTS-V0.2.before.json").read_text())
+          after = json.loads(Path("experiments/substrate-interpreter-v0.2/RESULTS-V0.2.json").read_text())
+
+          keys = [
+              "same_persistent_representation",
+              "offline_representation",
+              "object_language_scan",
+              "object_language_direct",
+              "semantic_equivalence",
+              "resource_ratio",
+          ]
+
+          print("=== S2 RESOURCE REPLAY COMPARISON ===")
+          for key in keys:
+              print(f"{key}:")
+              print("  BEFORE:", json.dumps(before.get(key), sort_keys=True))
+              print("  AFTER: ", json.dumps(after.get(key), sort_keys=True))
+              print("  EQUAL: ", before.get(key) == after.get(key))
+
+          print("=== END COMPARISON ===")
+          PY
+      - name: Upload replay evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: s2-conformance-replay
+          path: |
+            experiments/substrate-interpreter-v0.2/RESULTS-V0.2.json
+            /tmp/RESULTS-V0.2.before.json
