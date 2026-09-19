@@ -16,6 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "evidence/manifest-v0.1.json"
 CLAIMS = ROOT / "evidence/claims-v0.1.json"
+OPEN_CLAIMS = ROOT / "evidence/open-claims-v0.1.json"
 
 def fail(message: str) -> None:
     raise SystemExit(f"EVIDENCE-INTEGRITY-FAIL: {message}")
@@ -196,9 +197,12 @@ def main() -> None:
         fail(f"missing manifest: {MANIFEST}")
     if not CLAIMS.is_file():
         fail(f"missing claim registry: {CLAIMS}")
+    if not OPEN_CLAIMS.is_file():
+        fail(f"missing open-claim registry: {OPEN_CLAIMS}")
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     claims = json.loads(CLAIMS.read_text(encoding="utf-8"))
+    open_claims = json.loads(OPEN_CLAIMS.read_text(encoding="utf-8"))
     if manifest.get("schema") != "machine.evidence-manifest.v0.2":
         fail("unexpected evidence manifest schema")
 
@@ -210,6 +214,24 @@ def main() -> None:
         fail("claim registry must contain exactly three initial claim IDs")
     if len(entries) != 3:
         fail(f"expected 3 verified entries, found {len(entries)}")
+
+    open_rows = open_claims.get("claims", [])
+    open_ids = [row.get("claim_id") for row in open_rows]
+    if open_claims.get("schema") != "machine.open-claim-registry.v0.1":
+        fail("unexpected open-claim registry schema")
+    if len(open_ids) != len(set(open_ids)) or None in open_ids:
+        fail("open-claim registry claim_id values must be unique and non-null")
+    if set(open_ids) & claim_ids:
+        fail("verified and open claim registries must not reuse claim_id values")
+    for row in open_rows:
+        if row.get("status") != "OPEN":
+            fail(f"open claim {row.get("claim_id")} must remain OPEN")
+        if row.get("evidence_status") != "UNVERIFIED_PACKAGE":
+            fail(f"open claim {row.get("claim_id")} must remain UNVERIFIED_PACKAGE")
+        if not row.get("documented_source"):
+            fail(f"open claim {row.get("claim_id")} missing documented_source")
+        if not row.get("next_discriminating_test"):
+            fail(f"open claim {row.get("claim_id")} missing next_discriminating_test")
 
     evidence_ids = [e.get("evidence_id") for e in entries]
     if len(evidence_ids) != len(set(evidence_ids)) or None in evidence_ids:
