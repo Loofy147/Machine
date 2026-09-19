@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - research/evidence-disposition-v0
+  pull_request:
+    branches:
+      - research/confirmatory-freeze-order-v0.1
   workflow_dispatch:
 
 jobs:
