@@ -1,0 +1,23 @@
+name: s2-conformance-v0
+
+on:
+  push:
+    branches:
+      - research/substrate-interpreter-v0
+
+jobs:
+  s2-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test runner
+        run: python -m pip install --disable-pip-version-check pytest
+      - name: Run spec-derived S2 semantic conformance
+        env:
+          PYTHONPATH: experiments/s2-conformance-v0.1:experiments/substrate-interpreter-v0.2
+        run: python -m pytest -q experiments/s2-conformance-v0.1
