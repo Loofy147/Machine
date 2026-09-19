@@ -1,5 +1,5 @@
 {
-  "schema": "machine.mechanism-frontier-claims.v0.2",
+  "schema": "machine.mechanism-frontier-claims.v0.3",
   "recorded": "2026-09-19",
   "branch": "research/evidence-disposition-v0",
   "claims": [
@@ -7,59 +7,81 @@
       "claim_id": "CL-FIXED-BUDGET-FRONTIER-SHIFT-BIDI-V0",
       "claim": "In the declared finite graph fixture, under B_off=0, R=0, and identical edge-examination accounting, bidirectional BFS with direct online predecessor access solves additional sampled instances at fixed tight online budgets where forward BFS with a visited set does not.",
       "status": "EXPERIMENTALLY_SUPPORTED",
-      "scope": "M in {30,300,3000}; 200 seeded queries per M; corrected edge-examination accounting; caps through 640 for frontier measurements",
+      "scope": "M in {30,300,3000}; three query seeds; corrected edge-examination accounting",
       "evidence": [
         "experiments/mechanism-frontier-shift-v0/run.py",
-        "experiments/mechanism-frontier-shift-v0/RESULTS-V0.md"
+        "experiments/mechanism-frontier-shift-v0/RESULTS-V0.md",
+        "experiments/mechanism-frontier-shift-v0/emulation_control.py"
       ],
       "limits": [
-        "one arithmetic graph family and query seed",
-        "forward BFS is a strong simple baseline, not a theorem-level optimum over all successor-only algorithms",
-        "predecessor access is the specific changed transition capability",
-        "the absolute ultimate feasible-set difference is not established"
+        "one arithmetic graph family for the native predecessor comparison",
+        "forward BFS is a strong simple baseline, not a theorem-level optimum",
+        "direct predecessor access is the specific changed transition capability",
+        "ultimate computational-power separation is not established"
       ],
       "interpretation": "resource-bounded Pareto-frontier shift"
     },
     {
       "claim_id": "CL-SUCCESSOR-ONLY-REVERSE-EMULATION-V0",
-      "claim": "Within the same B_off=0, R=0 contract, emulating predecessor access using only the original successor operations requires substantial online scanning and does not reproduce the native bidirectional frontier at the tight budgets tested.",
+      "claim": "Within the B_off=0, R=0 contract, exhaustive online emulation of predecessor access using only successor operations does not recover the native bidirectional frontier at the tight budgets tested.",
       "status": "EXPERIMENTALLY_SUPPORTED",
-      "scope": "same graph/query fixture; exhaustive predecessor discovery charged one tick per candidate-edge examination",
+      "scope": "same finite graph fixture and query set as the native predecessor comparison",
       "evidence": [
         "experiments/mechanism-frontier-shift-v0/emulation_control.py",
         "experiments/mechanism-frontier-shift-v0/RESULTS-V0.md"
       ],
       "limits": [
-        "the emulation is generic exhaustive scanning and may not be optimal for every successor-only encoding",
-        "different graph families may admit cheaper successor-only inverse reasoning",
-        "no CI replay yet"
+        "generic exhaustive emulation may not be optimal for every successor-only encoding",
+        "graph-specific inverse reasoning could be cheaper",
+        "not CI-verified"
       ],
-      "interpretation": "under this resource contract, direct predecessor access is not reproduced by the tested successor-only reorganization",
-      "next_discriminating_test": "Repeat on independent graph families and include stronger successor-only inverse representations with all construction/use costs charged online."
+      "next_discriminating_test": "Use stronger successor-only representation controls and independent graph families."
     },
     {
-      "claim_id": "CL-ULTIMATE-CLOSURE-NOT-CAPABILITY-ABSOLUTE-V0",
-      "claim": "The observed frontier shift should not be interpreted as an absolute difference in ultimate solvability: at sufficiently high online budgets, the successor-only baseline can recover the sampled instances, while the exhaustive emulation also eventually succeeds on tested finite cases.",
+      "claim_id": "CL-TARGET-OBLIVIOUS-REPRESENTATION-CAN-SHIFT-FRONTIER-V0",
+      "claim": "A fixed successor-only executor can itself exhibit a resource-bounded frontier shift when supplied with a target-oblivious multi-step macro representation, without changing the transition topology.",
       "status": "EXPERIMENTALLY_SUPPORTED",
-      "scope": "sampled finite workloads; high-budget spot checks",
+      "scope": "affine M in {30,300,3000}, permutation M=31, opaque M=31; macro lengths 2,3,4; seeds 17,23,41",
       "evidence": [
-        "experiments/mechanism-frontier-shift-v0/RESULTS-V0.md"
+        "experiments/mechanism-frontier-shift-v0/samples-v0/run.py",
+        "experiments/mechanism-frontier-shift-v0/samples-v0/REPRESENTATIVE-SAMPLES-V0.csv",
+        "experiments/mechanism-frontier-shift-v0/samples-v0/RESULTS-REPRESENTATION-CONTROL-V0.md",
+        "experiments/mechanism-frontier-shift-v0/samples-v0/REPRESENTATION-METADATA-V0.json"
       ],
       "limits": [
-        "finite samples only",
-        "does not characterize the entire infinite instance family"
-      ]
+        "macro family is only one representation family",
+        "offline cost and state size are nonzero and vary strongly with macro length and M",
+        "full local raw sample export is not yet fully packaged into the repository",
+        "not CI-verified"
+      ],
+      "interpretation": "representation/allocation can move the online frontier without transition-topology change",
+      "next_discriminating_test": "Search a broader compact target-oblivious representation family and compare full (B_off,R,B_on) Pareto frontiers."
+    },
+    {
+      "claim_id": "CL-REPRESENTATION-DOES-NOT-YET-CLOSE-BIDI-FRONTIER-GENERALLY-V0",
+      "claim": "The tested macro2/3/4 representation family does not generally reproduce the native predecessor frontier at larger M under the same B_on, despite substantial offline computation and storage.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "affine M=300 and M=3000",
+      "evidence": [
+        "experiments/mechanism-frontier-shift-v0/samples-v0/RESULTS-REPRESENTATION-CONTROL-V0.md"
+      ],
+      "limits": [
+        "does not rule out other compact representations",
+        "does not compare at equal total budget across all points",
+        "not evidence that the representation frontier is globally optimal"
+      ],
+      "interpretation": "residual frontier gap remains for the tested representation family"
     },
     {
       "claim_id": "CL-MECHANISM-CATEGORY-NOT-ABSOLUTE-V0",
-      "claim": "Mechanism change should be evaluated by measured feasible-set and Pareto-frontier shifts under a matched execution contract, not by the category name itself.",
+      "claim": "Mechanism change should be evaluated by measured feasible-set and Pareto-frontier shifts under a matched execution contract; the category name itself does not establish capability expansion.",
       "status": "INFERENCE",
       "scope": "cross-experiment synthesis",
       "limits": [
-        "the present result establishes one specific frontier shift, not a universal law about all mechanism changes",
-        "different mechanism definitions can embed different amounts of computation"
+        "only one concrete mechanism-induced frontier shift has been tested",
+        "different mechanisms can embed different computation or information access"
       ],
-      "next_discriminating_test": "Separate direct information-access advantages from hidden computation embedded in the new mechanism and replicate across graph families."
+      "next_discriminating_test": "Construct equal-(B_off,R,B_on) Pareto comparisons across stronger representation families and transition-access variants."
     }
   ]
 }
