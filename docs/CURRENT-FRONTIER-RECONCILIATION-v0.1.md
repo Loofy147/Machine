@@ -277,6 +277,76 @@ canonical Machine substrate contract     = OPEN
 
 This artifact is an experimental substrate, not evidence that the canonical Machine interpreter already satisfies S1.
 
+
+
+## 12. Experimental concrete substrate
+
+A small CEK-style interpreter is now implemented on branch:
+
+`research/substrate-interpreter-v0`
+
+The v0.1 package established the initial S1/S2 boundary but used an explicitly indexed representation for the direct path.
+
+## 13. Same-representation control — v0.2
+
+The corrected experiment is:
+
+`experiments/substrate-interpreter-v0.2/`
+
+Both S1 and S2 now receive exactly the same persistent state representation:
+
+```
+state["rel"] = mapping(key -> value)
+```
+
+Only the access contract differs:
+
+```
+S1 = state read + iteration + comparison + branching
+S2 = S1 + direct indexed lookup
+```
+
+Local replay:
+
+```
+pytest = 5 passed
+audit exit = 0
+semantic_equivalence = true
+```
+
+Observed over five online queries:
+
+```
+S1:
+  transition_ticks = 676
+  access_ticks = 291
+
+S2:
+  transition_ticks = 20
+  access_ticks = 10
+
+offline representation:
+  construction_ticks = 5
+  stored_entries = 5
+```
+
+Therefore the measured ratios are:
+
+```
+transition cost: 33.8x
+access cost:     29.1x
+```
+
+This removes the main representation confound present in v0.1.
+
+The resulting bounded claim is:
+
+> Under an explicit S1/S2 contract with identical persistent relation representation, direct indexed access can provide a large resource advantage over generic object-language traversal without changing observed relation semantics.
+
+This remains a resource result, not an ultimate computability separation.
+
+The canonical Machine interpreter substrate remains OPEN / SPECIFICATION-DEBT because the inspected repository state still does not identify the actual canonical interpreter implementation that this experimental substrate is intended to model.
+
 ## 11. Governing rule
 
 Measure the Pareto frontier first.
