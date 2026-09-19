@@ -225,15 +225,15 @@ def main() -> None:
         fail("verified and open claim registries must not reuse claim_id values")
     for row in open_rows:
         if row.get("status") != "OPEN":
-            fail(f"open claim {row.get("claim_id")} must remain OPEN")
+            fail(f'open claim {row.get("claim_id")} must remain OPEN')
         if row.get("evidence_status") != "UNVERIFIED_PACKAGE":
-            fail(f"open claim {row.get("claim_id")} must remain UNVERIFIED_PACKAGE")
+            fail(f'open claim {row.get("claim_id")} must remain UNVERIFIED_PACKAGE')
         if not row.get("documented_source"):
-            fail(f"open claim {row.get("claim_id")} missing documented_source")
+            fail(f'open claim {row.get("claim_id")} missing documented_source')
         if not row.get("source_branch") or not row.get("source_commit"):
-            fail(f"open claim {row.get("claim_id")} missing source provenance")
+            fail(f'open claim {row.get("claim_id")} missing source provenance')
         if not row.get("next_discriminating_test"):
-            fail(f"open claim {row.get("claim_id")} missing next_discriminating_test")
+            fail(f'open claim {row.get("claim_id")} missing next_discriminating_test')
 
     evidence_ids = [e.get("evidence_id") for e in entries]
     if len(evidence_ids) != len(set(evidence_ids)) or None in evidence_ids:
