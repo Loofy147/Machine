@@ -1,4 +1,4 @@
-# S2 Candidate Specification — Freeze Checklist v0.1
+# S2 Candidate Specification — Freeze Checklist v0.1 — Superseded
 
 Purpose: verify that the candidate specification was authored without importing current implementation properties.
 
@@ -28,4 +28,4 @@ Any answer that changes the semantic core requires a revision of the candidate s
 
 ## Status
 
-PRE-FREEZE. Conformance testing must not be interpreted as evidence for the candidate specification until this checklist is accepted.
+SUPERSEDED. Use `docs/S2-CANDIDATE-SPEC-FREEZE-CHECKLIST-v0.2.md`.
