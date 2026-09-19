@@ -61,6 +61,18 @@ def verify_pilot(entry: dict) -> None:
         if fragment not in recorded:
             fail(f"pilot record missing {fragment!r}")
 
+
+def verify_record_fragments(path: Path, fragments: list[str], regexes: list[str] | None = None) -> None:
+    if not path.is_file():
+        fail(f'missing recorded result: {path}')
+    recorded = path.read_text(encoding='utf-8')
+    for fragment in fragments:
+        if fragment not in recorded:
+            fail(f'recorded result missing {fragment!r}')
+    for pattern in regexes or []:
+        if re.search(pattern, recorded, re.MULTILINE) is None:
+            fail(f'recorded result missing pattern {pattern!r}')
+
 def verify_error_source(entry: dict) -> None:
     with tempfile.TemporaryDirectory() as tmp:
         out = str(Path(tmp) / "results.json")
@@ -89,6 +101,17 @@ def verify_error_source(entry: dict) -> None:
                     f"error-source {mode}.{key}: "
                     f"expected {expected_value}, got {actual.get(key)}"
                 )
+
+    verify_record_fragments(
+        ROOT / entry["result_path"],
+        [
+            "| oracle | 1.00 | 1.00 | 0.80 | 1.00 | 1.00 |",
+            "| probe | 1.00 | 1.00 | 2.00 | 1.00 | 1.00 |",
+            "| adaptive | 1.00 | 1.00 | 2.22 | 1.00 | 1.00 |",
+            "| random | 0.72 | 0.72 | 2.17 | 0.7725 | 0.7725 |",
+            "| local | 0.67 | 0.67 | 2.30 | 0.82 | 0.82 |",
+        ],
+    )
 
 def verify_target(entry: dict) -> None:
     with tempfile.TemporaryDirectory() as tmp:
@@ -126,6 +149,7 @@ def verify_target(entry: dict) -> None:
                     fail(f"target-oblivious M={m}, h={h}: heldout work drift")
 
     expected_rows = entry["expected_iid_summary_rounding"]["rows"]
+    doc_patterns = []
     for m, h, expected_success, expected_work in expected_rows:
         row = next(r for r in rows if r["M"] == m and r["h"] == h)
         actual_success = round(row["iid"]["success_rate"], 3)
@@ -136,6 +160,10 @@ def verify_target(entry: dict) -> None:
                 f"expected rounded ({expected_success}, {expected_work}), "
                 f"got ({actual_success}, {actual_work})"
             )
+        doc_patterns.append(
+            rf"\| {m} \| {h} \| .* \| .* \| {expected_success:.3f} \| {expected_work:.2f} \|"
+        )
+    verify_record_fragments(ROOT / entry["result_path"], [], doc_patterns)
 
 def main() -> None:
     if not MANIFEST.is_file():
