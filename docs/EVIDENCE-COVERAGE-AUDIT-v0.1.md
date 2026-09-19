@@ -91,7 +91,7 @@ Their documented claims remain at their existing bounded status. No evidence sta
 
 ### A. Claim identity
 
-An initial machine-readable Claim Registry now covers the three reproduced evidence surfaces. A repository-wide registry linking all material claims is still missing:
+An initial machine-readable Claim Registry now covers the three reproduced evidence surfaces. A separate `evidence/open-claims-v0.1.json` registry now keeps documented-but-unpackaged claims explicitly `OPEN` with a required next discriminating test. A repository-wide registry linking all material claims is still missing:
 
 \`\`\`text
 claim_id
@@ -132,6 +132,28 @@ Status: **OPEN**.
 \`main\`, \`research/machine-native-primitives-v0\`, \`research/target-oblivious-frontier-v0\`, and \`research/confirmatory-freeze-order-v0.1\` represent different research states.
 
 Status: **OPEN until explicit canonicalization/reconciliation is recorded**.
+
+### E. Unpackaged-claim visibility
+
+The following documented research surfaces are now represented explicitly in the open-claim registry rather than relying only on prose:
+
+```text
+nine-mechanism ablation
+B-clean executable adaptation
+online reflective learning boundary
+contextual credit assignment
+history/identity ablation
+```
+
+Their records remain:
+
+```text
+status = OPEN
+evidence_status = UNVERIFIED_PACKAGE
+next_discriminating_test = required
+```
+
+This prevents documentation presence from being mistaken for evidence-package completion.
 
 ### D. Stale branches
 
