@@ -1,0 +1,57 @@
+{
+  "schema": "machine.substrate-interpreter-claims.v0.1",
+  "recorded": "2026-09-19",
+  "branch": "research/substrate-interpreter-v0",
+  "claims": [
+    {
+      "claim_id": "CL-S1-OBJECT-LANGUAGE-RELATION-DERIVATION-V0",
+      "claim": "Under the S1 contract, relation traversal can be expressed by object-language recursion over stored relation data without a dedicated relation-lookup primitive.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "finite five-entry relation; CEK-style interpreter; one recursive scan program",
+      "evidence": [
+        "experiments/substrate-interpreter-v0/machine.py",
+        "experiments/substrate-interpreter-v0/test_machine.py",
+        "experiments/substrate-interpreter-v0/RESULTS-V0.json"
+      ],
+      "limits": [
+        "single small interpreter substrate",
+        "finite relation fixture",
+        "does not establish that the current canonical Machine implementation has the same contract"
+      ]
+    },
+    {
+      "claim_id": "CL-S1-S2-SEMANTIC-EQUIVALENCE-V0",
+      "claim": "The S1 object-language scan and S2 direct indexed lookup returned identical observed values for the tested query set.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "keys k4,k0,k2,missing,k3 over five-entry relation",
+      "evidence": [
+        "experiments/substrate-interpreter-v0/RESULTS-V0.json"
+      ],
+      "limits": [
+        "finite query set",
+        "exact representation and semantics are local to this interpreter"
+      ]
+    },
+    {
+      "claim_id": "CL-S2-RESOURCE-GAIN-V0",
+      "claim": "In the tested interpreter, direct indexed lookup used fewer online transition/access ticks than object-language scanning, while index construction/storage were charged separately.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "five-entry relation; five queries",
+      "evidence": [
+        "experiments/substrate-interpreter-v0/RESULTS-V0.json"
+      ],
+      "limits": [
+        "abstract tick model",
+        "pre-index construction is a separate offline representation cost",
+        "not an ultimate computability separation"
+      ]
+    },
+    {
+      "claim_id": "CL-CANONICAL-MACHINE-SUBSTRATE-STILL-OPEN-V0",
+      "claim": "This interpreter demonstrates a candidate concrete S1/S2 substrate contract, but does not establish that the canonical Machine interpreter already implements S1 or S2.",
+      "status": "OPEN / SPECIFICATION-DEBT",
+      "scope": "repository currently lacks the canonical interpreter implementation on the inspected branches",
+      "next_discriminating_test": "Reconcile this experimental substrate with the actual canonical Machine interpreter source before promoting its contract."
+    }
+  ]
+}
