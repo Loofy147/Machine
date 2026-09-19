@@ -10,7 +10,9 @@
       "documented_status": "EXPERIMENTALLY_SUPPORTED / OPEN",
       "evidence_status": "UNVERIFIED_PACKAGE",
       "scope": "bounded integer-search testbed and reported ablations",
-      "next_discriminating_test": "Re-run the fair variation, gate decomposition, evaluation-quality, contextual-experience, reformation, composition, and representation-equivalence controls with executable artifacts and matched budgets."
+      "next_discriminating_test": "Re-run the fair variation, gate decomposition, evaluation-quality, contextual-experience, reformation, composition, and representation-equivalence controls with executable artifacts and matched budgets.",
+      "source_branch": "research/machine-native-primitives-v0",
+      "source_commit": "081f649f5c4cc31c52cbeb7af0fbda4ee90c5478"
     },
     {
       "claim_id": "CL-B-CLEAN-REUSABLE-STRUCTURE-OPEN-V0",
@@ -19,7 +21,9 @@
       "documented_status": "EXPERIMENTALLY_SUPPORTED / LIMITED",
       "evidence_status": "UNVERIFIED_PACKAGE",
       "scope": "small deterministic mutable x86-64 hypothesis family",
-      "next_discriminating_test": "Test reusable executable substructure across genuinely held-out related tasks with a fresh-search baseline and matched evaluation budgets."
+      "next_discriminating_test": "Test reusable executable substructure across genuinely held-out related tasks with a fresh-search baseline and matched evaluation budgets.",
+      "source_branch": "research/machine-native-primitives-v0",
+      "source_commit": "081f649f5c4cc31c52cbeb7af0fbda4ee90c5478"
     },
     {
       "claim_id": "CL-ONLINE-REFLECTION-OPEN-V0",
@@ -28,7 +32,9 @@
       "documented_status": "EXPERIMENTALLY_SUPPORTED / LIMITED — reflection target still OPEN",
       "evidence_status": "UNVERIFIED_PACKAGE",
       "scope": "continuous executable replacement, history-dependent proposal, and contextual credit experiments",
-      "next_discriminating_test": "Implement a minimal causal evaluator-reification pair where the installed evaluator representation is the representation actually consulted by future live transitions, with isolated probe and commit/reject."
+      "next_discriminating_test": "Implement a minimal causal evaluator-reification pair where the installed evaluator representation is the representation actually consulted by future live transitions, with isolated probe and commit/reject.",
+      "source_branch": "research/machine-native-primitives-v0",
+      "source_commit": "081f649f5c4cc31c52cbeb7af0fbda4ee90c5478"
     },
     {
       "claim_id": "CL-CONTEXTUAL-CREDIT-OPEN-V0",
@@ -37,7 +43,9 @@
       "documented_status": "EXPERIMENTALLY_SUPPORTED / LIMITED",
       "evidence_status": "UNVERIFIED_PACKAGE",
       "scope": "context-indexed proposal policy with supplied REPEAT/UNIQUE labels",
-      "next_discriminating_test": "Remove the supplied regime label and compare machine-derived context signatures against global and history-erased controls."
+      "next_discriminating_test": "Remove the supplied regime label and compare machine-derived context signatures against global and history-erased controls.",
+      "source_branch": "research/machine-native-primitives-v0",
+      "source_commit": "081f649f5c4cc31c52cbeb7af0fbda4ee90c5478"
     },
     {
       "claim_id": "CL-HISTORY-IDENTITY-ABLATION-OPEN-V0",
@@ -46,7 +54,9 @@
       "documented_status": "EXPERIMENTALLY_SUPPORTED / fixed candidate palette",
       "evidence_status": "UNVERIFIED_PACKAGE",
       "scope": "history-dependent proposal policy bound to operator identity",
-      "next_discriminating_test": "Package the history-erased and history-shuffled ablation with executable raw outputs, matched candidate budgets, and causal proposal-quality metrics."
+      "next_discriminating_test": "Package the history-erased and history-shuffled ablation with executable raw outputs, matched candidate budgets, and causal proposal-quality metrics.",
+      "source_branch": "research/machine-native-primitives-v0",
+      "source_commit": "081f649f5c4cc31c52cbeb7af0fbda4ee90c5478"
     }
   ]
 }
