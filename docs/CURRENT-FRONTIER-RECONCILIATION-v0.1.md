@@ -1,7 +1,7 @@
 # Current Frontier Reconciliation v0.1
 
-**Recorded:** 2026-09-19  
-**Repository:** `Loofy147/Machine`  
+**Recorded:** 2026-09-19
+**Repository:** `Loofy147/Machine`
 **Purpose:** durable research-state record for the current capability/allocation frontier and the results that must not be reconstructed from conversation context.
 
 ## 1. Branch audit
@@ -11,289 +11,229 @@ Audited branch refs:
 | Role | Branch | Audited ref / head known from repository records | Relation / disposition |
 |---|---|---|---|
 | Integration baseline | `main` | `1626bac2f5c478294afa4b9463f694608c322117` | integration authority |
-| Machine-native research | `research/machine-native-primitives-v0` | `081f649f5c4cc31c52cbeb7af0fbda4ee90c5478` | 48 ahead / 3 behind main at audit; broad research line |
-| Target-oblivious frontier | `research/target-oblivious-frontier-v0` | `5decefaafb5b6abad2364629dafa1d96a5ffdba0` | 52 ahead / 3 behind main at audit; resource/placement line |
-| Confirmatory freeze | `research/confirmatory-freeze-order-v0.1` | `6f724f9c6b4f3c979587a4117f8bdcde8a5ccc48` | 25 ahead / 1 behind main at audit; protocol/freeze line |
-| Evidence integration | `research/evidence-disposition-v0` | audit base after current consolidation commits: `78fa2f77e12acfec295d696790594ae71332e0a0` | 63 ahead before this consolidation; 65 ahead after two evidence commits; evidence/provenance line |
-| Stale candidates | `research/definition`, `research/machine-native-primitives`, `research/machine-native-primitives-v0-docs`, `research/machine-native-primitives-v0-issue`, `research/test-write` | old state rooted at `641517a26790c40295606f12fd6e4a87fcab7186` | ARCHIVE CANDIDATES; no unique changes vs main at audit |
+| Machine-native research | `research/machine-native-primitives-v0` | `081f649f5c4cc31c52cbeb7af0fbda4ee90c5478` | broad machine-model research |
+| Target-oblivious frontier | `research/target-oblivious-frontier-v0` | `5decefaafb5b6abad2364629dafa1d96a5ffdba0` | resource/placement line |
+| Confirmatory freeze | `research/confirmatory-freeze-order-v0.1` | `6f724f9c6b4f3c979587a4117f8bdcde8a5ccc48` | protocol/freeze line |
+| Evidence integration | `research/evidence-disposition-v0` | current consolidation line | evidence/provenance line |
+| Stale candidates | `research/definition`, `research/machine-native-primitives`, `research/machine-native-primitives-v0-docs`, `research/machine-native-primitives-v0-issue`, `research/test-write` | old state rooted at `641517a26790c40295606f12fd6e4a87fcab7186` | ARCHIVE CANDIDATES |
 
-The existing canonicalization document recorded the evidence branch as 53 commits ahead. Direct comparison at this audit returned 63 commits ahead. Therefore the old count is stale and must not be reused as current repository state.
-
-The evidence branch itself is not scientific authority; it is the current reproducibility/provenance integration line.
+The older canonicalization document's evidence-branch commit count is stale; direct audit supersedes the old count.
 
 ## 2. Repository-backed results already established
 
 ### 2.1 Nine-mechanism review
 
-Source: `research/machine-native-primitives-v0/docs/EXPERIMENT-REVIEW-9-MECHANISMS.md`, ref `081f649...`.
+The nine mechanisms should not be promoted to nine flat primitives. Variation, invocation gating, composition, and reformation produced measured effects in the bounded testbed, while representation, transformation, and control remain structural scaffolds rather than proven irreducible primitives.
 
-Current interpretation:
-
-- the nine mechanisms should not become nine flat architectural primitives;
-- variation and invocation gating produced strong testbed effects, but causal interpretation is bounded;
-- composition and reformation are empirically relevant in the tested system;
-- representation, transformation, and control are structural scaffolds rather than proven irreducible primitives;
-- contextualized experience remains a hypothesis requiring further ablation.
-
-Evidence status in the evidence branch remains OPEN / UNVERIFIED_PACKAGE for the broader nine-mechanism claim.
+Evidence packaging status remains bounded/open as recorded by the evidence branch.
 
 ### 2.2 B-clean executable mutation
 
-Source: `research/machine-native-primitives-v0/docs/EXPERIMENT-B-CLEAN.md`.
+Mutable executable representation can be modified and executed, but the measured adaptive behavior was driven by the external search procedure. Mutable executable representation itself was not shown to provide an adaptive advantage.
 
-Established within scope:
-
-- mutable executable representation can be changed and executed;
-- adaptation came from the search procedure, not from mutation alone;
-- search algorithm dominated the reported result in the bounded candidate family;
-- this does not establish a substrate-level adaptive advantage for mutable executable representation.
-
-Evidence status remains OPEN / UNVERIFIED_PACKAGE in the evidence branch.
+Evidence packaging status remains OPEN / UNVERIFIED_PACKAGE.
 
 ### 2.3 Contextual credit
 
-Source: `research/machine-native-primitives-v0/docs/EXPERIMENT-CONTEXTUAL-CREDIT.md`.
+Context-indexed history can outperform global history when operator value crosses between supplied contexts. Context discovery from machine-observable state remains OPEN.
 
-Established within scope:
-
-- context-indexed history can outperform global history when operator value crosses between supplied contexts;
-- the current experiment supplies the context label;
-- context discovery remains OPEN.
-
-Evidence status remains OPEN / UNVERIFIED_PACKAGE.
+Evidence packaging status remains OPEN / UNVERIFIED_PACKAGE.
 
 ### 2.4 Online reflective learning
 
-Source: `research/machine-native-primitives-v0/docs/EXPERIMENT-ONLINE-REFLECTIVE-LEARNING.md`.
-
-Established within scope:
-
-- continuous executable hot-swap is demonstrated;
-- history-dependent proposal behavior is demonstrated for a fixed candidate palette;
-- contextual credit is demonstrated with supplied context.
+Continuous executable hot-swap and history-dependent proposal behavior are demonstrated within their declared boundaries.
 
 Not established:
 
 - causal reification of the live evaluator/transition machinery;
-- self-discovery of executable structure;
-- context discovery from machine state;
+- context discovery;
+- arbitrary executable structure discovery;
 - modification of the modifier/proposer.
 
-The reflection target remains OPEN.
+Causal reflection remains OPEN.
 
 ### 2.5 Target-oblivious frontier
 
-Source: `research/target-oblivious-frontier-v0/experiments/target-oblivious-frontier/RESULTS-V0.md`, ref `5decefa...`.
+For the declared finite graph fixture:
 
-Established for the declared finite graph fixture:
+- strict-heldout invariant passes;
+- partial target-specific offline state that cannot contain the realized target does not change held-out behavior;
+- increasing offline target coverage increases hits and lowers expected online work;
+- full target-oblivious precomputation can move target-selection work to offline state;
+- fixed-depth online lookahead remains resource-sensitive as M grows.
 
-- strict-heldout invariant passes exactly;
-- target-specific offline state that cannot contain the realized target does not alter held-out success or online work;
-- increasing offline target coverage raises hit rate and lowers expected online work;
-- full target-oblivious precomputation moves target-selection work to offline state in this finite graph;
-- fixed-depth online lookahead has bounded per-decision expansion at fixed depth, but its success changes with M.
+Interpretation boundary remains resource/placement tradeoff, not evidence that reflection is necessary.
 
-Interpretation boundary recorded by the branch:
+## 3. Adversarial insufficiency detector
 
-> resource/placement tradeoff, not evidence that transition-mechanism modification is necessary.
+Code and results:
 
-## 3. New adversarial detector result now packaged
+`experiments/frontier-insufficiency-adversarial-v0/`
 
-Code:
+The detector has three verdicts:
 
-`experiments/frontier-insufficiency-adversarial-v0/detector.py`
+- `SUFFICIENT_FOUND`
+- `INCONCLUSIVE_AT_RESOLUTION(delta)`
+- `INSUFFICIENT_CERTIFIED_AT_RESOLUTION`
 
-Result:
+Observed blind results support the methodological rule that persistent positive residual is not, by itself, proof of expressive insufficiency.
 
-`experiments/frontier-insufficiency-adversarial-v0/RESULTS-V0.md`
+Independent Lipschitz certificates can support a bounded negative result for selected fixtures.
 
-Code commit: `72dce24466a86d395174a6e4995d20f9fecdd523`  
-Result commit: `78fa2f77e12acfec295d696790594ae71332e0a0`
+The package remains locally replayed but is not yet CI-integrated.
 
-Local execution reproduced:
+## 4. Current mechanism-frontier experiment
 
-- sufficient funnel -> `SUFFICIENT_FOUND`;
-- sufficient needle with no gradient -> `INCONCLUSIVE_AT_RESOLUTION(5)`;
-- insufficient easy positive floor -> `INCONCLUSIVE_AT_RESOLUTION(5)`;
-- insufficient dense near-misses -> `INCONCLUSIVE_AT_RESOLUTION(5)`;
-- pathological multiscale positive basins -> `INCONCLUSIVE_AT_RESOLUTION(5)`.
+### 4.1 Fair baseline
 
-With independent Lipschitz certificates, the two certified insufficient fixtures returned:
+The old naive forward recursion was removed from the primary comparison.
 
-- `INSUFFICIENT_CERTIFIED_AT_RESOLUTION` for the easy floor;
-- `INSUFFICIENT_CERTIFIED_AT_RESOLUTION` for dense near-misses.
-
-Interpretation:
-
-> finite black-box persistence is not enough to prove expressive insufficiency; a third honest outcome, INCONCLUSIVE_AT_RESOLUTION(delta), is required unless an independent regularity/certificate assumption supports a negative conclusion.
-
-This package has not yet been added to the branch's CI evidence verifier, so it is reproducible repository state but not yet CI-verified evidence.
-
-## 4. Recent capability/allocation results that are NOT yet repository evidence
-
-The following results were obtained and discussed in the current conversation but are absent from repository search at the audit:
-
-- exact policy-table / BFS replay;
-- h-based allocation frontier;
-- memoized lookahead comparison;
-- crossover around N=40 versus N=62;
-- the reported ~19.3% reduction from memoization with the same success/failure pattern;
-- the reported miss cost remaining roughly flat around 40--44 as offline coverage h increased.
-
-Current disposition:
-
-`USER_REPORTED / CONVERSATION-ONLY`
-
-They must not be treated as repository evidence until their code, run command, raw results, and interpretation boundary are committed and replayable.
-
-## 5. Corrected conceptual claims
-
-### Claim C1 — fixed transition semantics do not imply fixed computational behavior
-
-A fixed `step()` can produce substantially different behavior when its state contains richer policy/program/table data.
-
-The policy-table experiment demonstrates this principle, but the BFS that built the table is the source of the necessary search computation.
-
-Status: USER_REPORTED / CONVERSATION-ONLY pending repository packaging.
-
-### Claim C2 — precomputation can relocate computation without expanding uncovered capability
-
-The target-oblivious experiment establishes this in the declared finite graph under strict-heldout controls.
-
-Status: EXPERIMENTALLY_SUPPORTED within fixture scope.
-
-### Claim C3 — optimization can reduce cost without changing the feasible set
-
-The memoized-lookahead result currently exists only as USER_REPORTED / CONVERSATION-ONLY. It must not yet be promoted.
-
-### Claim C4 — capability is relative to the complete execution contract
-
-Statements such as "S is sufficient" or "S is insufficient" are incomplete unless the following are fixed:
+Baseline:
 
 ```text
-transition mechanism
-+ frozen representation/state budget
-+ offline/preprocessing budget
-+ online/post-instance budget
-+ information timing
-+ correctness criterion
-+ allowed operations
+successor-only substrate
++
+BFS
++
+visited set
 ```
 
-Status: INFERENCE derived from the combined experimental corrections; next tests are required.
-
-### Claim C5 — mechanism change is not a privileged category by definition
-
-A changed transition mechanism is evidence of a different implementation. It is not by itself evidence of a new computational capability, because some mechanism changes may be representable as data interpreted by an unchanged substrate, or may only reduce cost.
-
-Status: INFERENCE / OPEN.
-
-## 6. Current formal comparison target
-
-For a fixed mechanism T, frozen artifact A, and online budget Q, define the feasible instance set:
+Changed mechanism:
 
 ```text
-F(T, A, Q) = { I : T(A, I) satisfies the task within Q }
+successor access
++
+direct online predecessor access
++
+bidirectional BFS
 ```
 
-The next comparison should distinguish:
+Contract:
 
-1. same F, lower cost -> optimization;
-2. different F because A contains more target-oblivious precomputation -> allocation/representation;
-3. different F under matched A, offline budget, online budget, information timing, and correctness -> evidence that the transition mechanism changes the feasible set relative to the baseline.
+```text
+B_off = 0
+R = 0
+no persistent target-dependent state
+same instances
+same correctness criterion
+1 candidate-edge examination = 1 online tick
+```
 
-Even case (3) requires auditing whether the new mechanism hides additional representation/search computation in its own definition.
+### 4.2 Observed frontier shift
+
+Under fixed tight online budgets, direct predecessor access produced many additional solved instances.
+
+Examples:
+
+- M=30, B_on=20: forward 105/192; native bidi 192/192.
+- M=300, B_on=80: forward 37/200; native bidi 197/200.
+- M=3000, B_on=640: forward 18/200; native bidi 200/200.
+
+This is a measured feasible-set/Pareto-frontier shift under the declared resource contract.
+
+### 4.3 Decisive emulation control
+
+The successor-only substrate was then forced to emulate predecessor access by exhaustive online scanning:
+
+```text
+candidate state
+→ apply original successor operations
+→ test whether successor(candidate) = requested node
+```
+
+Every candidate-edge examination is charged to `B_on`.
+
+This emulation did not reproduce the native bidirectional frontier at the tight budgets tested.
+
+Examples:
+
+- M=30, B_on=40: native bidi 192; successor-only emulated bidi 19.
+- M=300, B_on=160: native bidi 200; successor-only emulated bidi 3.
+- M=3000, B_on=640: native bidi 200; successor-only emulated bidi 0.
+
+At sufficiently high budgets, the finite sampled cases can eventually be solved, demonstrating that the present result is not a proof of different ultimate computational power.
+
+### 4.4 Current interpretation
+
+The current experiment supports:
+
+> a resource-bounded mechanism-induced frontier shift for the specific addition of direct predecessor access.
+
+It does not support:
+
+> mechanism change in general creates absolute new computational capability.
+
+The critical remaining question is whether cheaper successor-only inverse representations exist that reproduce the frontier without adding predecessor access, with every representation-construction and access cost charged to the same online budget.
+
+## 5. Recent results that remain Conversation-only
+
+The following are explicitly not repository evidence yet:
+
+- exact policy-table/BFS replay;
+- h-based allocation sweep;
+- memoized-lookahead comparison;
+- reported ~19.3% memoized operation reduction;
+- reported crossover near N=40 versus N=62;
+- reported miss floor around 40–44.
+
+Their current disposition is USER_REPORTED / CONVERSATION-ONLY until code, raw output, provenance, and replay are packaged.
+
+## 6. Corrected conceptual claims
+
+### C1 — fixed mechanism does not imply fixed computational behavior
+
+A fixed transition mechanism can execute substantially different behavior when its state contains different policy/program/table data.
+
+The policy-table result currently remains conversation-only because its generator and raw run are not yet packaged.
+
+### C2 — computation can be relocated
+
+The target-oblivious experiment establishes that precomputation can relocate work from online execution into frozen state under the declared finite graph contract.
+
+### C3 — optimization is distinct from capability
+
+Memoization is currently conversation-only, but the intended distinction is:
+
+```text
+same feasible set + lower cost = optimization
+```
+
+### C4 — capability is contract-relative
+
+A capability statement is incomplete unless transition mechanism, representation/state budget, preprocessing budget, post-instance budget, information timing, correctness criterion, and allowed operations are fixed.
+
+### C5 — mechanism should be evaluated by frontier movement
+
+A mechanism change should be considered consequential only to the extent that a measured feasible-set or Pareto-frontier shift remains after matched resource accounting and representation-equivalence controls.
 
 ## 7. Current frontier
 
-The current research frontier is no longer:
-
-```text
-mechanism change vs state mutation
-```
-
-The active question is:
+The research question is now:
 
 > After a target-oblivious artifact is frozen, with explicit limits on representation, preprocessing, and post-instance computation, what minimum computation must still occur after the instance is revealed?
 
 Then:
 
-> Can a different transition mechanism lower that minimum or expand the feasible instance set under the same explicit resource contract, or can the same effect be achieved by re-representing or relocating computation inside the fixed substrate?
+> Can a changed transition mechanism lower that minimum or expand the feasible instance set under the same explicit execution contract, or can the same effect be reproduced by re-representing or relocating computation inside the fixed substrate?
+
+The present mechanism experiment supplies the first repository-backed example where a specific transition-access change shifts the resource-bounded frontier.
 
 ## 8. Immediate discriminating experiments
 
-### E1 — package the policy-table/allocation experiment
+1. Repeat the predecessor-access comparison on independent graph families and seeds.
+2. Build stronger successor-only inverse representations and charge all construction/use cost online.
+3. Normalize inverse-access cost so the comparison distinguishes information access from hidden implementation efficiency.
+4. Add compact target-oblivious representations under controlled `B_off,R`.
+5. Package and replay the policy-table/allocation/memoization experiments before using their reported numerical values as evidence.
 
-Commit:
+## 9. Governing interpretation rules
 
-- generator;
-- freeze order;
-- raw outputs;
-- h/N sweep;
-- exact cost accounting;
-- success/failure pattern;
-- crossover derivation.
+Do not treat computation relocation as computation elimination.
 
-The experiment must keep the future instance hidden during artifact construction.
+Do not treat algorithm-name changes as capability changes.
 
-### E2 — genuine mechanism capability comparison
+Do not treat a plateau as proof of expressive insufficiency without the assumptions needed to exclude unseen solutions.
 
-Hold fixed:
+Do not treat a mechanism-induced frontier shift under a tight resource contract as proof of absolute computational-power separation.
 
-- instance family;
-- target-oblivious artifact A;
-- representation budget;
-- offline budget;
-- online budget;
-- information timing;
-- correctness criterion.
-
-Compare a baseline transition mechanism with a genuinely different mechanism.
-
-Measure both:
-
-```text
-feasible-set membership
-and
-computation cost
-```
-
-Do not label a result "new capability" unless the feasible set changes under the matched contract.
-
-### E3 — representation-equivalence controls
-
-For every apparent mechanism advantage, test whether an equivalent program/data representation inside the baseline substrate can reproduce it without violating the same resource constraints.
-
-### E4 — extend the insufficiency detector
-
-Generate independent sufficient and insufficient families varying separately:
-
-- search difficulty;
-- solution sparsity;
-- near-miss density;
-- multiscale structure.
-
-Report false-insufficiency and false-sufficiency rates, not only individual fixture outcomes.
-
-### E5 — compact target-oblivious structures
-
-Move beyond exact target tables:
-
-- landmarks;
-- partial policies;
-- hierarchical summaries;
-- reusable subplans;
-- compact executable representations.
-
-Measure the complete offline/representation/online Pareto frontier.
-
-## 9. Governing interpretation rule
-
-Do not treat computation location as computation absence.
-
-Do not treat mechanism-name changes as capability changes.
-
-Do not treat persistent plateau as proof of expressive insufficiency without the assumptions needed to exclude unseen solutions.
-
-Do not upgrade conversation results to repository evidence without code/result/provenance packaging.
-
+Do not promote conversation results to repository evidence without executable provenance and replay.
