@@ -13,8 +13,16 @@
       "result_path": "experiments/confirmatory-pilot-v0.1/RESULTS-V0.md",
       "result_commit": "5d4f853f8228888c1d8ec0e945f47377ec74b0aa",
       "command": "python3 experiments/confirmatory-pilot-v0.1/harness.py",
-      "parameters": {"seed": 20260916, "source_cases": 40, "target_cases": 80},
-      "expected": {"theta_D": 0.4625, "theta_P": -1.0, "theta_R": 0.0},
+      "parameters": {
+        "seed": 20260916,
+        "source_cases": 40,
+        "target_cases": 80
+      },
+      "expected": {
+        "theta_D": 0.4625,
+        "theta_P": -1,
+        "theta_R": 0
+      },
       "scientific_boundary": "Contract plumbing only. The fixture uses context_boundary=1 for every source case, so no nontrivial source learning is established."
     },
     {
@@ -26,15 +34,47 @@
       "code_path": "experiments/error-source-localization/harness.py",
       "result_path": "experiments/error-source-localization/RESULTS-V0.md",
       "command": "python3 experiments/error-source-localization/harness.py --episodes 100 --seed 20260916 --budget 4 --out <temp>",
-      "parameters": {"episodes": 100, "seed": 20260916, "budget": 4},
-      "expected": {
-        "oracle": {"recovery_rate": 1.0, "localization_rate": 1.0, "mean_recovery_cost": 0.8, "mean_final_test": 1.0},
-        "probe": {"recovery_rate": 1.0, "localization_rate": 1.0, "mean_recovery_cost": 2.0, "mean_final_test": 1.0},
-        "adaptive": {"recovery_rate": 1.0, "localization_rate": 1.0, "mean_recovery_cost": 2.22, "mean_final_test": 1.0},
-        "random": {"recovery_rate": 0.72, "localization_rate": 0.72, "mean_recovery_cost": 2.17, "mean_final_test": 0.7725},
-        "local": {"recovery_rate": 0.67, "localization_rate": 0.67, "mean_recovery_cost": 2.3, "mean_final_test": 0.82}
+      "parameters": {
+        "episodes": 100,
+        "seed": 20260916,
+        "budget": 4
       },
-      "scientific_boundary": "Harness validation only. Supplied intervention vocabulary and deterministic fixture do not establish causal reflection or self-discovered fault ontology."
+      "expected": {
+        "oracle": {
+          "recovery_rate": 1,
+          "localization_rate": 1,
+          "mean_recovery_cost": 0.8,
+          "mean_final_test": 1
+        },
+        "probe": {
+          "recovery_rate": 1,
+          "localization_rate": 1,
+          "mean_recovery_cost": 2,
+          "mean_final_test": 1
+        },
+        "adaptive": {
+          "recovery_rate": 1,
+          "localization_rate": 1,
+          "mean_recovery_cost": 2.22,
+          "mean_final_test": 1
+        },
+        "random": {
+          "recovery_rate": 0.72,
+          "localization_rate": 0.72,
+          "mean_recovery_cost": 2.17,
+          "mean_final_test": 0.7725
+        },
+        "local": {
+          "recovery_rate": 0.67,
+          "localization_rate": 0.67,
+          "mean_recovery_cost": 2.3,
+          "mean_final_test": 0.82
+        }
+      },
+      "scientific_boundary": "Harness validation only. Supplied intervention vocabulary and deterministic fixture do not establish causal reflection or self-discovered fault ontology.",
+      "code_commit": "a506395667f0a34f74bdee2e2392117875a0ddb2",
+      "result_commit": "8320a8734156fa6adf7bfe99607cc697548b78dd",
+      "protocol_path": "experiments/error-source-localization/PROTOCOL.md"
     },
     {
       "evidence_id": "EV-TARGET-OBLIVIOUS-FRONTIER-V0-20260918",
@@ -45,17 +85,118 @@
       "code_path": "experiments/target-oblivious-frontier/run.py",
       "result_path": "experiments/target-oblivious-frontier/RESULTS-V0.md",
       "command": "python3 experiments/target-oblivious-frontier/run.py --m 30 --m 300 --m 3000 --queries 200 --look-depth 2 --out <temp>",
-      "parameters": {"M": [30, 300, 3000], "queries": 200, "look_depth": 2},
+      "parameters": {
+        "M": [
+          30,
+          300,
+          3000
+        ],
+        "queries": 200,
+        "look_depth": 2
+      },
       "expected_strict_heldout_invariant": "For every tested h <= M/2, hits=0 and success_rate and avg_online_work equal h=0 for the same M.",
       "expected_iid_summary_rounding": {
-        "precision": {"success_rate": 3, "avg_online_work": 2},
+        "precision": {
+          "success_rate": 3,
+          "avg_online_work": 2
+        },
         "rows": [
-          [30, 0, 0.984, 115.66], [30, 3, 0.984, 101.99], [30, 5, 0.99, 94.03], [30, 15, 1.0, 59.36], [30, 30, 1.0, 2.85],
-          [300, 0, 0.533, 235.24], [300, 17, 0.578, 215.97], [300, 30, 0.598, 206.58], [300, 150, 0.774, 118.75], [300, 300, 1.0, 5.8],
-          [3000, 0, 0.115, 380.62], [3000, 54, 0.12, 377.7], [3000, 300, 0.195, 347.31], [3000, 1500, 0.545, 194.22], [3000, 3000, 1.0, 9.4]
+          [
+            30,
+            0,
+            0.984,
+            115.66
+          ],
+          [
+            30,
+            3,
+            0.984,
+            101.99
+          ],
+          [
+            30,
+            5,
+            0.99,
+            94.03
+          ],
+          [
+            30,
+            15,
+            1,
+            59.36
+          ],
+          [
+            30,
+            30,
+            1,
+            2.85
+          ],
+          [
+            300,
+            0,
+            0.533,
+            235.24
+          ],
+          [
+            300,
+            17,
+            0.578,
+            215.97
+          ],
+          [
+            300,
+            30,
+            0.598,
+            206.58
+          ],
+          [
+            300,
+            150,
+            0.774,
+            118.75
+          ],
+          [
+            300,
+            300,
+            1,
+            5.8
+          ],
+          [
+            3000,
+            0,
+            0.115,
+            380.62
+          ],
+          [
+            3000,
+            54,
+            0.12,
+            377.7
+          ],
+          [
+            3000,
+            300,
+            0.195,
+            347.31
+          ],
+          [
+            3000,
+            1500,
+            0.545,
+            194.22
+          ],
+          [
+            3000,
+            3000,
+            1,
+            9.4
+          ]
         ]
       },
-      "scientific_boundary": "This establishes a resource-placement/invariant result for the declared finite graph, not a need for reflection or changed transition topology."
+      "scientific_boundary": "This establishes a resource-placement/invariant result for the declared finite graph, not a need for reflection or changed transition topology.",
+      "code_commit": "12e19447a488fd3806daef04eea82b87b8397298",
+      "result_commit": "4704a06a9db3e72c2a5b6dd395eb94fa5c413ba7",
+      "protocol_path": "experiments/target-oblivious-frontier/PROTOCOL.md"
     }
   ]
 }
