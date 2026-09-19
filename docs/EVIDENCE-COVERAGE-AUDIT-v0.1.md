@@ -1,7 +1,7 @@
 # Evidence Coverage Audit v0.1
 
 **Branch:** \`research/evidence-disposition-v0\`  
-**Status:** IMPLEMENTED / SELF-CONTAINMENT CORRECTED / FRESH FULL GATE NOT YET OBSERVED  
+**Status:** IMPLEMENTED / SELF-CONTAINED / CI-VERIFIED  
 **Date:** 2026-09-18
 
 ## Purpose
@@ -175,13 +175,22 @@ The first evidence package referenced two experiment paths that existed only on 
 
 The missing harnesses, protocols, and result records have now been copied into this branch. The manifest records the exact commits that created those copied evidence files.
 
-Current status:
+Verification history:
 
 ```text
-package self-containment = corrected
-fresh full verifier execution = not yet observed
-CI workflow run = not yet observed
+run #25 = EVIDENCE-INTEGRITY-PASS
+run #41 = verifier implementation failure (syntax error)
+run #43 = EVIDENCE-INTEGRITY-PASS
 ```
+
+Run #43 used full-history checkout and verified:
+- executed experiment outputs;
+- recorded result documents;
+- claim/evidence bindings;
+- explicit OPEN/unpackaged-claim registry;
+- exact code/result file provenance against recorded commits.
+
+The run is fresh CI evidence for the integrity gate. It does not upgrade the scientific claims.
 
 ## New repository controls implemented
 
