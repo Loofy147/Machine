@@ -18,6 +18,16 @@ python3 experiments/error-source-localization/harness.py --episodes 100 --seed 2
 | random | 0.72 | 0.72 | 2.17 | 0.7725 | 0.7725 |
 | local | 0.67 | 0.67 | 2.30 | 0.82 | 0.82 |
 
+Fault-specific recovery:
+
+| fault | local | random | probe | adaptive | oracle |
+|---|---:|---:|---:|---:|---:|
+| F0 healthy | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| F1 operation | 0.70 | 0.65 | 1.00 | 1.00 | 1.00 |
+| F2 policy | 0.80 | 0.65 | 1.00 | 1.00 | 1.00 |
+| F3 representation | 0.00 | 0.65 | 1.00 | 1.00 | 1.00 |
+| F4 model | 0.85 | 0.65 | 1.00 | 1.00 | 1.00 |
+
 ## What this run establishes
 
 1. The fixture distinguishes a representation ceiling from lower-level injected faults: `F3` cannot be recovered by the local controller because repartitioning is unavailable.
