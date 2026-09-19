@@ -1,7 +1,7 @@
 # Evidence Coverage Audit v0.1
 
 **Branch:** \`research/evidence-disposition-v0\`  
-**Status:** IMPLEMENTED / LOCALLY VERIFIED  
+**Status:** IMPLEMENTED / SELF-CONTAINMENT CORRECTED / FRESH FULL GATE NOT YET OBSERVED  
 **Date:** 2026-09-18
 
 ## Purpose
@@ -91,7 +91,7 @@ Their documented claims remain at their existing bounded status. No evidence sta
 
 ### A. Claim identity
 
-There is not yet a repository-wide machine-readable Claim Registry linking:
+An initial machine-readable Claim Registry now covers the three reproduced evidence surfaces. A repository-wide registry linking all material claims is still missing:
 
 \`\`\`text
 claim_id
@@ -104,7 +104,7 @@ claim_id
 → regression protection
 \`\`\`
 
-Status: **OPEN**.
+Status: **PARTIALLY IMPLEMENTED / OPEN**.
 
 ### B. Concern lifecycle
 
@@ -146,6 +146,20 @@ research/test-write
 \`\`\`
 
 Disposition: **ARCHIVE/SUPERSEDE decision required**.
+
+## Self-containment correction
+
+The first evidence package referenced two experiment paths that existed only on separate research branches. That made the manifest/verifier non-self-contained even though the experiments themselves were reproducible elsewhere.
+
+The missing harnesses, protocols, and result records have now been copied into this branch. The manifest records the exact commits that created those copied evidence files.
+
+Current status:
+
+```text
+package self-containment = corrected
+fresh full verifier execution = not yet observed
+CI workflow run = not yet observed
+```
 
 ## New repository controls implemented
 
