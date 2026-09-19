@@ -73,7 +73,7 @@
       },
       "scientific_boundary": "Harness validation only. Supplied intervention vocabulary and deterministic fixture do not establish causal reflection or self-discovered fault ontology.",
       "code_commit": "a506395667f0a34f74bdee2e2392117875a0ddb2",
-      "result_commit": "8320a8734156fa6adf7bfe99607cc697548b78dd",
+      "result_commit": "52401d3ad9432759e187695c7dcb9ec5f6d75984",
       "protocol_path": "experiments/error-source-localization/PROTOCOL.md"
     },
     {
@@ -195,7 +195,7 @@
       },
       "scientific_boundary": "This establishes a resource-placement/invariant result for the declared finite graph, not a need for reflection or changed transition topology.",
       "code_commit": "12e19447a488fd3806daef04eea82b87b8397298",
-      "result_commit": "4704a06a9db3e72c2a5b6dd395eb94fa5c413ba7",
+      "result_commit": "683800c0270c31baa6e6d6fd301b2bbf6247bff1",
       "protocol_path": "experiments/target-oblivious-frontier/PROTOCOL.md"
     }
   ]
