@@ -16,6 +16,13 @@ def scan_expr(key):
 def direct_expr(key):
     return Prim("relation_lookup_direct",(Prim("state_read",(Const("rel"),)),Const(key)))
 
+def normalize_direct_result(value):
+    if isinstance(value, RelationLookupHit):
+        return value.value
+    if isinstance(value, RelationLookupMiss):
+        return NIL
+    raise AssertionError(f"unknown direct lookup result: {value!r}")
+
 def main():
     relation={f"k{i}":i*10 for i in range(5)}
     offline=5
@@ -27,7 +34,7 @@ def main():
         st=Interpreter(S1,{"rel":relation}).run(scan_expr(k))
         scan_results.append(st.result); scan_steps+=st.ticks; scan_access+=st.access_ticks
         st=Interpreter(S2,{"rel":relation}).run(direct_expr(k))
-        direct_results.append(st.result); direct_steps+=st.ticks; direct_access+=st.access_ticks
+        direct_results.append(normalize_direct_result(st.result)); direct_steps+=st.ticks; direct_access+=st.access_ticks
     out={"status":"EXECUTED / LOCAL REPLAY",
          "same_persistent_representation":True,
          "substrates":{
