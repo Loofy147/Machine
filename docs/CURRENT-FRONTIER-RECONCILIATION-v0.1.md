@@ -228,6 +228,55 @@ A finite reverse-index match is an exact finite closure result, not a general cl
 
 The decisive remaining audit must inspect the actual Machine interpreter substrate and freeze its concrete state-access semantics before classifying direct predecessor access as an optimization, representation closure, or substrate extension.
 
+
+
+## 12. Experimental concrete substrate
+
+A small CEK-style interpreter is now implemented on branch:
+
+`research/substrate-interpreter-v0`
+
+Evidence package:
+
+- `experiments/substrate-interpreter-v0/machine.py`
+- `experiments/substrate-interpreter-v0/test_machine.py`
+- `experiments/substrate-interpreter-v0/run_audit.py`
+- `experiments/substrate-interpreter-v0/RESULTS-V0.json`
+- `experiments/substrate-interpreter-v0/RESULTS-V0.md`
+- `evidence/substrate-interpreter-claims-v0.1.json`
+
+The interpreter provides a concrete candidate S1 contract and a contract-gated S2 direct indexed lookup.
+
+Local replay established:
+
+```
+S1 object-language scan:
+  transition_ticks = 600
+  access_ticks = 211
+
+S2 direct indexed lookup:
+  transition_ticks = 35
+  access_ticks = 15
+
+offline index:
+  construction = 5
+  stored entries = 5
+
+semantic equivalence = true
+pytest = 5 passed
+```
+
+This is stronger than the previous standalone relation audit because the S1 derivation is now performed by the object language itself using recursive closure computation.
+
+Disposition boundary:
+
+```
+S1 derivability in experimental interpreter = EXPERIMENTALLY_SUPPORTED
+canonical Machine substrate contract     = OPEN
+```
+
+This artifact is an experimental substrate, not evidence that the canonical Machine interpreter already satisfies S1.
+
 ## 11. Governing rule
 
 Measure the Pareto frontier first.
