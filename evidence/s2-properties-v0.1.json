@@ -1,0 +1,89 @@
+{
+  "schema": "machine.s2-properties.v0.1",
+  "recorded": "2026-09-19",
+  "repository": "Loofy147/Machine",
+  "branch": "research/substrate-interpreter-v0",
+  "parent_ref": "ea31e36d85ac8af689282f3840b1d4dff055ed75",
+  "status": "EXPERIMENTAL-CONTRACT-FROZEN",
+  "properties": [
+    {
+      "id": "S2-P1",
+      "claim": "S2 is a strict additive extension of S1 by relation_lookup_direct.",
+      "status": "ESTABLISHED",
+      "scope": "implementation"
+    },
+    {
+      "id": "S2-P2",
+      "claim": "The matched v0.2 experiment gives S1 and S2 the same persistent relation representation and stored information.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "five-entry mapping fixture"
+    },
+    {
+      "id": "S2-P3",
+      "claim": "Tested S1 programs preserve result and machine-state contents under S2.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "property tests added in test_machine.py"
+    },
+    {
+      "id": "S2-P4",
+      "claim": "Direct lookup is read-only with respect to machine_data and interpreter store in the current dict-backed fixture.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "current implementation"
+    },
+    {
+      "id": "S2-P5",
+      "claim": "relation_lookup_direct accepts a Mapping and key, returns the mapped value, and returns NIL for a missing key.",
+      "status": "ESTABLISHED",
+      "scope": "current host-language implementation"
+    },
+    {
+      "id": "S2-P6",
+      "claim": "Direct lookup is explicitly charged one access tick; state_read is charged separately.",
+      "status": "ESTABLISHED",
+      "scope": "current abstract cost model"
+    },
+    {
+      "id": "S2-P7",
+      "claim": "The direct primitive performs no preprocessing, cache construction, or target-specific representation construction.",
+      "status": "ESTABLISHED",
+      "scope": "implementation"
+    },
+    {
+      "id": "S2-P8",
+      "claim": "S1 and S2 are semantically equivalent on the recorded five-query workload.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "finite workload"
+    },
+    {
+      "id": "S2-P9",
+      "claim": "S2 changes access to an already-read relation value rather than information availability or target timing.",
+      "status": "ESTABLISHED",
+      "scope": "experimental contract"
+    },
+    {
+      "id": "S2-P10",
+      "claim": "The one-tick direct access accounting is not evidence of a universal O(1) lookup theorem.",
+      "status": "ESTABLISHED",
+      "scope": "interpretation boundary"
+    },
+    {
+      "id": "S2-P11",
+      "claim": "S2 currently depends on host-language Mapping/get semantics.",
+      "status": "SPECIFICATION_DEBT",
+      "scope": "implementation boundary"
+    },
+    {
+      "id": "S2-P12",
+      "claim": "The current evidence does not establish an absolute computability separation between S2 and S1.",
+      "status": "OPEN",
+      "scope": "scientific conclusion"
+    }
+  ],
+  "known_gaps": [
+    "host Mapping semantics are not yet lifted into an explicit object-language relation contract",
+    "no asymptotic cost characterization",
+    "finite semantic equivalence only",
+    "canonical Machine substrate remains unresolved"
+  ],
+  "next_discriminating_action": "Reconcile these properties with the canonical Machine interpreter and repeat the matched S1/S2 property suite there."
+}
