@@ -1,0 +1,13 @@
+M,method,B_off,R,B_on_max_all_sampled,B_on_median,B_on_p90
+30,forward,0,0,74,22.5,47
+30,native_bidi,0,0,26,9,18
+30,reverse_index,90,90,26,9,18
+30,policy,2700,870,9,5,7
+100,forward,0,0,254,80.5,193
+100,native_bidi,0,0,70,23,44
+100,reverse_index,300,300,70,23,44
+100,policy,30000,9900,13,7,11
+300,forward,0,0,845,255.5,605
+300,native_bidi,0,0,195,48.5,112
+300,reverse_index,900,900,195,48.5,112
+300,policy,270000,89700,17,11,15
