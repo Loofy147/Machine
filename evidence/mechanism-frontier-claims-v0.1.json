@@ -1,0 +1,52 @@
+{
+  "schema": "machine.mechanism-frontier-claims.v0.1",
+  "recorded": "2026-09-19",
+  "branch": "research/evidence-disposition-v0",
+  "code_commit": "8eeda6301e386446acdd9f28059144ad41967f3b",
+  "result_commit": "f8a7df60e36bcc034066df81b3f67c3dfbc8ceb5",
+  "claims": [
+    {
+      "claim_id": "CL-FIXED-BUDGET-FRONTIER-SHIFT-BIDI-V0",
+      "claim": "In the declared finite graph fixture, under B_off=0, R=0, and identical edge-examination accounting, bidirectional BFS with online predecessor access solves additional sampled instances at fixed tight online budgets where forward BFS with a visited set does not.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "M in {30,300,3000}; 200 seeded queries per M; B_on in {10,20,40,80,160,320}",
+      "evidence": [
+        "experiments/mechanism-frontier-shift-v0/run.py",
+        "experiments/mechanism-frontier-shift-v0/RESULTS-V0.md"
+      ],
+      "limits": [
+        "tests one graph family and one seed",
+        "the baseline is a strong single-direction BFS, not a theorem-level optimum over all algorithms",
+        "predecessor access is itself a changed transition capability",
+        "the observed gap disappears with sufficiently large online budgets in the sampled workload"
+      ],
+      "interpretation": "resource-bounded Pareto-frontier shift, not absolute ultimate solvability expansion",
+      "next_discriminating_test": "Emulate predecessor access inside the baseline substrate with all emulation cost charged to B_on, and compare additional graph families and inverse-relation cost models."
+    },
+    {
+      "claim_id": "CL-ULTIMATE-FEASIBLE-SET-CLOSURE-V0",
+      "claim": "For the sampled workloads, both forward and bidirectional mechanisms eventually solve every sampled query under sufficiently large online budgets.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "same fixture and workload as CL-FIXED-BUDGET-FRONTIER-SHIFT-BIDI-V0",
+      "evidence": [
+        "experiments/mechanism-frontier-shift-v0/RESULTS-V0.md"
+      ],
+      "limits": [
+        "finite sampled query sets",
+        "does not establish equality over the entire infinite family of possible graph instances"
+      ],
+      "interpretation": "the measured difference is presently a resource-bounded frontier effect, not an ultimate solvability difference"
+    },
+    {
+      "claim_id": "CL-MECHANISM-CATEGORY-NOT-ABSOLUTE-V0",
+      "claim": "A mechanism change should be evaluated by whether it creates a measured feasible-set/Pareto-frontier shift under a matched execution contract, rather than by the category name 'mechanism change'.",
+      "status": "INFERENCE",
+      "scope": "cross-experiment synthesis",
+      "limits": [
+        "the current evidence does not prove that all apparent mechanism changes reduce to allocation or optimization",
+        "different mechanism definitions can contain different amounts of computation internally"
+      ],
+      "next_discriminating_test": "Build representation-equivalence and inverse-access emulation controls under matched total resource accounting."
+    }
+  ]
+}
