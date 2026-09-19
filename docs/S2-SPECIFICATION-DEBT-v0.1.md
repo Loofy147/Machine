@@ -13,11 +13,11 @@ What semantic definition of S2 should be frozen for implementation conformance?
 
 A candidate semantic specification now exists:
 
-    docs/S2-CANDIDATE-SPEC-v0.2.md
+    docs/S2-CANDIDATE-SPEC-v0.3.md
 
 It is still PRE-FREEZE. Therefore canonical S2 semantics remain OPEN until its independent review checklist is accepted.
 
-The earlier v0.1 candidate was superseded because it mixed semantic and frontier/conformance concerns.
+Earlier v0.1/v0.2 candidates were superseded as the semantic boundary was refined.
 
 ## What evidence establishes
 
@@ -64,4 +64,4 @@ The order remains:
 
 ## Next action
 
-Review and accept/revise the v0.2 semantic candidate and its freeze checklist. Then derive the conformance suite without consulting current implementation-specific behavior as a source of normative requirements.
+Review and accept/revise the v0.3 semantic candidate and its freeze checklist. Then derive the conformance suite without consulting current implementation-specific behavior as a source of normative requirements.
