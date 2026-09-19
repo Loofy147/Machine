@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 from pathlib import Path
 import sys
 
@@ -6,8 +7,12 @@ ROOT = Path(__file__).parents[2]
 TARGET = ROOT / "experiments" / "substrate-interpreter-v0.2"
 sys.path.insert(0, str(TARGET))
 
-from machine import Interpreter, S2, NIL, Prim, Const  # noqa: E402
-from .oracle import Miss, Hit
+from machine import Interpreter, S2, NIL, Prim, Const
+from oracle import Hit
+
+@dataclass(frozen=True)
+class EqKey:
+    token: str
 
 class ExperimentalS2Target:
     """Target-specific adapter; not part of the S2 semantic specification."""
@@ -21,9 +26,8 @@ class ExperimentalS2Target:
 
     def lookup(self, relation, key):
         raw = self._run(relation, key)
-        # A target conformance adapter may not infer Miss from relation membership.
-        # The current target uses the same concrete NIL value for two abstract outcomes,
-        # so an ambiguous result is an adapter/target conformance failure, not a pass.
+        # The adapter may not use relation membership to decode an ambiguous result.
+        # NIL is therefore a conformance failure when it can represent both Miss and Hit(NIL).
         if raw is NIL:
             raise AssertionError("ambiguous concrete result: cannot distinguish Miss from Hit(NIL)")
         return Hit(raw)
@@ -32,7 +36,7 @@ class ExperimentalS2Target:
         return a == b
 
     def equivalent_key_pair(self):
-        return ("a", "a")
+        return EqKey("a"), EqKey("a")
 
     def snapshot_relation(self, relation):
         return repr(relation)
