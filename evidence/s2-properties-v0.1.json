@@ -3,32 +3,36 @@
   "recorded": "2026-09-19",
   "repository": "Loofy147/Machine",
   "branch": "research/substrate-interpreter-v0",
-  "parent_ref": "61f4286cf695eb7a827a321fccec9c1e9001e373",
-  "status": "EXPERIMENTAL-CONTRACT-FROZEN",
+  "status": "EXPERIMENTAL-SUBSTRATE-PROFILE",
+  "interpretation": "Evidence-backed profile of the concrete experimental implementation labeled S2; not a canonical S2 specification.",
+  "superseded_interpretation": "Do not treat this property set as the semantic definition of S2.",
+  "profile_document": "docs/S2-EXPERIMENTAL-SUBSTRATE-PROFILE-v0.1.md",
+  "specification_debt_document": "docs/S2-SPECIFICATION-DEBT-v0.1.md",
+  "canonical_specification_status": "OPEN / SPECIFICATION-DEBT",
   "properties": [
     {
       "id": "S2-P1",
-      "claim": "S2 is a strict additive extension of S1 by relation_lookup_direct.",
+      "claim": "The experimental S2 implementation is a strict additive extension of its experimental S1 implementation by relation_lookup_direct.",
       "status": "ESTABLISHED",
-      "scope": "implementation"
+      "scope": "implementation profile"
     },
     {
       "id": "S2-P2",
-      "claim": "The matched v0.2 experiment gives S1 and S2 the same persistent relation representation and stored information.",
+      "claim": "The matched v0.2 experiment gives experimental S1 and S2 the same persistent relation representation and stored information.",
       "status": "EXPERIMENTALLY_SUPPORTED",
       "scope": "five-entry mapping fixture"
     },
     {
       "id": "S2-P3",
-      "claim": "Tested S1 programs preserve result and machine-state contents under S2.",
+      "claim": "Tested S1 programs preserve result and machine-state contents under the experimental S2 implementation.",
       "status": "EXPERIMENTALLY_SUPPORTED",
-      "scope": "property suite; reconstructed exact-source replay passed"
+      "scope": "property suite"
     },
     {
       "id": "S2-P4",
       "claim": "Direct lookup is read-only with respect to machine_data and interpreter store in the current dict-backed fixture.",
       "status": "EXPERIMENTALLY_SUPPORTED",
-      "scope": "property suite; reconstructed exact-source replay passed"
+      "scope": "current implementation"
     },
     {
       "id": "S2-P5",
@@ -50,13 +54,13 @@
     },
     {
       "id": "S2-P8",
-      "claim": "S1 and S2 are semantically equivalent on the recorded five-query workload.",
+      "claim": "Experimental S1 and S2 are semantically equivalent on the recorded five-query workload.",
       "status": "EXPERIMENTALLY_SUPPORTED",
       "scope": "finite workload"
     },
     {
       "id": "S2-P9",
-      "claim": "S2 changes access to an already-read relation value rather than information availability or target timing.",
+      "claim": "The experimental S2 implementation changes access to an already-read relation value rather than information availability or target timing.",
       "status": "ESTABLISHED",
       "scope": "experimental contract"
     },
@@ -68,62 +72,15 @@
     },
     {
       "id": "S2-P11",
-      "claim": "S2 currently depends on host-language Mapping/get semantics.",
-      "status": "SPECIFICATION_DEBT",
+      "claim": "The experimental S2 implementation currently depends on host-language Mapping/get semantics.",
+      "status": "SPECIFICATION DEBT",
       "scope": "implementation boundary"
     },
     {
       "id": "S2-P12",
-      "claim": "The current evidence does not establish an absolute computability separation between S2 and S1.",
+      "claim": "The evidence does not establish the canonical semantic definition of S2 or an absolute computability separation.",
       "status": "OPEN",
-      "scope": "scientific conclusion"
+      "scope": "research classification"
     }
-  ],
-  "replay": {
-    "source_ref": "61f4286cf695eb7a827a321fccec9c1e9001e373",
-    "mode": "RECONSTRUCTED-EXACT-SOURCE",
-    "property_tests": 8,
-    "exit_code": 0,
-    "github_actions_runs": 0
-  },
-  "benchmark": {
-    "queries": [
-      "k4",
-      "k0",
-      "k2",
-      "missing",
-      "k3"
-    ],
-    "results": [
-      40,
-      0,
-      20,
-      [],
-      30
-    ],
-    "s1": {
-      "transition_ticks": 676,
-      "access_ticks": 291
-    },
-    "s2": {
-      "transition_ticks": 20,
-      "access_ticks": 10
-    },
-    "offline": {
-      "construction_ticks": 5,
-      "stored_entries": 5
-    },
-    "semantic_equivalence": true,
-    "ratios": {
-      "transition_ticks_scan_over_direct": 33.8,
-      "access_ticks_scan_over_direct": 29.1
-    }
-  },
-  "known_gaps": [
-    "host Mapping semantics are not yet lifted into an explicit object-language relation contract",
-    "no asymptotic cost characterization",
-    "finite semantic equivalence only",
-    "canonical Machine substrate remains unresolved"
-  ],
-  "next_discriminating_action": "Reconcile these properties with the canonical Machine interpreter and repeat the matched S1/S2 property suite there."
+  ]
 }
