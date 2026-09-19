@@ -1,0 +1,24 @@
+{
+  "status": "EXECUTED / LOCAL REPLAY",
+  "substrates": {
+    "S1": {"generic_state_read": true, "comparison": true, "branching": true, "sequence_traversal": true, "direct_relation_lookup": false},
+    "S2": {"generic_state_read": true, "comparison": true, "branching": true, "sequence_traversal": true, "direct_relation_lookup": true}
+  },
+  "offline_representation": {"construction_ticks": 5, "stored_entries": 5},
+  "object_language_scan": {
+    "results": [40, 0, 20, [], 30],
+    "transition_ticks_total": 600,
+    "access_ticks_total": 211
+  },
+  "object_language_direct": {
+    "results": [40, 0, 20, [], 30],
+    "transition_ticks_total": 35,
+    "access_ticks_total": 15
+  },
+  "semantic_equivalence": true,
+  "resource_ratio": {
+    "transition_ticks_scan_over_direct": 17.142857142857142,
+    "access_ticks_scan_over_direct": 14.066666666666666
+  },
+  "replay": {"pytest": "5 passed", "audit_exit": 0}
+}
