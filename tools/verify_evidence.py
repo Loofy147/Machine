@@ -230,6 +230,8 @@ def main() -> None:
             fail(f"open claim {row.get("claim_id")} must remain UNVERIFIED_PACKAGE")
         if not row.get("documented_source"):
             fail(f"open claim {row.get("claim_id")} missing documented_source")
+        if not row.get("source_branch") or not row.get("source_commit"):
+            fail(f"open claim {row.get("claim_id")} missing source provenance")
         if not row.get("next_discriminating_test"):
             fail(f"open claim {row.get("claim_id")} missing next_discriminating_test")
 
