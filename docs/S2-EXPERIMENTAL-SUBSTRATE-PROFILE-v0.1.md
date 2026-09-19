@@ -7,7 +7,7 @@ Evidence source: experiments/substrate-interpreter-v0.2/
 
 ## Status
 
-This is an experimental substrate profile, not the canonical specification of S2.
+This is an experimental substrate profile, not the canonical specification of S2. The active semantic candidate is `docs/S2-CANDIDATE-SPEC-v0.2.md`; the active test/frontier protocol is `docs/S2-CONFORMANCE-FRONTIER-PROTOCOL-v0.1.md`.
 It records properties observed or established in the concrete experimental implementation currently labeled S2. The profile is evidence about that implementation and must not be promoted into the semantic definition of S2 merely because the implementation was named S2.
 
 ## 1. Experimental identification
@@ -171,8 +171,8 @@ It is not evidence that these properties constitute the definition of S2 in the 
 
 The research state must maintain two distinct artifacts:
 
-    S2 specification
-        semantic design target; currently unresolved
+    S2 semantic specification
+        docs/S2-CANDIDATE-SPEC-v0.2.md (pre-freeze)
 
     S2 experimental profile
         observed properties of the implementation currently labeled S2
@@ -181,10 +181,10 @@ The profile can falsify or constrain a proposed S2 specification. It cannot by i
 
 ## 6. Next discriminating action
 
-1. define S2 independently of the current implementation;
-2. state its semantic boundary and minimal required primitives;
-3. identify what is accidental to the experimental interpreter (for example host Mapping semantics);
-4. derive implementation tests from that independent specification;
+1. review/freeze the independently authored S2 semantic candidate;
+2. derive conformance obligations from the frozen semantic core;
+3. keep accidental implementation properties (for example host Mapping semantics) outside the normative specification;
+4. derive implementation tests from that frozen specification;
 5. reproduce the property suite on the canonical Machine substrate.
 
 ## 7. Validity boundary
