@@ -7,7 +7,7 @@ Evidence source: experiments/substrate-interpreter-v0.2/
 
 ## Status
 
-This is an experimental substrate profile, not the canonical specification of S2. The active semantic candidate is `docs/S2-CANDIDATE-SPEC-v0.2.md`; the active test/frontier protocol is `docs/S2-CONFORMANCE-FRONTIER-PROTOCOL-v0.1.md`.
+This is an experimental substrate profile, not the canonical specification of S2. The active semantic candidate is `docs/S2-CANDIDATE-SPEC-v0.3.md`; the active test/frontier protocol is `docs/S2-CONFORMANCE-FRONTIER-PROTOCOL-v0.2.md`.
 It records properties observed or established in the concrete experimental implementation currently labeled S2. The profile is evidence about that implementation and must not be promoted into the semantic definition of S2 merely because the implementation was named S2.
 
 ## 1. Experimental identification
