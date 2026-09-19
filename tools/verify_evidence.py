@@ -35,6 +35,32 @@ def run(command: list[str], timeout: int = 120) -> subprocess.CompletedProcess[s
         fail(f"command failed: {' '.join(command)}")
     return proc
 
+def git_show(commit: str, path: str) -> bytes:
+    proc = subprocess.run(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if proc.returncode != 0:
+        fail(f"cannot resolve provenance {commit}:{path}: {proc.stderr.decode(errors='replace').strip()}")
+    return proc.stdout
+
+def verify_file_provenance(commit: str, path: str) -> None:
+    current = (ROOT / path).read_bytes()
+    historical = git_show(commit, path)
+    if historical != current:
+        fail(f"provenance drift: {path} differs from {commit}:{path}")
+
+def verify_entry_provenance(entry: dict) -> None:
+    required = ("code_commit", "result_commit", "code_path", "result_path")
+    for key in required:
+        if not entry.get(key):
+            fail(f"manifest entry {entry.get('evidence_id')} missing {key}")
+    verify_file_provenance(entry["code_commit"], entry["code_path"])
+    verify_file_provenance(entry["result_commit"], entry["result_path"])
+
 def parse_metric(output: str, name: str) -> float:
     match = re.search(rf"^{re.escape(name)}=([-+0-9.]+)$", output, re.MULTILINE)
     if not match:
@@ -185,7 +211,23 @@ def main() -> None:
     if len(entries) != 3:
         fail(f"expected 3 verified entries, found {len(entries)}")
 
+    evidence_ids = [e.get("evidence_id") for e in entries]
+    if len(evidence_ids) != len(set(evidence_ids)) or None in evidence_ids:
+        fail("manifest evidence_id values must be unique and non-null")
+    if len(claim_ids) != len(claims.get("claims", [])):
+        fail("claim registry claim_id values must be unique and non-null")
+
+    manifest_by_id = {e["evidence_id"]: e for e in entries}
+    for claim in claims.get("claims", []):
+        linked = claim.get("evidence_ids", [])
+        if not linked:
+            fail(f"claim {claim.get('claim_id')} has no evidence_ids")
+        for evidence_id in linked:
+            if evidence_id not in manifest_by_id:
+                fail(f"claim {claim.get('claim_id')} references unknown evidence: {evidence_id}")
+
     for entry in entries:
+        verify_entry_provenance(entry)
         if entry.get("claim_id") not in claim_ids:
             fail(f"manifest references unknown claim: {entry.get('claim_id')}")
         if entry.get("status") != "REPRODUCIBILITY_VERIFIED":
