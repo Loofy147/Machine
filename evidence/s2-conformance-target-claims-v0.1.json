@@ -1,0 +1,32 @@
+{
+  "schema": "machine.s2-conformance-target-claims.v0.1",
+  "recorded": "2026-09-19",
+  "repository": "Loofy147/Machine",
+  "branch": "research/substrate-interpreter-v0",
+  "semantic_source": "docs/S2-CANDIDATE-SPEC-v0.3.md",
+  "protocol": "docs/S2-CONFORMANCE-FRONTIER-PROTOCOL-v0.2.md",
+  "claims": [
+    {
+      "claim_id": "CL-S2-TARGET-PRE-REPAIR-NONCONFORMANT-V0.1",
+      "claim": "The pre-repair experimental S2 target could not represent Miss distinctly from Hit(NIL).",
+      "status": "ESTABLISHED_BY_SOURCE_INSPECTION",
+      "evidence": "experiments/substrate-interpreter-v0.2/machine.py at pre-repair source",
+      "consequence": "S2-C02, S2-C03, S2-C08 and S2-C11 failed under the candidate semantic contract."
+    },
+    {
+      "claim_id": "CL-S2-TARGET-REPAIR-TAGGED-RESULT-V0.1",
+      "claim": "The experimental S2 target was minimally repaired to use disjoint concrete RelationLookupMiss and RelationLookupHit(value) result encodings.",
+      "status": "ESTABLISHED_BY_SOURCE_INSPECTION",
+      "scope": "current branch implementation",
+      "constraint": "This is a target repair derived from the specification, not a specification change."
+    },
+    {
+      "claim_id": "CL-S2-TARGET-POST-REPAIR-CONFORMANCE-V0.1",
+      "claim": "Post-repair semantic conformance is not yet verified by execution.",
+      "status": "UNVERIFIED",
+      "limitation": "No registered GitHub Actions run and no direct local repository execution was available at inspection time.",
+      "next_discriminating_action": "Run the unchanged spec-derived conformance suite and the updated audit."
+    }
+  ],
+  "next_discriminating_action": "Execute the unchanged conformance suite and audit against the repaired target; do not alter the semantic specification to obtain a pass."
+}
