@@ -3,59 +3,65 @@
 Recorded: 2026-09-19
 Repository: Loofy147/Machine
 Branch: research/substrate-interpreter-v0
+Status: OPEN / PRE-FREEZE
 
 ## Question
 
-What is the canonical semantic definition of S2?
+What semantic definition of S2 should be frozen for implementation conformance?
 
 ## Current disposition
 
-OPEN / SPECIFICATION DEBT
+A candidate semantic specification now exists:
 
-The current evidence does not establish a canonical S2 specification. It establishes an experimental profile of the concrete implementation currently labeled S2.
+    docs/S2-CANDIDATE-SPEC-v0.2.md
 
-## What is established by evidence
+It is still PRE-FREEZE. Therefore canonical S2 semantics remain OPEN until its independent review checklist is accepted.
 
-The experimental implementation named S2 is:
+The earlier v0.1 candidate was superseded because it mixed semantic and frontier/conformance concerns.
 
-    S1 + relation_lookup_direct
+## What evidence establishes
 
-with matched persistent relation representation and explicit abstract access accounting.
+The experimental implementation currently labeled S2 has an evidence-backed profile:
 
-Those facts are implementation/protocol facts, not yet the semantic definition of S2.
+    docs/S2-EXPERIMENTAL-SUBSTRATE-PROFILE-v0.1.md
 
-## What remains to be specified independently
+That profile remains evidence about an implementation. It does not define S2.
 
-A proper S2 specification must determine, independently of the current implementation:
+## Remaining specification questions
 
-- whether S2 denotes a direct indexed relation-access primitive specifically, or a broader class of indexed access;
-- whether relation is a first-class object-language value or a host-language Mapping;
-- whether lookup has defined behavior for missing keys, duplicate keys, NIL-valued entries, and arbitrary values;
-- whether lookup is semantically read-only;
-- whether access cost is part of S2 semantics or belongs solely to the resource model;
-- whether S2 adds only access capability or may include an associated representation invariant/index;
-- which timing constraints apply to the representation/index;
-- what the minimal S2 extension is relative to S1.
+The independent candidate still requires review of:
 
-## Non-circularity requirement
+- whether `lookup(R,k)` is the intended semantic boundary;
+- whether relations should be abstract partial functions;
+- whether `Miss | Hit(v)` is the intended abstract result algebra;
+- whether lookup must preserve the abstract relation;
+- whether invalid-input behavior should remain outside the semantic core.
 
-The experimental S2 profile must not be used as the specification and then used again as evidence that the implementation satisfies that same specification.
+These are specification decisions, not implementation findings.
 
-The correct direction is:
+## Separate protocol debt
 
-    independent S2 specification
-            ↓
-    implementation / tests
-            ↓
-    experimental evidence
-            ↓
-    specification verification or revision
+Frontier/conformance concerns are now separated into:
 
-## Current relation to the profile
+    docs/S2-CONFORMANCE-FRONTIER-PROTOCOL-v0.1.md
 
-The experimental profile is docs/S2-EXPERIMENTAL-SUBSTRATE-PROFILE-v0.1.md.
-This document records the unresolved canonical specification question.
+That protocol must be aligned with `docs/SUBSTRATE-FRONTIER-CONTRACT-v0.1.md` before resource claims are made.
 
-## Next discriminating action
+## Non-circularity rule
 
-Define a candidate S2 specification independently, then construct the smallest implementation and property suite capable of falsifying it before classifying the experimental profile as canonical.
+Do not promote implementation properties into S2 semantics after the fact.
+The order remains:
+
+    candidate semantics
+        ↓
+    freeze
+        ↓
+    implementation targets
+        ↓
+    conformance evidence
+        ↓
+    revise only on explicit specification grounds
+
+## Next action
+
+Review and accept/revise the v0.2 semantic candidate and its freeze checklist. Then derive the conformance suite without consulting current implementation-specific behavior as a source of normative requirements.
