@@ -1,284 +1,204 @@
 # Current Frontier Reconciliation v0.1
 
-**Recorded:** 2026-09-19
-**Repository:** `Loofy147/Machine`
-**Purpose:** durable research-state record for the current capability/allocation frontier and the results that must not be reconstructed from conversation context.
+**Recorded:** 2026-09-19  
+**Repository:** `Loofy147/Machine`  
+**Purpose:** durable research-state record for the capability/allocation frontier.
 
-## 1. Current repository research state
+## 1. Research state
 
-Relevant branches remain:
+- `main` = integration authority at `1626bac2f5c478294afa4b9463f694608c322117`.
+- `research/machine-native-primitives-v0` = broad machine-model research.
+- `research/target-oblivious-frontier-v0` = resource/placement frontier.
+- `research/confirmatory-freeze-order-v0.1` = confirmatory protocol/freeze.
+- `research/evidence-disposition-v0` = current evidence/provenance consolidation.
+- `research/definition`, `research/machine-native-primitives`, `research/machine-native-primitives-v0-docs`, `research/machine-native-primitives-v0-issue`, `research/test-write` remain ARCHIVE CANDIDATES.
 
-- `main` = integration authority at `1626bac2f5c478294afa4b9463f694608c322117`
-- `research/machine-native-primitives-v0` = broad machine-model research
-- `research/target-oblivious-frontier-v0` = resource/placement frontier
-- `research/confirmatory-freeze-order-v0.1` = confirmatory protocol/freeze
-- `research/evidence-disposition-v0` = current evidence/provenance consolidation
-- stale branches `research/definition`, `research/machine-native-primitives`, `research/machine-native-primitives-v0-docs`, `research/machine-native-primitives-v0-issue`, `research/test-write` remain ARCHIVE CANDIDATES.
+## 2. Existing evidence
 
-The evidence branch's older commit-count statement in the canonicalization document is stale; current direct repository comparisons remain authoritative.
+The repository-backed lines remain:
 
-## 2. Existing scientific results
+- nine-mechanism review: no justification for nine flat primitives;
+- B-clean: mutable executable representation is a substrate capability, not an adaptive advantage by itself;
+- contextual credit: context-indexed history helps in the tested supplied-context regime;
+- online reflection: hot-swap and history-dependent proposals supported, causal evaluator reflection still OPEN;
+- target-oblivious frontier: offline state can relocate computation; strict-heldout controls pass.
 
-### Nine-mechanism line
+The adversarial insufficiency detector establishes that persistent nonzero residual is not sufficient for a global insufficiency claim; `INCONCLUSIVE_AT_RESOLUTION(delta)` is required without independent regularity/certificates.
 
-The repository does not justify nine flat primitives. Variation, invocation gating, composition, and reformation have bounded empirical effects; representation, transformation, and control remain structural scaffolds rather than proven irreducible primitives.
-
-### B-clean
-
-Mutable executable representation is a substrate capability, not evidence by itself of adaptive advantage. Search dynamics dominated the tested bounded hypothesis family.
-
-### Contextual credit
-
-Context-indexed history can improve behavior when operator value crosses between supplied contexts. Context discovery remains OPEN.
-
-### Online reflection
-
-Continuous hot-swap and history-dependent proposals are demonstrated within their declared boundaries. Causal reification of the live transition/evaluator machinery remains OPEN.
-
-### Target-oblivious frontier
-
-Under a freeze-before-target-reveal protocol, partial target-specific state that cannot contain the realized target does not alter strict-heldout behavior. Full target-oblivious precomputation can move computation offline in the finite graph fixture.
-
-Interpretation remains resource placement, not proof that reflection is necessary.
-
-## 3. Insufficiency detector
-
-The adversarial detector is packaged in:
-
-`experiments/frontier-insufficiency-adversarial-v0/`
-
-Its third verdict is:
-
-`INCONCLUSIVE_AT_RESOLUTION(delta)`
-
-Persistent nonzero residual is not treated as a proof of expressive insufficiency. Selected negative conclusions are accepted only when an independent regularity certificate supports them.
-
-This package is locally replayed but not yet CI-integrated.
-
-## 4. Mechanism frontier line
-
-### 4.1 Native transition-access result
+## 3. Mechanism frontier result
 
 With:
 
 ```text
 B_off = 0
 R = 0
-same instance family
+same graph
+same queries
 same correctness criterion
-same online tick accounting
+1 candidate-edge examination = 1 B_on tick
 ```
 
-forward BFS + visited set was compared with bidirectional BFS with direct predecessor access.
+direct predecessor access plus bidirectional search shifts the online feasible frontier relative to successor-only forward BFS.
 
-The result is a measured resource-bounded feasible-set/Pareto-frontier shift: direct predecessor access solves additional sampled instances at tight `B_on`.
+Successor-only exhaustive inverse emulation cannot recover the native frontier at the tight budgets tested.
 
-### 4.2 Successor-only emulation control
+This is a resource-bounded frontier result, not an ultimate computational-power separation.
 
-The predecessor relation was then emulated with only the original successor operations by exhaustive online scanning, with every tested edge charged to `B_on`.
+## 4. Representation closure result
 
-That emulation does not reproduce the native frontier at the tight budgets tested.
+A stronger follow-up tested whether the predecessor frontier can be purchased as frozen state.
 
-This supports a narrower interpretation:
+### Reverse-index representation
 
-> direct predecessor access is a distinct resource under this contract because obtaining equivalent information through the tested successor-only substrate costs substantially more online computation.
-
-It does not prove different ultimate computational power.
-
-## 5. New representation control
-
-The next test kept the transition topology fixed and changed only the frozen representation.
-
-A target-oblivious macro representation was built for 2, 3, or 4 successive successor steps. The online executor remained the same successor-only forward BFS; the macro construction cost was charged to `B_off`, and stored macro endpoints were counted as `R`.
-
-Three independent query seeds were used:
+For M in {30,100,300}:
 
 ```text
-17, 23, 41
+B_off = 3M
+R = 3M
 ```
 
-80 queries per seed and caps:
+The reverse-index representation reproduced the native bidirectional success pattern and minimum online budgets exactly in every tested summary row.
+
+This means:
+
+> if a substrate can generically interpret an indexed relation stored in state, predecessor access is representable as frozen data.
+
+The remaining issue is whether generic stored-relation traversal belongs to the original fixed substrate or is itself a transition primitive.
+
+### All-pairs policy representation
+
+The fixed successor executor was given an exact target-oblivious `(start,target) -> next-action` table.
+
+Maximum post-instance budget needed to solve every sampled query became:
 
 ```text
-10, 20, 40, 80, 160, 320, 640
+M=30  -> 9
+M=100 -> 13
+M=300 -> 17
 ```
 
-Graph families:
+while the forward baseline required:
 
 ```text
-affine_mix: M = 30, 300, 3000
-perm_mix:   M = 31
-opaque_mix: M = 31
+M=30  -> 74
+M=100 -> 254
+M=300 -> 845
 ```
 
-### Observations
-
-For affine M=30 at `B_on=40`:
+The policy table paid approximately:
 
 ```text
-forward  = 83.33%
-native   = 100.00%
-macro4   = 96.67%
+B_off = Θ(M^2)
+R     = Θ(M^2)
 ```
 
-For affine M=300 at `B_on=160`:
+Thus the fixed successor executor can trade large offline/state resources for very small online computation.
+
+## 5. Current interpretation
+
+Two premature conclusions are now explicitly rejected.
+
+### Rejected interpretation A
+
+> direct predecessor access proves an absolute new computational capability.
+
+Not supported.
+
+### Rejected interpretation B
+
+> every mechanism-induced frontier shift can be reproduced by ordinary state representation at negligible cost.
+
+Also not supported.
+
+### Current supported interpretation
+
+The experiments establish a multi-resource tradeoff among:
 
 ```text
-forward  = 35.00%
-native   = 97.50%
-macro4   = 41.25%
+offline computation B_off
+persistent representation R
+post-instance computation B_on
 ```
 
-For affine M=3000 at `B_on=640`:
+Direct predecessor access provides a low-`B_off`, low-`R` point on that frontier.
 
-```text
-forward  = 12.08%
-native   = 83.75%
-macro4   = 10.83%
-```
+A reverse-index can reproduce its online behavior by paying `Θ(M)` offline/state resources.
 
-For perm M=31 at `B_on=40`:
+An all-pairs policy can reduce online computation further by paying `Θ(M^2)` resources.
 
-```text
-forward  = 83.75%
-native   = 100.00%
-macro4   = 90.83%
-```
+Therefore the remaining mechanistic question is narrower:
 
-For opaque M=31 at `B_on=40` there is deliberately no native reverse score, because no inverse transition mechanism is supplied:
+> Does a fixed substrate contain a generic state-indexed relation interpreter, or does adding that interpreter constitute a genuine transition primitive?
 
-```text
-forward  = 82.92%
-macro4   = 92.50%
-```
+That boundary determines whether predecessor access is best described as representation or mechanism under the chosen substrate.
 
-Thus the representation itself can shift the frontier without mechanism change, but the tested macro family does not generally close the native predecessor frontier at larger M.
+## 6. Current frontier
 
-### Resource cost
-
-The macro4 representation costs:
-
-- affine M=30: 2,568 offline successor evaluations / 844 stored endpoints;
-- affine M=300: 29,298 / 15,092;
-- affine M=3000: 296,598 / 158,192;
-- perm M=31: 2,544 / 820;
-- opaque M=31: 2,667 / 857.
-
-Therefore equal `B_on` does not imply equal total resource usage.
-
-The relevant state is now:
+The active research object is now the Pareto frontier:
 
 ```text
 (B_off, R, B_on)
 ```
 
-not `B_on` alone.
+for a fixed information-timing contract and correctness requirement.
 
-## 6. Current interpretation after the representation control
+A mechanism is causally interesting only if it supplies a Pareto point that the admissible fixed-substrate representation family cannot reproduce under the same resource contract.
 
-The evidence now rules out two premature conclusions.
+## 7. Immediate next test
 
-### Not established
-
-> "The native bidirectional frontier shift proves mechanism change creates a new absolute computational capability."
-
-We do not have that.
-
-### Also not established
-
-> "Any mechanism-induced frontier shift can be reproduced by state representation."
-
-The tested macro family does not reproduce the native frontier at larger M.
-
-### What is established within scope
-
-1. Direct predecessor access causes a measurable resource-bounded frontier shift in the declared graph family.
-2. Successor-only exhaustive emulation cannot reproduce that shift at the tested tight budgets.
-3. Fixed successor execution with richer target-oblivious representation can itself shift the frontier.
-4. The amount recoverable by the tested representation depends strongly on graph scale and representation budget.
-5. Therefore the causal question cannot be answered from `B_on` alone.
-
-## 7. Current frontier
-
-The frontier is now explicitly a multi-resource question:
-
-> Under a fixed instance family and correctness requirement, what Pareto frontier is achievable over offline computation `B_off`, persistent representation size `R`, and post-instance computation `B_on`?
-
-Then, and only then:
-
-> Does changing transition access produce a Pareto frontier point that the best available fixed-substrate representation cannot reproduce under the same resource contract?
-
-This is stronger than asking whether one mechanism "beats" another.
-
-## 8. Immediate next discriminating experiment
-
-The next experiment should not add another named algorithm.
-
-It should search the representation family and produce explicit Pareto fronts:
+Define and isolate the smallest generic operation:
 
 ```text
-forward baseline:
-    (B_off=0, R=0, B_on)
-
-representation family:
-    macro2
-    macro3
-    macro4
-    compact abstractions
-    target-oblivious distance summaries
-    other reusable subplans
-
-transition-access family:
-    direct predecessor
-    successor-only equivalents
-
-compare:
-    same correctness
-    same information timing
-    same total/individual resource accounting
+relation_lookup(state, key) -> stored executable relation
 ```
 
-The decisive result would be a frontier point where:
+Then test:
 
-```text
-transition-access variant is feasible
-AND
-all tested fixed-substrate representations are infeasible
-under the same (B_off, R, B_on) contract.
-```
+1. whether it already follows from the abstract machine contract;
+2. whether it must be added as a new substrate primitive;
+3. whether direct predecessor access offers any Pareto advantage after that primitive is admitted;
+4. whether a compact relation encoding can approach the reverse-index frontier with sub-`Θ(M)` storage.
 
-That would be substantially stronger evidence for a mechanism-specific capability boundary.
+## 8. Provenance status
 
-## 9. Repository samples now recorded
+Repository-backed now:
 
-Representative query-level samples are committed at:
+- adversarial insufficiency detector;
+- mechanism frontier baseline/emulation;
+- macro representation controls;
+- Pareto representation closure;
+- representative query-level samples;
+- resource metadata;
+- current claim registry.
 
-`experiments/mechanism-frontier-shift-v0/samples-v0/REPRESENTATIVE-SAMPLES-V0.csv`
+Still CONVERSATION-ONLY:
 
-The deterministic rerun script is:
+- earlier policy-table/BFS numerical run;
+- h-allocation sweep;
+- memoized-lookahead ~19.3% reduction;
+- workload crossover near N=40/62.
 
-`experiments/mechanism-frontier-shift-v0/samples-v0/run.py`
+Those remain excluded from scientific evidence until their original harnesses and raw outputs are packaged.
 
-Resource metadata:
+## 9. Sample locations
 
-`experiments/mechanism-frontier-shift-v0/samples-v0/REPRESENTATION-METADATA-V0.json`
+`experiments/pareto-representation-closure-v0/REPRESENTATIVE-SAMPLES-V0.csv`
 
-Results:
+`experiments/pareto-representation-closure-v0/SUMMARY-V0.csv`
 
-`experiments/mechanism-frontier-shift-v0/samples-v0/RESULTS-REPRESENTATION-CONTROL-V0.md`
+`experiments/pareto-representation-closure-v0/PARETO-FRONTIER-V0.csv`
 
-The larger local raw export is retained separately and is not yet treated as repository evidence in full.
+`experiments/pareto-representation-closure-v0/RESOURCE-METADATA-V0.json`
 
-## 10. Governing interpretation rules
+`experiments/pareto-representation-closure-v0/RESULTS-V0.md`
 
-Do not treat computation relocation as computation elimination.
+`experiments/pareto-representation-closure-v0/run.py`
 
-Do not treat algorithm-name changes as capability changes.
+## 10. Governing rule
 
-Do not treat a plateau as proof of expressive insufficiency without the assumptions needed to exclude unseen solutions.
+Do not ask which named category wins.
 
-Do not treat a mechanism-induced shift at fixed `B_on` as proof of absolute computational-power separation.
+Measure the Pareto frontier first.
 
-Do not compare architectures without recording `B_off`, `R`, `B_on`, information timing, correctness, and what computation is embedded in the mechanism.
+Then identify which substrate/resource distinction caused the frontier shift.
 
-Do not promote conversation results to repository evidence without executable provenance and replay.
