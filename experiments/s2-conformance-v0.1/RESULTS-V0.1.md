@@ -1,4 +1,4 @@
-# S2 Conformance Results v0.1 — Experimental Target
+# S2 Conformance Results v0.1 — Superseded by v0.2
 
 Recorded: 2026-09-19
 Repository: Loofy147/Machine
@@ -6,7 +6,7 @@ Branch: research/substrate-interpreter-v0
 Semantic source: docs/S2-CANDIDATE-SPEC-v0.3.md
 Protocol: docs/S2-CONFORMANCE-FRONTIER-PROTOCOL-v0.2.md
 Target: experiments/substrate-interpreter-v0.2/
-Status: TARGET NON-CONFORMANT / STATIC SOURCE REVIEW
+Status: SUPERSEDED / HISTORICAL STATIC REVIEW
 
 ## 1. Execution status
 
@@ -81,7 +81,7 @@ for all valid values v.
 
 The correct repair direction is target-side: introduce a concrete result encoding that preserves the abstract distinction, then rerun the unchanged conformance suite.
 
-## 6. Scientific disposition
+## 6. Historical disposition
 
     S2 specification        = unchanged / PRE-FREEZE
     experimental target     = NON-CONFORMANT on result algebra
