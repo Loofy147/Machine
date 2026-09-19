@@ -3,7 +3,7 @@
   "recorded": "2026-09-19",
   "repository": "Loofy147/Machine",
   "branch": "research/substrate-interpreter-v0",
-  "parent_ref": "ea31e36d85ac8af689282f3840b1d4dff055ed75",
+  "parent_ref": "61f4286cf695eb7a827a321fccec9c1e9001e373",
   "status": "EXPERIMENTAL-CONTRACT-FROZEN",
   "properties": [
     {
@@ -22,13 +22,13 @@
       "id": "S2-P3",
       "claim": "Tested S1 programs preserve result and machine-state contents under S2.",
       "status": "EXPERIMENTALLY_SUPPORTED",
-      "scope": "property tests added in test_machine.py"
+      "scope": "property suite; reconstructed exact-source replay passed"
     },
     {
       "id": "S2-P4",
       "claim": "Direct lookup is read-only with respect to machine_data and interpreter store in the current dict-backed fixture.",
       "status": "EXPERIMENTALLY_SUPPORTED",
-      "scope": "current implementation"
+      "scope": "property suite; reconstructed exact-source replay passed"
     },
     {
       "id": "S2-P5",
@@ -79,6 +79,46 @@
       "scope": "scientific conclusion"
     }
   ],
+  "replay": {
+    "source_ref": "61f4286cf695eb7a827a321fccec9c1e9001e373",
+    "mode": "RECONSTRUCTED-EXACT-SOURCE",
+    "property_tests": 8,
+    "exit_code": 0,
+    "github_actions_runs": 0
+  },
+  "benchmark": {
+    "queries": [
+      "k4",
+      "k0",
+      "k2",
+      "missing",
+      "k3"
+    ],
+    "results": [
+      40,
+      0,
+      20,
+      [],
+      30
+    ],
+    "s1": {
+      "transition_ticks": 676,
+      "access_ticks": 291
+    },
+    "s2": {
+      "transition_ticks": 20,
+      "access_ticks": 10
+    },
+    "offline": {
+      "construction_ticks": 5,
+      "stored_entries": 5
+    },
+    "semantic_equivalence": true,
+    "ratios": {
+      "transition_ticks_scan_over_direct": 33.8,
+      "access_ticks_scan_over_direct": 29.1
+    }
+  },
   "known_gaps": [
     "host Mapping semantics are not yet lifted into an explicit object-language relation contract",
     "no asymptotic cost characterization",
