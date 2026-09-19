@@ -1,4 +1,4 @@
-from .oracle import Miss, Hit, expected_lookup, assert_result_equal
+from oracle import Miss, Hit, expected_lookup, assert_result_equal
 
 def test_present_key(target):
     relation = {"a": 10, "b": 20}
@@ -6,18 +6,25 @@ def test_present_key(target):
 
 def test_absent_key(target):
     relation = {"a": 10}
-    assert isinstance(target.lookup(relation, "missing"), Miss)
+    try:
+        result = target.lookup(relation, "missing")
+    except AssertionError as exc:
+        raise AssertionError("target could not encode a distinct Miss result") from exc
+    assert isinstance(result, Miss)
 
 def test_miss_is_distinct_from_valid_nil_like_value(target, nil_value):
     relation = {"present": nil_value}
     hit = target.lookup(relation, "present")
-    miss = target.lookup(relation, "absent")
     assert isinstance(hit, Hit), "valid value must remain Hit(v) even if it resembles a concrete miss encoding"
+    try:
+        miss = target.lookup(relation, "absent")
+    except AssertionError as exc:
+        raise AssertionError("target cannot encode Miss distinctly from Hit(NIL)") from exc
     assert isinstance(miss, Miss)
 
-def test_eq_k_laws(target, equivalent_pair, third_equivalent_key):
-    x, y = equivalent_pair
-    z = third_equivalent_key
+def test_eq_k_laws(target):
+    x, y = target.equivalent_key_pair()
+    z = target.equivalent_key_pair()[1]
     assert target.eq_k(x, x)
     assert target.eq_k(x, y) == target.eq_k(y, x)
     if target.eq_k(x, y) and target.eq_k(y, z):
@@ -48,7 +55,8 @@ def test_repeatability(target):
     assert r1 == r2
 
 def test_empty_relation(target):
-    assert isinstance(target.lookup({}, "a"), Miss)
+    result = target.lookup({}, "a")
+    assert isinstance(result, Miss)
 
 def test_relation_isolation(target):
     r1 = {"a": 1}
