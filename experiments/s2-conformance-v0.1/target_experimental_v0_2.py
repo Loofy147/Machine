@@ -7,8 +7,8 @@ ROOT = Path(__file__).parents[2]
 TARGET = ROOT / "experiments" / "substrate-interpreter-v0.2"
 sys.path.insert(0, str(TARGET))
 
-from machine import Interpreter, S2, NIL, Prim, Const
-from oracle import Hit
+from machine import Interpreter, S2, NIL, Prim, Const, RelationLookupHit, RelationLookupMiss
+from oracle import Hit, Miss
 
 @dataclass(frozen=True)
 class EqKey:
@@ -26,11 +26,11 @@ class ExperimentalS2Target:
 
     def lookup(self, relation, key):
         raw = self._run(relation, key)
-        # The adapter may not use relation membership to decode an ambiguous result.
-        # NIL is therefore a conformance failure when it can represent both Miss and Hit(NIL).
-        if raw is NIL:
-            raise AssertionError("ambiguous concrete result: cannot distinguish Miss from Hit(NIL)")
-        return Hit(raw)
+        if isinstance(raw, RelationLookupMiss):
+            return Miss()
+        if isinstance(raw, RelationLookupHit):
+            return Hit(raw.value)
+        raise AssertionError(f"target returned an unrecognized concrete lookup result: {raw!r}")
 
     def eq_k(self, a, b):
         return a == b
