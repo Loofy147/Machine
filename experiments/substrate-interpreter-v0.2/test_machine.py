@@ -38,8 +38,10 @@ def test_object_language_scan_matches_direct_access():
     relation={f"k{i}":i*10 for i in range(5)}
     keys=["k4","k0","k2","missing","k3"]
     scan=[Interpreter(S1,{"rel":relation}).run(scan_program(k)).result for k in keys]
-    direct=[Interpreter(S2,{"rel":relation}).run(direct_program(k)).result for k in keys]
+    direct_raw=[Interpreter(S2,{"rel":relation}).run(direct_program(k)).result for k in keys]
+    direct=[r.value if isinstance(r,RelationLookupHit) else NIL for r in direct_raw]
     assert scan == direct == [40,0,20,NIL,30]
+    assert isinstance(direct_raw[3], RelationLookupMiss)
 
 def test_s2_is_conservative_for_s1_programs():
     relation={f"k{i}":i*10 for i in range(5)}
