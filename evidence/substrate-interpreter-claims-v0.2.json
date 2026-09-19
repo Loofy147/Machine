@@ -1,0 +1,45 @@
+{
+  "schema": "machine.substrate-interpreter-claims.v0.2",
+  "recorded": "2026-09-19",
+  "branch": "research/substrate-interpreter-v0",
+  "supersedes": "evidence/substrate-interpreter-claims-v0.1.json",
+  "claims": [
+    {
+      "claim_id": "CL-SAME-REPRESENTATION-DIRECT-LOOKUP-V0.2",
+      "claim": "With identical persistent relation representation, direct indexed lookup produces the same observed relation semantics as object-language traversal while using substantially fewer measured online transitions/accesses in the tested fixture.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "one five-entry mapping; five online queries; CEK-style interpreter",
+      "evidence": [
+        "experiments/substrate-interpreter-v0.2/machine.py",
+        "experiments/substrate-interpreter-v0.2/test_machine.py",
+        "experiments/substrate-interpreter-v0.2/RESULTS-V0.2.json",
+        "experiments/substrate-interpreter-v0.2/RESULTS-V0.2.md"
+      ],
+      "limits": [
+        "finite fixture",
+        "abstract cost model",
+        "one experimental interpreter"
+      ]
+    },
+    {
+      "claim_id": "CL-S1-DERIVATION-SAME-STATE-V0.2",
+      "claim": "Under the S1 contract, relation lookup is derivable from the same stored mapping using state read, generic iteration, comparison, branching, and object-language recursion.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "experimental interpreter and finite mapping fixture",
+      "evidence": [
+        "experiments/substrate-interpreter-v0.2/machine.py",
+        "experiments/substrate-interpreter-v0.2/test_machine.py"
+      ],
+      "limits": [
+        "does not establish that the canonical Machine substrate has S1"
+      ]
+    },
+    {
+      "claim_id": "CL-CANONICAL-SUBSTRATE-REMAINS-OPEN-V0.2",
+      "claim": "The canonical Machine substrate has not yet been shown to implement the experimental S1 or S2 contract.",
+      "status": "OPEN / SPECIFICATION-DEBT",
+      "scope": "current repository branch inspection",
+      "next_discriminating_test": "Reconcile the experimental interpreter with the actual canonical interpreter source and repeat the minimal pair there."
+    }
+  ]
+}
