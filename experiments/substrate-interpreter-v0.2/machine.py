@@ -39,6 +39,14 @@ class Unit: pass
 UNIT = Unit()
 NIL: tuple[()] = ()
 
+@dataclass(frozen=True)
+class RelationLookupHit:
+    value: Any
+
+@dataclass(frozen=True)
+class RelationLookupMiss:
+    pass
+
 def ed(env): return dict(env)
 def et(env): return tuple(sorted(env.items()))
 
@@ -235,7 +243,10 @@ class Interpreter:
             if not self.contract.direct_relation_lookup: raise LanguageError("direct lookup unavailable")
             if len(args)!=2 or not isinstance(args[0],Mapping): raise LanguageError("direct lookup")
             if st: st.access_ticks += 1
-            return args[0].get(args[1],NIL)
+            relation, key = args
+            if key in relation:
+                return RelationLookupHit(relation[key])
+            return RelationLookupMiss()
         raise LanguageError(f"unknown primitive: {name}")
 
 def build_indexed_relation(entries: Sequence[Pair]):
