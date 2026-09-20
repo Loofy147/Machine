@@ -3,7 +3,7 @@
 Status: DURABLE RESEARCH RECORD
 Repository: Loofy147/Machine
 Branch: research/evidence-disposition-v0
-Base branch head observed before this write: ad68742c880a67f3042ed55557a2e0c31691d9de
+Parent head observed before this document commit: ad68742c880a67f3042ed55557a2e0c31691d9de
 
 Purpose
 -------
@@ -59,11 +59,11 @@ Finding:
 - Property freezes and post-repair verification must remain tied to exact repository refs and executable workflows.
 - A property description in prose is specification debt until the corresponding executable check and provenance are recorded.
 
-Relevant Machine refs discussed:
+Exact refs that were verified in the branch audit:
 - ea31e36d85ac8af689282f3840b1d4dff055ed75
 - 4de38729c44f03d99c44c9ec7f714e587a7a5a4b
-- 61f4286cf695eb7a827a321fccec9...
-  (full historical ref retained in repository history where available)
+
+A third historical property-freeze ref was only available as an incomplete prefix in the conversation record; it is intentionally not promoted here.
 
 Status: ESTABLISHED as an engineering process rule; individual property claims remain suite-scoped.
 
@@ -71,6 +71,7 @@ Status: ESTABLISHED as an engineering process rule; individual property claims r
 
 Research line:
 - research/target-oblivious-frontier-v0
+- current audited branch head: 5decefaafb5b6abad2364629dafa1d96a5ffdba0
 
 Question:
 - What can be represented/verified offline without conditioning on the eventual target, versus what necessarily requires target-conditioned online work?
@@ -88,11 +89,11 @@ Finding:
 - The repository/branch/ref/commit tuple is the minimum identity for reusing a result.
 - Branch comparisons must be interpreted with exact refs; a conversation summary is not a substitute for repository state.
 
-Relevant branch audit refs discussed:
+Relevant branch audit refs:
 - main: 1626bac2f5c478294afa4b9463f694608c322117
-- research/target-oblivious-frontier-v0: 5decefa... (full ref in repository history)
-- research/confirmatory-freeze-order-v0.1: 6f724f... (full ref in repository history)
-- current evidence-disposition branch head before this write: ad68742c880a67f3042ed55557a2e0c31691d9de
+- research/target-oblivious-frontier-v0: 5decefaafb5b6abad2364629dafa1d96a5ffdba0
+- research/confirmatory-freeze-order-v0.1: 6f724f9c6b4f3c979587a4117f8bdcde8a5ccc48
+- research/evidence-disposition-v0 parent head before this write: ad68742c880a67f3042ed55557a2e0c31691d9de
 
 Status: ESTABLISHED
 
