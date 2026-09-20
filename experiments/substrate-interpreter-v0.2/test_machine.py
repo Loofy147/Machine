@@ -32,7 +32,9 @@ def test_same_representation_contract_difference():
         pass
     else:
         raise AssertionError("S1 must reject direct lookup")
-    assert Interpreter(S2,{"rel":relation}).run(direct_program("b")).result == 20
+    result = Interpreter(S2,{"rel":relation}).run(direct_program("b")).result
+    assert isinstance(result, RelationLookupHit)
+    assert result.value == 20
 
 def test_object_language_scan_matches_direct_access():
     relation={f"k{i}":i*10 for i in range(5)}
@@ -55,7 +57,8 @@ def test_s2_direct_lookup_is_read_only_for_machine_state():
     relation={"a":10,"b":20}
     before={"rel":relation,"marker":7}
     st=Interpreter(S2,before).run(direct_program("b"))
-    assert st.result == 20
+    assert isinstance(st.result, RelationLookupHit)
+    assert st.result.value == 20
     assert st.machine_data == before
 
 def test_s2_access_cost_is_explicit_and_nonzero():
@@ -65,4 +68,4 @@ def test_s2_access_cost_is_explicit_and_nonzero():
 
 def test_s2_missing_key_preserves_lookup_contract():
     st=Interpreter(S2,{"rel":{"a":10}}).run(direct_program("missing"))
-    assert st.result == NIL
+    assert isinstance(st.result, RelationLookupMiss)
