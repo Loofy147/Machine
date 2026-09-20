@@ -1,31 +1,11 @@
 {
   "status": "EXPERIMENTALLY_SUPPORTED / POST-REPAIR CI REPLAY",
   "same_persistent_representation": true,
-  "substrates": {
-    "S1": {"generic_state_read": true, "comparison": true, "branching": true, "sequence_traversal": true, "direct_relation_lookup": false},
-    "S2": {"generic_state_read": true, "comparison": true, "branching": true, "sequence_traversal": true, "direct_relation_lookup": true}
-  },
-  "offline_representation": {"construction_ticks": 5, "stored_entries": 5},
-  "object_language_scan": {
-    "results": [40, 0, 20, [], 30],
-    "transition_ticks_total": 676,
-    "access_ticks_total": 291
-  },
-  "object_language_direct": {
-    "results": [40, 0, 20, [], 30],
-    "transition_ticks_total": 20,
-    "access_ticks_total": 10
-  },
+  "offline_representation": {"construction_ticks": 5, "stored_entries": 5, "measurement": "fixture construction loop; one abstract construction unit per inserted entry"},
+  "resource_vector": {"model": "(B_off,R,B_on,C_access)", "B_off": 5, "R": 5, "S1": {"B_on": 676, "C_access": 291}, "S2": {"B_on": 20, "C_access": 10}},
+  "object_language_scan": {"results": [40, 0, 20, [], 30], "transition_ticks_total": 676, "access_ticks_total": 291},
+  "object_language_direct": {"results": [40, 0, 20, [], 30], "transition_ticks_total": 20, "access_ticks_total": 10},
   "semantic_equivalence": true,
   "resource_ratio": {"transition_ticks_scan_over_direct": 33.8, "access_ticks_scan_over_direct": 29.1},
-  "verification": {
-    "head_commit": "6100337bb75bd180c75ac874ea1021d3bd69c792",
-    "github_actions_run_id": 35466392638,
-    "github_actions_run_number": 10,
-    "pytest": "11 passed",
-    "audit_exit": 0,
-    "full_resource_vector_equal_committed_baseline": true,
-    "artifact_id": 10590214678,
-    "artifact_sha256": "228805354139cfb1489e51d2a2acb181c2e1da6f60b1e2c6060a2a39056989b3"
-  }
+  "verification": {"head_commit": "7b122864a2705cce64d678e491657672376ca372", "github_actions_run_id": 35534437003, "github_actions_run_number": 14, "semantic_conformance_pytest": "13 passed", "implementation_property_pytest": "8 passed", "audit_exit": 0, "full_canonical_vector_equal_committed_baseline": true, "artifact_id": 10612023877, "artifact_sha256": "ed82dfba1226d7e11efb9672b4af730d910400d4cfd124b665f956bf281b5f8a"}
 }
