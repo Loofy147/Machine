@@ -23,3 +23,8 @@ def assert_result_equal(actual, expected):
     if isinstance(expected, Miss):
         return
     assert actual.value == expected.value
+
+def assert_lookup_matches_oracle(target, relation, key):
+    expected = expected_lookup(relation, key, target.eq_k)
+    actual = target.lookup(relation, key)
+    assert_result_equal(actual, expected)

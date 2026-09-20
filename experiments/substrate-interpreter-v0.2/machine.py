@@ -250,8 +250,12 @@ class Interpreter:
         raise LanguageError(f"unknown primitive: {name}")
 
 def build_indexed_relation(entries: Sequence[Pair]):
-    index={x.head:x.tail for x in entries}
-    return index,len(index),len(index)
+    index={}
+    construction_ticks=0
+    for x in entries:
+        construction_ticks += 1
+        index[x.head]=x.tail
+    return index,construction_ticks,len(index)
 
 def scan_lookup(entries: Sequence[Pair], key):
     ticks=0

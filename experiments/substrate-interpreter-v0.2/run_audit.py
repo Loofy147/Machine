@@ -24,27 +24,51 @@ def normalize_direct_result(value):
     raise AssertionError(f"unknown direct lookup result: {value!r}")
 
 def main():
-    relation={f"k{i}":i*10 for i in range(5)}
-    offline=5
-    storage=len(relation)
+    entries=[Pair(f"k{i}",i*10) for i in range(5)]
+    relation, construction_ticks, storage = build_indexed_relation(entries)
     keys=["k4","k0","k2","missing","k3"]
+
     scan_results=[]; scan_steps=scan_access=0
     direct_results=[]; direct_steps=direct_access=0
+
     for k in keys:
         st=Interpreter(S1,{"rel":relation}).run(scan_expr(k))
         scan_results.append(st.result); scan_steps+=st.ticks; scan_access+=st.access_ticks
+
         st=Interpreter(S2,{"rel":relation}).run(direct_expr(k))
         direct_results.append(normalize_direct_result(st.result)); direct_steps+=st.ticks; direct_access+=st.access_ticks
-    out={"status":"EXECUTED / LOCAL REPLAY",
-         "same_persistent_representation":True,
-         "substrates":{
-           "S1":{"generic_state_read":True,"comparison":True,"branching":True,"sequence_traversal":True,"direct_relation_lookup":False},
-           "S2":{"generic_state_read":True,"comparison":True,"branching":True,"sequence_traversal":True,"direct_relation_lookup":True}},
-         "offline_representation":{"construction_ticks":offline,"stored_entries":storage},
-         "object_language_scan":{"results":scan_results,"transition_ticks_total":scan_steps,"access_ticks_total":scan_access},
-         "object_language_direct":{"results":direct_results,"transition_ticks_total":direct_steps,"access_ticks_total":direct_access},
-         "semantic_equivalence":scan_results==direct_results,
-         "resource_ratio":{"transition_ticks_scan_over_direct":scan_steps/direct_steps,"access_ticks_scan_over_direct":scan_access/direct_access}}
+
+    out={
+        "status":"EXECUTED / CI REPLAY",
+        "same_persistent_representation":True,
+        "substrates":{
+            "S1":{"generic_state_read":True,"comparison":True,"branching":True,"sequence_traversal":True,"direct_relation_lookup":False},
+            "S2":{"generic_state_read":True,"comparison":True,"branching":True,"sequence_traversal":True,"direct_relation_lookup":True}},
+        "offline_representation":{
+            "construction_ticks":construction_ticks,
+            "stored_entries":storage,
+            "measurement":"fixture construction loop; one abstract construction unit per inserted entry"},
+        "resource_vector":{
+            "model":"(B_off,R,B_on,C_access)",
+            "B_off":construction_ticks,
+            "R":storage,
+            "S1":{"B_on":scan_steps,"C_access":scan_access},
+            "S2":{"B_on":direct_steps,"C_access":direct_access}},
+        "object_language_scan":{
+            "results":scan_results,
+            "transition_ticks_total":scan_steps,
+            "access_ticks_total":scan_access},
+        "object_language_direct":{
+            "results":direct_results,
+            "transition_ticks_total":direct_steps,
+            "access_ticks_total":direct_access},
+        "semantic_equivalence":scan_results==direct_results,
+        "resource_ratio":{
+            "transition_ticks_scan_over_direct":scan_steps/direct_steps,
+            "access_ticks_scan_over_direct":scan_access/direct_access}}
+
     Path(__file__).with_name("RESULTS-V0.2.json").write_text(json.dumps(out,indent=2)+"\n")
     print(json.dumps(out,indent=2))
-if __name__=="__main__": main()
+
+if __name__=="__main__":
+    main()

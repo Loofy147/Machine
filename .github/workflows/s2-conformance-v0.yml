@@ -21,11 +21,15 @@ jobs:
         env:
           PYTHONPATH: experiments/s2-conformance-v0.1:experiments/substrate-interpreter-v0.2
         run: python -m pytest -q experiments/s2-conformance-v0.1
+      - name: Run S2 implementation property suite
+        env:
+          PYTHONPATH: experiments/substrate-interpreter-v0.2
+        run: python -m pytest -q experiments/substrate-interpreter-v0.2/test_machine.py
       - name: Preserve committed resource baseline
         run: cp experiments/substrate-interpreter-v0.2/RESULTS-V0.2.json /tmp/RESULTS-V0.2.before.json
       - name: Run updated interpreter audit
         run: python experiments/substrate-interpreter-v0.2/run_audit.py
-      - name: Compare full resource vector
+      - name: Compare canonical resource vector and semantic observations
         run: |
           python - <<'PY'
           import json
@@ -34,23 +38,32 @@ jobs:
           before = json.loads(Path("/tmp/RESULTS-V0.2.before.json").read_text())
           after = json.loads(Path("experiments/substrate-interpreter-v0.2/RESULTS-V0.2.json").read_text())
 
-          keys = [
-              "same_persistent_representation",
-              "offline_representation",
-              "object_language_scan",
-              "object_language_direct",
-              "semantic_equivalence",
-              "resource_ratio",
-          ]
+          def vector(d):
+              return {
+                  "same_persistent_representation": d["same_persistent_representation"],
+                  "B_off": d["offline_representation"]["construction_ticks"],
+                  "R": d["offline_representation"]["stored_entries"],
+                  "B_on_scan": d["object_language_scan"]["transition_ticks_total"],
+                  "C_access_scan": d["object_language_scan"]["access_ticks_total"],
+                  "B_on_direct": d["object_language_direct"]["transition_ticks_total"],
+                  "C_access_direct": d["object_language_direct"]["access_ticks_total"],
+                  "semantic_equivalence": d["semantic_equivalence"],
+                  "scan_results": d["object_language_scan"]["results"],
+                  "direct_results": d["object_language_direct"]["results"],
+                  "transition_ratio": d["resource_ratio"]["transition_ticks_scan_over_direct"],
+                  "access_ratio": d["resource_ratio"]["access_ticks_scan_over_direct"],
+              }
 
-          print("=== S2 RESOURCE REPLAY COMPARISON ===")
-          for key in keys:
-              print(f"{key}:")
-              print("  BEFORE:", json.dumps(before.get(key), sort_keys=True))
-              print("  AFTER: ", json.dumps(after.get(key), sort_keys=True))
-              print("  EQUAL: ", before.get(key) == after.get(key))
+          before_vector = vector(before)
+          after_vector = vector(after)
 
-          print("=== END COMPARISON ===")
+          print("=== S2 RESOURCE/SEMANTIC REPLAY COMPARISON ===")
+          print("BEFORE:", json.dumps(before_vector, sort_keys=True))
+          print("AFTER: ", json.dumps(after_vector, sort_keys=True))
+          print("EQUAL: ", before_vector == after_vector)
+
+          if before_vector != after_vector:
+              raise SystemExit("RESOURCE_OR_SEMANTIC_DRIFT_DETECTED")
           PY
       - name: Upload replay evidence
         uses: actions/upload-artifact@v4
