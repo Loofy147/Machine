@@ -1,0 +1,29 @@
+{
+  "schema": "machine.frontier-representation-control.v0",
+  "status": "LOCAL_REPLAY",
+  "seeds": [17, 23, 41],
+  "queries_per_seed": 80,
+  "caps": [10, 20, 40, 80, 160, 320, 640],
+  "graphs": [
+    {"kind": "affine_mix", "M": 30,
+     "macro2": {"offline_ticks": 354, "stored_edges": 224},
+     "macro3": {"offline_ticks": 1026, "stored_edges": 514},
+     "macro4": {"offline_ticks": 2568, "stored_edges": 844}},
+    {"kind": "affine_mix", "M": 300,
+     "macro2": {"offline_ticks": 3594, "stored_edges": 2384},
+     "macro3": {"offline_ticks": 10746, "stored_edges": 6184},
+     "macro4": {"offline_ticks": 29298, "stored_edges": 15092}},
+    {"kind": "affine_mix", "M": 3000,
+     "macro2": {"offline_ticks": 35994, "stored_edges": 23984},
+     "macro3": {"offline_ticks": 107946, "stored_edges": 62884},
+     "macro4": {"offline_ticks": 296598, "stored_edges": 158192}},
+    {"kind": "perm_mix", "M": 31,
+     "macro2": {"offline_ticks": 366, "stored_edges": 229},
+     "macro3": {"offline_ticks": 1053, "stored_edges": 497},
+     "macro4": {"offline_ticks": 2544, "stored_edges": 820}},
+    {"kind": "opaque_mix", "M": 31,
+     "macro2": {"offline_ticks": 363, "stored_edges": 238},
+     "macro3": {"offline_ticks": 1077, "stored_edges": 530},
+     "macro4": {"offline_ticks": 2667, "stored_edges": 857}}
+  ]
+}
