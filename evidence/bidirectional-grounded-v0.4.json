@@ -1,0 +1,46 @@
+{
+  "schema": "machine.bidirectional-grounded-evidence.v0.4",
+  "branch": "research/bidirectional-grounded-verification-v0",
+  "parent_commit": "39fd08990cd08461549b507af2395fabe4591b19",
+  "records": [
+    {
+      "claim_id": "CL-MX-VC-V0.4",
+      "claim": "In the blind-search specialization, every tested admissible interruptible Dijkstra run expanded a set covering G_MX and satisfied N_pi >= VC(G_MX).",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "evidence_ids": ["EV-WX-N3-20260921","EV-WX-N4-20260921","EV-RS-N4-20260921","EV-MG-2000-20260921"],
+      "limits": ["empirical scope only", "blind-search specialization", "positive weights", "finite exhaustive/random test spaces"],
+      "next_discriminating_test": "Extend weighted exhaustive scheduling and then test front-to-end consistent-heuristic variants with the full MEP definition."
+    },
+    {
+      "claim_id": "CL-ACTIVE-GUARD-DIJKSTRA-V0.4",
+      "claim": "The active-vertex stopping guard is correct in the tested positive-weight interruptible bidirectional Dijkstra/UCS model.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "evidence_ids": ["EV-WX-N3-20260921","EV-WX-N4-20260921","EV-RS-N4-20260921"],
+      "limits": ["does not establish arbitrary consistent-heuristic correctness", "depends on exact active-state and post-edge interruption semantics"],
+      "next_discriminating_test": "Formalize the lower-bound proof and test a front-to-end heuristic implementation against the generalized MEP condition."
+    },
+    {
+      "claim_id": "CL-NAIVE-GUARD-FAIL-V0.4",
+      "claim": "The top_F + top_B stopping guard can terminate suboptimally during true post-edge interruption.",
+      "status": "CONTRADICTED",
+      "evidence_ids": ["EV-POSTEDGE-REGRESSION-V0.4","EV-WX-N3-20260921","EV-WX-N4-20260921","EV-RS-N4-20260921"],
+      "limits": ["counterexample is model-specific to interruptible Dijkstra state semantics"],
+      "next_discriminating_test": "Search for smaller counterexamples under arbitrary scheduling, including multigraphs."
+    },
+    {
+      "claim_id": "CL-SIMPLE-MULTI-WORK-V0.4",
+      "claim": "Adding dominated parallel transitions can preserve shortest-path geometry and G_MX/VC while increasing edge-level work.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "evidence_ids": ["EV-MATCHED-SM-V0.4-20260921"],
+      "limits": ["does not establish the theoretical Theta(m/n) simple-graph instance-optimality gap"],
+      "next_discriminating_test": "Construct or reproduce the cited simple-directed worst-case family."
+    }
+  ],
+  "artifacts": {
+    "weighted_exhaustive_n3": "RESULTS-V0.4.json:weighted_n3",
+    "weighted_exhaustive_n4": "RESULTS-V0.4.json:weighted_n4",
+    "random_all_schedules_n4": "RESULTS-V0.4.json:random_n4_all_schedules",
+    "matched_simple_multigraph": "RESULTS-V0.4.json:matched_simple_multigraph",
+    "canonical_regression": "canonical_postedge_regression_v4.json"
+  }
+}
