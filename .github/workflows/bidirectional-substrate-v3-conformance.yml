@@ -60,6 +60,12 @@ jobs:
           python bidir_pasted_original.py
           python run_prov.py
 
+      - name: C benchmark compile and smoke
+        working-directory: experiments/bidirectional-substrate-v3
+        run: |
+          gcc -O2 -o substrate_bench substrate_bench.c -lm
+          ./substrate_bench 50000 4 7
+
       - name: Full v3 regression
         working-directory: experiments/bidirectional-substrate-v3
         run: python verify_v3.py
