@@ -1,0 +1,20 @@
+name: substrate-rev2.1-conformance
+
+on:
+  push:
+    branches:
+      - research/substrate-rev2.1-v0
+  pull_request:
+    branches:
+      - research/substrate-rev2.1-v0
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip pytest numpy
+      - run: python -m pytest -q experiments/substrate-interpreter-v0/test_substrate.py
