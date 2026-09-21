@@ -1,0 +1,14 @@
+{
+  "n": 3,
+  "s": 0,
+  "t": 2,
+  "edges": [[0,1,1],[0,2,3],[1,2,1]],
+  "C_star": 2,
+  "naive_mu": 3,
+  "active_mu": 2,
+  "policy_schedule": "FBFFFF",
+  "policy_description": "fixed direction schedule; first decision F, second B, remaining decisions unused after termination",
+  "check_before_first_edge": false,
+  "semantics": "post-edge-only",
+  "purpose": "canonical regression for naive top_F+top_B stopping guard"
+}
