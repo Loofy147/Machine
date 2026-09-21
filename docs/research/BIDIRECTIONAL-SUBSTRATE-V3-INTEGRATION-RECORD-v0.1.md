@@ -50,7 +50,7 @@ Established from repository inspection:
 - `machine_substrate_artifacts.zip` is not present in the imported package; claims depending exclusively on it remain supplied/imported evidence, not newly reproduced evidence.
 - external Networkit real-graph acquisition remains a separate network-dependent stage.
 
-CI status for the newly added workflow is currently UNKNOWN from the available GitHub workflow-status interface; no CI pass is claimed here.
+CI verification completed successfully on the final branch commit that introduced the workflow trigger: GitHub Actions run `35584149685` (Bidirectional Substrate v3 Conformance) concluded `success`; `verify_v3.py` and all prior validation steps completed successfully. The repository also recorded substrate Rev 2.1 conformance run `35584149682` as `success`. This establishes source-level CI execution on the GitHub environment; it does not upgrade literature claims or external benchmark provenance.
 
 ## Claim-status rule
 
