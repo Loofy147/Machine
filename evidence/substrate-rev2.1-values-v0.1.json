@@ -1,0 +1,48 @@
+{
+  "schema": "machine.substrate-rev2.1-values.v0.1",
+  "branch": "research/substrate-interpreter-v0",
+  "claim_set_status": "EXPERIMENTALLY_SUPPORTED / IMPLEMENTATION_PROFILE",
+  "claims": [
+    {
+      "claim_id": "CL-SUBSTRATE-ADAPTIVE-CSR-V0.1",
+      "claim": "The unified Fiber implementation selects unsigned CSR dtypes from actual value ranges and exposes reproducible representation metrics.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "implementation-level dtype boundaries and deterministic contract methods",
+      "evidence": [
+        "experiments/substrate-interpreter-v0/substrate.py",
+        "experiments/substrate-interpreter-v0/test_substrate.py",
+        "docs/SUBSTRATE-REV2.1-IMPLEMENTATION-PROFILE-v0.1.md"
+      ],
+      "limits": [
+        "representation metrics exclude Python object overhead",
+        "does not establish optimality of dtype layout"
+      ]
+    },
+    {
+      "claim_id": "CL-SUBSTRATE-FIBER-CONTRACT-V0.1",
+      "claim": "Fiber distinguishes raw labeled transition multiplicity from deduplicated predecessor cardinality at the owning object boundary.",
+      "status": "ESTABLISHED_BY_IMPLEMENTATION_AND_TEST",
+      "scope": "Fiber.deduped contract",
+      "evidence": [
+        "experiments/substrate-interpreter-v0/substrate.py",
+        "experiments/substrate-interpreter-v0/test_substrate.py"
+      ],
+      "limits": [
+        "semantic specification remains separate"
+      ]
+    },
+    {
+      "claim_id": "CL-SUBSTRATE-ATTRACTOR-MULTIPLICITY-FIX-V0.1",
+      "claim": "Attractor derives its counter convention from Fiber.deduped and agrees with the dense reference for the parallel-transition regression fixture.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "declared regression fixture",
+      "evidence": [
+        "experiments/substrate-interpreter-v0/test_substrate.py"
+      ],
+      "limits": [
+        "not yet a universal formal proof for all games"
+      ],
+      "next_discriminating_test": "Run randomized 400-game cross-checks over multiple duplicate-transition rates and owners."
+    }
+  ]
+}
