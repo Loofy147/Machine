@@ -49,6 +49,7 @@ jobs:
           PY
 
 
+      # Re-run the imported substrate correctness contract (C1-C7) from source, not from substrate_results.json.
       - name: Machine substrate correctness C1-C7
         working-directory: experiments/bidirectional-substrate-v3
         run: python test_correctness.py 400
