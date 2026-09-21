@@ -1,0 +1,43 @@
+{
+  "elapsed_s": 18.485,
+  "matched_simple_multigraph": {
+    "failures": [],
+    "max_W_ratio": 2.5,
+    "mean_W_ratio": 1.673388353788404,
+    "mean_edge_multiplicity_ratio": 1.6750033681271115,
+    "mean_edges_multi": 206.246,
+    "mean_edges_simple": 123.13,
+    "median_edge_multiplicity_ratio": 1.6774193548387097,
+    "min_W_ratio": 1.0,
+    "pairs": 2000,
+    "policy_runs": 8000
+  },
+  "random_n4_all_schedules": {
+    "active_guard_failures": 0,
+    "checked_runs": 351232,
+    "mx_cover_failures": 0,
+    "naive_finite_failures": 4736,
+    "random_graphs": 2000,
+    "schedules_per_graph": 256,
+    "solvable_graphs": 1372
+  },
+  "weighted_n3": {
+    "active_guard_failures": 0,
+    "graph_states": 4096,
+    "konig_failures": 0,
+    "mx_cover_failures": 0,
+    "naive_finite_failures": 3840,
+    "schedule_runs": 233472,
+    "solvable_graphs": 3648
+  },
+  "weighted_n4": {
+    "active_guard_failures": 0,
+    "checked_policy_runs": 976860,
+    "konig_failures": 0,
+    "mx_cover_failures": 0,
+    "naive_finite_failures": 4374,
+    "policy": "smaller_frontier",
+    "solvable_graphs": 488430,
+    "total_graphs": 531441
+  }
+}
