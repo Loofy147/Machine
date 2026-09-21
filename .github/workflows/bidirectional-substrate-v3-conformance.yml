@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - research/bidirectional-substrate-v3
+      - research/substrate-rev2.1-v0
   pull_request:
     branches:
       - research/bidirectional-substrate-v3
