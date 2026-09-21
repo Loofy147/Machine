@@ -1,0 +1,245 @@
+[
+ {
+  "minkey_pre_pct": 40.217804970871555,
+  "minkey_pre_t": 8.375917525932405,
+  "alt_cert_pct": 66.75580724660477,
+  "alt_cert_t": 7.21502344954209,
+  "stage2_means": [
+   19.9,
+   23.1,
+   28.0
+  ],
+  "stage2_friedman_p": 0.16391894132913587,
+  "stage2_equiv_margin": [
+   13.3,
+   11.3
+  ],
+  "stage2_share_pct": 9.938109190934641,
+  "minkey_scan_pct": 156.44463940305337,
+  "alt_scan_pct": 83.88985979313128,
+  "minkey_vs_fwd_scan_t": -1.0595323894858435,
+  "minkey_vs_fwd_scan_savings_pct": -4.9358587555949365,
+  "card_vs_fwd_unanimous_exp": 90,
+  "proxy_vs_true_exp_pct": -0.09213860278390884,
+  "n_graphs": 90,
+  "n_instances": 270,
+  "n_per_cluster": 300,
+  "entropy": 11
+ },
+ {
+  "minkey_pre_pct": 38.950403690888095,
+  "minkey_pre_t": 9.595016082543056,
+  "alt_cert_pct": 58.438451500652455,
+  "alt_cert_t": 6.548440507121953,
+  "stage2_means": [
+   23.5,
+   25.7,
+   24.7
+  ],
+  "stage2_friedman_p": 0.9120091435297486,
+  "stage2_equiv_margin": [
+   5.5,
+   6.5
+  ],
+  "stage2_share_pct": 10.332701050793364,
+  "minkey_scan_pct": 158.5033417903665,
+  "alt_scan_pct": 81.34253824598608,
+  "minkey_vs_fwd_scan_t": -0.9218743327703216,
+  "minkey_vs_fwd_scan_savings_pct": -4.08993531122657,
+  "card_vs_fwd_unanimous_exp": 90,
+  "proxy_vs_true_exp_pct": 0.29460011382278495,
+  "n_graphs": 90,
+  "n_instances": 270,
+  "n_per_cluster": 300,
+  "entropy": 12
+ },
+ {
+  "minkey_pre_pct": 35.3186538788945,
+  "minkey_pre_t": 7.986474507992957,
+  "alt_cert_pct": 64.90435394906702,
+  "alt_cert_t": 8.442825224988486,
+  "stage2_means": [
+   24.0,
+   28.5,
+   28.5
+  ],
+  "stage2_friedman_p": 0.12493021219857224,
+  "stage2_equiv_margin": [
+   8.7,
+   5.7
+  ],
+  "stage2_share_pct": 11.66638451213466,
+  "minkey_scan_pct": 159.19252665232534,
+  "alt_scan_pct": 75.38834547593865,
+  "minkey_vs_fwd_scan_t": -2.4192952268712813,
+  "minkey_vs_fwd_scan_savings_pct": -12.725896841863687,
+  "card_vs_fwd_unanimous_exp": 89,
+  "proxy_vs_true_exp_pct": 0.4668378405415563,
+  "n_graphs": 90,
+  "n_instances": 270,
+  "n_per_cluster": 300,
+  "entropy": 13
+ },
+ {
+  "minkey_pre_pct": 40.62481903989812,
+  "minkey_pre_t": 9.35974359689301,
+  "alt_cert_pct": 57.93830309447037,
+  "alt_cert_t": 7.260428729745424,
+  "stage2_means": [
+   21.8,
+   27.0,
+   26.7
+  ],
+  "stage2_friedman_p": 0.28585241430322156,
+  "stage2_equiv_margin": [
+   9.1,
+   7.5
+  ],
+  "stage2_share_pct": 10.20579148557365,
+  "minkey_scan_pct": 154.20125104574998,
+  "alt_scan_pct": 84.15243804285475,
+  "minkey_vs_fwd_scan_t": -1.2168978080397184,
+  "minkey_vs_fwd_scan_savings_pct": -5.044970769000148,
+  "card_vs_fwd_unanimous_exp": 90,
+  "proxy_vs_true_exp_pct": -0.5965709167679578,
+  "n_graphs": 90,
+  "n_instances": 270,
+  "n_per_cluster": 300,
+  "entropy": 14
+ },
+ {
+  "minkey_pre_pct": 38.82603993101228,
+  "minkey_pre_t": 9.008501254197753,
+  "alt_cert_pct": 67.8855825649623,
+  "alt_cert_t": 7.796177407976491,
+  "stage2_means": [
+   19.8,
+   28.2,
+   34.7
+  ],
+  "stage2_friedman_p": 0.000288862397255971,
+  "stage2_equiv_margin": [
+   20.4,
+   12.5
+  ],
+  "stage2_share_pct": 11.720100911505476,
+  "minkey_scan_pct": 154.691561313501,
+  "alt_scan_pct": 80.05184872691649,
+  "minkey_vs_fwd_scan_t": -1.7186090605592852,
+  "minkey_vs_fwd_scan_savings_pct": -7.184378167767851,
+  "card_vs_fwd_unanimous_exp": 90,
+  "proxy_vs_true_exp_pct": 0.08457671746588957,
+  "n_graphs": 90,
+  "n_instances": 270,
+  "n_per_cluster": 300,
+  "entropy": 15
+ },
+ {
+  "minkey_pre_pct": 33.27186674042659,
+  "minkey_pre_t": 8.101722240143582,
+  "alt_cert_pct": 48.54223023745112,
+  "alt_cert_t": 7.207029156602441,
+  "stage2_means": [
+   12.8,
+   13.2,
+   14.5
+  ],
+  "stage2_friedman_p": 0.06865380798995398,
+  "stage2_equiv_margin": [
+   4.5,
+   4.3
+  ],
+  "stage2_share_pct": 11.61150596345667,
+  "minkey_scan_pct": 130.877100145522,
+  "alt_scan_pct": 68.30974114741815,
+  "minkey_vs_fwd_scan_t": 0.49472280368145183,
+  "minkey_vs_fwd_scan_savings_pct": 1.8640874968369552,
+  "card_vs_fwd_unanimous_exp": 90,
+  "proxy_vs_true_exp_pct": -0.25516967126193446,
+  "n_graphs": 90,
+  "n_instances": 270,
+  "n_per_cluster": 150,
+  "entropy": 21
+ },
+ {
+  "minkey_pre_pct": 34.37050359712228,
+  "minkey_pre_t": 7.946048788082764,
+  "alt_cert_pct": 54.26540284360186,
+  "alt_cert_t": 6.066263520827463,
+  "stage2_means": [
+   12.1,
+   13.5,
+   14.2
+  ],
+  "stage2_friedman_p": 0.33378291991247816,
+  "stage2_equiv_margin": [
+   4.4,
+   3.8
+  ],
+  "stage2_share_pct": 11.025678848446853,
+  "minkey_scan_pct": 136.95260023387146,
+  "alt_scan_pct": 72.94161371320833,
+  "minkey_vs_fwd_scan_t": -0.02469004266631387,
+  "minkey_vs_fwd_scan_savings_pct": -0.10550563239233601,
+  "card_vs_fwd_unanimous_exp": 90,
+  "proxy_vs_true_exp_pct": 0.4364320005371569,
+  "n_graphs": 90,
+  "n_instances": 270,
+  "n_per_cluster": 150,
+  "entropy": 22
+ },
+ {
+  "minkey_pre_pct": 48.272962187122516,
+  "minkey_pre_t": 9.274859851816563,
+  "alt_cert_pct": 65.21204671173939,
+  "alt_cert_t": 6.9758326941610616,
+  "stage2_means": [
+   38.6,
+   50.9,
+   55.8
+  ],
+  "stage2_friedman_p": 0.004216108511846482,
+  "stage2_equiv_margin": [
+   26.8,
+   16.8
+  ],
+  "stage2_share_pct": 10.816494340890685,
+  "minkey_scan_pct": 172.87008470332714,
+  "alt_scan_pct": 89.4752668024339,
+  "minkey_vs_fwd_scan_t": -1.1988791395204221,
+  "minkey_vs_fwd_scan_savings_pct": -5.527084501607593,
+  "card_vs_fwd_unanimous_exp": 90,
+  "proxy_vs_true_exp_pct": 0.3440149990539876,
+  "n_graphs": 90,
+  "n_instances": 270,
+  "n_per_cluster": 600,
+  "entropy": 31
+ },
+ {
+  "minkey_pre_pct": 44.13371451215713,
+  "minkey_pre_t": 9.114068142575935,
+  "alt_cert_pct": 73.83083973172286,
+  "alt_cert_t": 7.457370970869604,
+  "stage2_means": [
+   50.0,
+   53.1,
+   53.2
+  ],
+  "stage2_friedman_p": 0.5325417163587458,
+  "stage2_equiv_margin": [
+   12.9,
+   12.2
+  ],
+  "stage2_share_pct": 11.010562652696576,
+  "minkey_scan_pct": 169.7612754888469,
+  "alt_scan_pct": 89.26482376467091,
+  "minkey_vs_fwd_scan_t": -1.28244890498421,
+  "minkey_vs_fwd_scan_savings_pct": -5.372555488211871,
+  "card_vs_fwd_unanimous_exp": 90,
+  "proxy_vs_true_exp_pct": 1.0374903582901718,
+  "n_graphs": 90,
+  "n_instances": 270,
+  "n_per_cluster": 600,
+  "entropy": 32
+ }
+]
