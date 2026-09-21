@@ -48,6 +48,11 @@ jobs:
           print("artifact validation passed")
           PY
 
+
+      - name: Machine substrate correctness C1-C7
+        working-directory: experiments/bidirectional-substrate-v3
+        run: python test_correctness.py 400
+
       - name: Generate regression inputs from source
         working-directory: experiments/bidirectional-substrate-v3
         run: |
