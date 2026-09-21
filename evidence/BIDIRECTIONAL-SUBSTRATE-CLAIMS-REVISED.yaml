@@ -1,0 +1,203 @@
+# Revised claims -- bidirectional Dijkstra scheduling policies on clustered bottleneck graphs
+# Evidence base: frozen provenance ensemble (90 graphs x 3 queries = 270 instances, n_per_cluster=300)
+#              + 9 fresh independently-seeded ensembles (n_per_cluster = 150, 300, 600).
+# Reproduce: see README in bidir_harness_v3.zip (run_prov.py, claims_v2.py, replicate.py, verify_v3.py, exp_policies.py, analyze_policies.py, exp_scaling.py)
+# Status vocabulary: REPLICATED | SUPPORTED | SUPPORTED_WITH_CAVEAT | REFINED | DEFINITIONAL | MEASURED_AND_GROUNDED | NOT_REPRODUCED | NOT_SUPPORTED
+# Unit conventions: "expansions" = nodes settled+scanned; "edge scans" = adjacency entries examined (work).
+# Statistics are graph-clustered (n=90 graph-level means; 3 queries per graph are not independent).
+# Rev 3: adds literature grounding + real-graph / directed-hub evidence (claims g1a8n2..g7h1v5); w3x7k1 and m9c5d2-c refined.
+
+- id: k4p8s3
+  claim: 'Changing the frontier scheduling policy changes search efficiency on identical (G, s, t, w) instances, for both expansions and edge-scan
+    work.
+
+    '
+  status: SUPPORTED
+  scope: Clustered bottleneck graphs, 3 policies (+2 added), weights in {1..9}; deterministic algorithm, so the intervention is exact on each
+    instance; inference is over the graph ensemble.
+  evidence:
+    paired_graph_level_t89:
+      total_expansions_min_key_minus_cardinality_true:
+        mean_diff: 58.2
+        t: 10.56
+        wilcoxon_pos_neg: 71/19
+      total_expansions_alternate_minus_cardinality_true:
+        mean_diff: 44.2
+        t: 7.34
+        wilcoxon_pos_neg: 77/13
+      separation_ratio_fwd_over_bidir_alternate_minus_cardinality_true:
+        t: -7.26
+        p: 1.4e-10
+      separation_ratio_fwd_over_bidir_min_key_minus_cardinality_true:
+        t: -7.72
+        p: 1.6e-11
+  quoted_statistic_check: 't(89)=13.224 and Wilcoxon W=0 could NOT be reproduced from the provided harness. Searched 10 policy pairs x 8 metrics:
+    no policy-vs-policy comparison is unanimous (W=0 never occurs); the closest |t| is 13.33 (total heap pushes, alternate vs cardinality_true,
+    87/3 split, W=20.5). W=0 with n=90 DOES occur -- but only for cardinality-type policies versus forward-only Dijkstra (90/90 graphs; t=33.7
+    expansions, t=18.9 edge scans). The quoted p=1.74e-16 equals the normal-approximation floor for n=90 (exact unanimity p = 2^(1-90) = 1.6e-27),
+    so it is an approximation artefact, not a measured tail probability. Regenerate the statistic from the frozen harness before quoting it.
+
+    '
+- id: m9c5d2-a
+  claim: E_total = E_pre + E_res + E_cert holds in 100% of runs.
+  status: DEFINITIONAL
+  note: 'Each stage is a difference of cumulative counters taken at two event snapshots, so the sum telescopes to the total for any definition
+    of the events. The identity cannot fail and is not experimental evidence; the empirical content is the stage magnitudes (m9c5d2-b..d). Stages
+    are also compositional (E_cert = E_total - E_pre - E_res), so correlations between stages carry a built-in negative bias and should not be
+    read causally.
+
+    '
+  naming: Rename Stage1/2/3 to E_pre (start->first contact), E_res (contact->optimum first held), E_cert (optimum held->proof).
+- id: m9c5d2-b
+  claim: min_key pays a pre-contact expansion penalty; alternate pays a certification penalty (both vs cardinality_true).
+  status: REPLICATED
+  evidence:
+    frozen_ensemble:
+      min_key_pre: +44.81% [95% CI +34.1, +57.0]
+      alternate_cert: +53.46% [95% CI +37.4, +73.0]
+    fresh_replications_9:
+      min_key_pre: +33.3% .. +48.3% (median +39.0%), t>2 in 9/9
+      alternate_cert: +48.5% .. +73.8% (median +64.9%), t>2 in 9/9
+    also_observed:
+      alternate_pre_vs_card: +6.96% [+2.6, +11.8]
+      min_key_cert_vs_card: +3.9% [-7.4, +16.5] (not significant)
+  note: Quoted +44.80% is +44.81% at two decimals. Percentages are ratios of means, not means of ratios.
+- id: m9c5d2-c
+  claim: Phase 2 (E_res) is invariant to scheduling policy (~22-25 expansions).
+  status: NOT_SUPPORTED
+  evidence:
+    frozen_ensemble: means 21.9 (alternate) / 23.7 (min_key) / 24.6 (cardinality_true); Friedman p=0.37; no pairwise difference significant
+    equivalence_tost_90pct_ci: 'smallest symmetric margin 6.3-7.4 expansions (~26-31% of the mean): equivalence is NOT established at any tight
+      margin'
+    fresh_replications_9: Friedman p<0.05 in 2/9; alternate has the lowest E_res in 10/10 ensembles (frozen + 9 fresh)
+    size_dependence: 'E_res ~ 12-15 (n=150), ~20-35 (n=300), ~39-56 (n=600) across policies: grows roughly in proportion to graph size, so ''22-25''
+      is a property of n=300, not a constant'
+    size_dependence_fitted: 'log-log fit over n_per_cluster = 75..1200, 3 fresh seeds per size: E_res exponent 0.95-0.98 (sd 0.06-0.08 across
+      seeds) for every policy; E_pre 1.01-1.07; E_cert 0.86-0.99; total expansions 0.98-1.00; forward-only 1.02 -> every stage grows ~linearly
+      in n'
+  supported_weaker_claim: E_res is small (9.8-11.7% of expansions across all ensembles) and shows no detectable policy effect at n=300 in the
+    frozen ensemble; it is not policy-invariant in general.
+- id: m9c5d2-d
+  claim: 'Mechanisms: min_key dilation is due to local degree density; alternate''s tax is due to rigid 1:1 progression; Phase 2 isolates local
+    bottleneck topology.'
+  status: REFINED
+  evidence:
+    min_key_degree_density: SUPPORTED
+    min_key_detail: pre-contact dilation vs cardinality_true by nominal alpha 1.0/2.5/4.0 = +7.5 / +56.8 / +104.4 expansions; spearman(alpha_realized)=0.65,
+      R2=0.47. min_key puts 79% of pre-contact expansions on the dense side (forward fraction 0.21 vs 0.77).
+    alternate_1to1_rigidity: SUPPORTED
+    alternate_detail: alternate splits certification 50/50 (fwd 54.8, bwd 54.8); cardinality_true 76/24 (fwd 54.6, bwd 16.8). Forward work is
+      identical; the entire tax is extra dense-side expansions. Tax by alpha 1.0/2.5/4.0 = 10.3 / 40.4 / 63.9; by beta 1/3/5 = 68.0 / 35.2 / 11.4.
+    phase2_isolates_topology: NOT_SUPPORTED
+    phase2_detail: '(cardinality_true) E_res vs beta: Kruskal p=0.44; vs alpha: p=0.19; eta^2(topology cell)=0.011; instance-level spearman |rho|<0.1
+      for hop distance, path cost, bridge distances, endpoint degrees (beta rho=0.13, p=0.03).'
+- id: w3x7k1
+  claim: Expansion counts understate the policy effect; whether min-key saves anything over unidirectional Dijkstra in edge-scan work depends
+    on the graph family.
+  status: REFINED
+  evidence:
+    frozen_ensemble:
+      edge_scans_vs_cardinality_true:
+        alternate: +83.1% [+67.1, +99.5]
+        min_key: +154.5% [+127.4, +181.9]
+        open_work: -1.3% (t=-2.71)
+        cardinality_proxy: +0.7% (t=1.55, n.s.)
+      saving_vs_forward_only_dijkstra:
+        cardinality_true:
+          expansions: 49.1%
+          edge_scans: 60.3%
+          graphs_better: 90/90
+        alternate:
+          expansions: 38.9%
+          edge_scans: 27.3%
+        min_key:
+          expansions: 35.7%
+          edge_scans: -1.1% (t=-0.25, n.s.)
+    fresh_replications_9: 'min_key edge-scan saving vs forward-only: -12.7% .. +1.9% (median -5.0%); min_key +131% .. +173% and alternate +68%
+      .. +89% scans vs cardinality_true'
+    real_graphs_and_hub_multigraph: 'min-key scans as a fraction of forward-only Dijkstra: router 0.31, PGP 0.34, blogs 0.20, power grid 0.38,
+      directed hub multigraph 0.04, clustered ensemble 1.01 (so it saves 62-96% on these graphs, versus 66-99% for Pohl''s rule, and nothing on
+      the clustered ensemble)'
+  note: 'cardinality_proxy (heap length incl. stale entries) is indistinguishable from cardinality_true: -0.6% .. +1.0% expansions across replications.'
+- id: e7m2r1
+  claim: beta_bridge, alpha_nominal, alpha_realized and geodesic distance are insufficient to explain the separation-ratio variance.
+  status: SUPPORTED
+  evidence:
+    r2_specified_hop_geodesic: 0.26-0.35 in-sample; grouped-by-graph 5-fold CV R2 0.21-0.30
+    r2_specified_weighted_geodesic: 0.37-0.51 in-sample (the answer depends on how 'geodesic' is defined)
+    variance_structure: between-graph eta^2 = 0.42-0.47, so 53-58% of the variance is within-graph (query-level) and cannot be explained by graph-level
+      beta/alpha by construction
+    adding_query_local_geometry: 'path cost, distance s->nearest bridge, t->nearest bridge, deg(s), deg(t): in-sample R2 0.42-0.59, grouped CV
+      R2 0.29-0.50'
+  limitations: Unexplained variance stays >=50% even with query-local geometry, but most of what IS explainable is simple measurable geometry,
+    not exotic invariants. Spectral/higher-order invariants remain untested.
+- id: h2q9v4
+  claim: Frozen provenance seeds give 90 independent topologies and independent query streams.
+  status: REFINED
+  evidence: 'Graph seeds: 90/90 unique. Query seeds (2000+rep+graph_id): only 50/90 unique -- 40 graphs reuse another graph''s (s,t) index stream.
+    Topologies still differ, and all key effects replicate on fresh SeedSequence-derived seeds, so conclusions are unaffected; use SeedSequence.spawn
+    for new work.'
+- id: g1a8n2
+  claim: Nicholson's min-key rule is dominated by Pohl's cardinality rule on real heavy-tailed graphs.
+  status: REPLICATED
+  scope: Edge scans, weights 1..9, 60-150 random pairs per graph, one graph per dataset; bootstrap over pairs.
+  evidence:
+    router_level_internet_192k: 29.8x Pohl's edge scans (95% CI 19.4-45.0); worst instance 675x the per-instance best of 7 rules
+    pgp_trust_10k: 6.6x (5.5-7.8)
+    political_blogs_1_5k: 3.9x (3.1-4.7)
+    us_power_grid_4_9k: 1.12x (1.09-1.15)
+    directed_hub_multigraph_20k: 1.63x (1.47-1.80)
+    clustered_frozen: 2.55x (2.28-2.82)
+    holm_corrected_p: Wilcoxon p < 0.0005 (Holm-corrected) on all six datasets
+  literature: 'Consistent with Haeupler et al. (arXiv:2410.14638v4): none of Dantzig/Nicholson/Pohl is instance-optimal; and with Ahmadi et al.
+    (2024): min-cost interleaving can run one direction for long stretches when its frontier enters a dense region.'
+- id: g2b5k7
+  claim: The whole-vertex alternating rule (Dantzig) pays a penalty that is specific to degree asymmetry between the two searches.
+  status: REFINED
+  evidence: 'alternate/Pohl edge scans: clustered (strong asymmetry) 1.83x; directed hub 1.00x; PGP 1.25x (1.17-1.34); power grid 1.04x; blogs
+    0.96x (n.s.); router graph 1.10x (0.99-1.20, n.s.); the earlier +83% figure is a property of the asymmetric ensemble, not a general law.'
+- id: g3c9m4
+  claim: A degree-aware rule (expand the side whose open set has the smaller total degree) beats Pohl's rule, most on hub-heavy graphs.
+  status: NOT_SUPPORTED
+  evidence: 'open_work/Pohl edge scans: 0.987 clustered (Holm p=0.011), 0.982 hub multigraph (n.s.), 0.981 PGP (n.s.), 0.993 power grid (Holm
+    p=0.001), 1.006 blogs, 1.013 router graph: improvement at most 1.9%, significant on two graphs only, none larger on the hubbiest graphs.'
+- id: g4d6p1
+  claim: The equal-work rule (alternate single edge relaxations), instance-optimal in edges accessed on multigraphs, is competitive in practice
+    and bounds the worst case.
+  status: SUPPORTED_WITH_CAVEAT
+  evidence:
+    mean_vs_pohl: 'edge-granular / Pohl: 1.03 router, 1.00 PGP, 0.98 blogs, 1.03 power, 0.97 hub multigraph (all within +-3.4%, n.s. after Holm
+      except power: +3.4%), but 1.23 on the asymmetric clustered ensemble (significant)'
+    vertex_vs_edge_granular: equal-work by vertex and by edge agree on average (within 2%) but differ in the tail
+    worst_instance_regret: edge-granular has the smallest maximum ratio to the per-instance best rule on 4 of 6 datasets, e.g. 1.20x vs 5.29x
+      for Pohl on the hub multigraph; Pohl is smallest on the clustered ensemble and the power grid
+  caveat: Regret is measured against the best of the 7 implemented rules, not against all algorithms; the guarantee in the literature is a constant
+    factor, not a mean-cost win.
+  literature: Haeupler et al. (arXiv:2410.14638v4, Thm 3, corrected Algorithm 2); Bertram et al. (arXiv:2608.24380) for the simple-graph limits.
+- id: g5e3r8
+  claim: Search effort and all three stages scale ~linearly with graph size on the clustered ensemble; policy penalties grow slowly with size.
+  status: REFINED
+  evidence: 'exponents (n_per_cluster 75..1200): total expansions 0.98-1.00, edge scans 0.93-1.03, E_pre 1.01-1.07, E_res 0.95-0.98, E_cert 0.86-0.99,
+    forward-only 1.02. Edge-scan ratio to Pohl at n=75 -> 1200: min-key 2.08 -> 2.79, alternate 1.59 -> 1.91, equal-work (edge) 1.13 -> 1.29;
+    in expansions the equal-work ratio stays 1.05-1.07.'
+  note: No sublinear regime appears on this ensemble (bottleneck-limited); the b^(d/2) picture is not the operative law here.
+- id: g6f7t2
+  claim: Heap length is an adequate proxy for the exact open-set size in Pohl's rule.
+  status: REPLICATED
+  evidence: 'proxy/exact edge scans: 1.007 clustered, 0.999 hub multigraph, 0.997 PGP, 0.998 power, 0.966 blogs, 1.018 router; every CI includes
+    1.'
+- id: g7h1v5
+  claim: Predecessor (in-edge) access shifts the resource frontier of point-to-point search; whether that is a new capability or a reallocation
+    depends on the contract.
+  status: MEASURED_AND_GROUNDED
+  evidence:
+    edge_scans_saved_by_backward_search_pohl: router graph 99.0%, directed hub multigraph 97.6%, PGP 94.9%, blogs 94.8%, power grid 66.4%, clustered
+      ensemble 60.3%
+    sublinear_query_contract: 'new capability: with only out-edge access and no degree queries unidirectional Dijkstra is instance-optimal (Haeupler
+      et al., Thm 2, restricted model); with in-edge access bidirectional Dijkstra is instance-optimal on multigraphs (Thm 3) and the measured
+      savings above are available'
+    preprocessing_contract: 'reallocation of computation: building the inverse index costs Theta(n+E); measured build 1.07 ms vs one scan step
+      118 us in C (repaid in 8.7-9.8 scan steps or ~1 layered-scan query)'
+    multiplicity: labeled fibers = multigraph regime (instance-optimal); de-duplicated fibers = simple digraph regime where the ratio can reach
+      Theta(ceil(m/n)) (Bertram et al.), m/n <= k here
+  note: The first two sentences of the evidence are this note's synthesis of the cited theorems, not statements made verbatim by the papers.

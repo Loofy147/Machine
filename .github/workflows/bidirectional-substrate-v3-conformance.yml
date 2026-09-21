@@ -1,0 +1,58 @@
+name: Bidirectional Substrate v3 Conformance
+
+on:
+  push:
+    branches:
+      - research/bidirectional-substrate-v3
+  pull_request:
+    branches:
+      - research/bidirectional-substrate-v3
+      - research/substrate-rev2.1-v0
+
+jobs:
+  verify-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy pandas scipy pyyaml
+
+      - name: Syntax and smoke validation
+        working-directory: experiments/bidirectional-substrate-v3
+        run: |
+          python -m py_compile bidir_pasted_original.py bidir_v2.py bidir_v3.py             run_prov.py verify_v3.py exp_policies.py exp_scaling.py             claims_v2.py replicate.py analyze_policies.py substrate_lib.py smoke_test.py
+          python smoke_test.py
+
+      - name: Validate committed JSON/YAML artifacts
+        working-directory: experiments/bidirectional-substrate-v3
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import yaml
+          for path in Path(".").glob("*.json"):
+              json.loads(path.read_text())
+          for path in [Path("claims_revised.yaml"), Path("../../evidence/BIDIRECTIONAL-SUBSTRATE-CLAIMS-REVISED.yaml")]:
+              yaml.safe_load(path.read_text())
+          print("artifact validation passed")
+          PY
+
+      - name: Generate regression inputs from source
+        working-directory: experiments/bidirectional-substrate-v3
+        run: |
+          python bidir_pasted_original.py
+          python run_prov.py
+
+      - name: Full v3 regression
+        working-directory: experiments/bidirectional-substrate-v3
+        run: python verify_v3.py
