@@ -47,10 +47,10 @@ Established from repository inspection:
 - the seven-policy smoke test source is present.
 - JSON/YAML validation is part of the CI contract.
 - the full regression has a deterministic source path and no longer depends on hand-supplied pickle files.
-- `machine_substrate_artifacts.zip` is not present in the imported package; claims depending exclusively on it remain supplied/imported evidence, not newly reproduced evidence.
+- `machine_substrate_artifacts.zip` is now present in the integrated v3 artifact package; the previous NOT_SUPPLIED boundary is closed for the substrate correctness/benchmark package. The package includes the C1-C7 correctness harness, B1-B10 benchmark sources, C benchmark, and `substrate_results.json`.
 - external Networkit real-graph acquisition remains a separate network-dependent stage.
 
-CI verification completed successfully on the final branch commit that introduced the workflow trigger: GitHub Actions run `35584149685` (Bidirectional Substrate v3 Conformance) concluded `success`; `verify_v3.py` and all prior validation steps completed successfully. The repository also recorded substrate Rev 2.1 conformance run `35584149682` as `success`. This establishes source-level CI execution on the GitHub environment; it does not upgrade literature claims or external benchmark provenance.
+CI verification completed successfully for the pre-artifact v3 integration commit: GitHub Actions run `35584149685` (Bidirectional Substrate v3 Conformance) concluded `success`, and `verify_v3.py` plus prior validation steps completed successfully. The repository also recorded substrate Rev 2.1 conformance run `35584149682` as `success`. After integration of the machine-substrate artifact package, the same two workflows were triggered on merge commit `e03b541b679bd2141a67f3a55247a3854545597a`; the Rev 2.1 conformance run completed successfully, while the post-artifact v3 run `35585041468` was still in progress at the time of this record update. No PASS is claimed for that final post-artifact v3 run until GitHub reports completion.
 
 ## Claim-status rule
 
