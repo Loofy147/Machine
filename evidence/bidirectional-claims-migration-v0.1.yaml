@@ -1,0 +1,80 @@
+schema: machine.bidirectional-claims-migration.v0.1
+status: MIGRATION_GATE
+repository: Loofy147/Machine
+branch: research/bidirectional-ledger-reconciliation-v0
+recorded: 2026-09-21
+
+source:
+  claims_revised_yaml: NOT_LOCATED
+  exact_source_read: false
+  note: "The originating claims_revised.yaml was not retrievable from the available Git trees or file index. No claim text is fabricated."
+
+reported_demo_migration:
+  known_claims:
+    - g1a8n2
+    - w3x7k1
+    - m9c5d2-c
+  reported_migrated_count: 3
+  reported_possible_fourth_via_strong_weak_split: true
+  fourth_id: UNKNOWN
+
+claims:
+  k4p8s3:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  m9c5d2-a:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  m9c5d2-b:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  m9c5d2-c:
+    status: MIGRATED_IN_DEMO__SOURCE_NOT_RETRIEVED
+    source_status: NOT_LOCATED
+  m9c5d2-d:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  e7m2r1:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  h2q9v4:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  g1a8n2:
+    status: MIGRATED_IN_DEMO__SOURCE_NOT_RETRIEVED
+    source_status: NOT_LOCATED
+  g2b5k7:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  g3c9m4:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  g4d6p1:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  g5e3r8:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  g6f7t2:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  g7h1v5:
+    status: MIGRATION_PENDING
+    source_status: NOT_LOCATED
+  w3x7k1:
+    status: MIGRATED_IN_DEMO__SOURCE_NOT_RETRIEVED
+    source_status: NOT_LOCATED
+
+harness_sources:
+  - bidir_v3.py
+  - exp_policies.py
+  - exp_scaling.py
+  - replicate.py
+  - real_graph_meta.json
+
+harness_status: SOURCE_NOT_LOCATED_IN_INSPECTED_REPOSITORY_TREES
+
+rules:
+  - "Do not upgrade MIGRATED_IN_DEMO__SOURCE_NOT_RETRIEVED to verified."
+  - "Do not regenerate original claim text from memory."
+  - "Original harness outputs and v0.4 replacement outputs must be compared before numerical claims are reconciled."
