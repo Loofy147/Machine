@@ -546,3 +546,182 @@ Treat it as:
 localize -> model -> minimally repair -> falsify the repair -> re-localize residual failure -> converge under an explicit progress contract
 
 The test machinery itself is part of the system under test.
+---
+
+# 21. 2026-09-21 addendum — AND/OR interaction distinction and repair-objective correction
+
+This addendum records the correction and extension produced by the follow-up interaction experiment discussion.
+
+## 21.1 Correction to the earlier failure-mode claim
+
+The earlier informal claim was:
+
+> a marginal presence/absence tracker would fail to light up on a pure AND interaction.
+
+That claim was wrong.
+
+For a pure two-edit AND failure:
+
+| P | Q | fail |
+|---|---|---:|
+| 0 | 0 | 0 |
+| 0 | 1 | 0 |
+| 1 | 0 | 0 |
+| 1 | 1 | 1 |
+
+each edit is individually necessary, so the marginal presence/absence gap is non-zero for both P and Q.
+
+The same marginal gaps can arise for an OR-independent structure:
+
+| P | Q | fail |
+|---|---|---:|
+| 0 | 0 | 0 |
+| 0 | 1 | 1 |
+| 1 | 0 | 1 |
+| 1 | 1 | 1 |
+
+Therefore the important limitation is not:
+
+> marginal tracking cannot detect interaction.
+
+It is:
+
+> marginal tracking cannot identify whether the observed association is produced by a joint dependency or by independent sufficient faults.
+
+For the demonstrated coding, the marginal evidence is identical:
+
+- P = +0.500
+- Q = +0.500
+- R = 0.000
+
+This is an identifiability limitation of the model shape.
+
+## 21.2 Interaction contrast
+
+Using the same full-factorial probe table, the second-order PQ contrast distinguishes the structures under the fixed Yates coding convention:
+
+- AND interaction: PQ = +0.500
+- OR-independent: PQ = -0.500
+
+The important result is the opposite interaction direction under the same coding, not the absolute numerical scale by itself.
+
+The interaction pass is therefore a structural detector, whereas the marginal pass is only an association detector.
+
+## 21.3 ddmin is a localization operation, not a repair operation
+
+A second correction is now experimentally motivated.
+
+ddmin returns a 1-minimal failing set (MFS): a subset whose failure disappears when any single member is removed.
+
+That object is not necessarily the minimum repair set (MCR).
+
+For the AND case:
+
+- MFS = {P,Q}
+- valid minimum repair sets = {P} or {Q}
+
+Dropping the entire MFS is therefore a valid repair but can be an over-repair.
+
+The protocol must keep these operations separate:
+
+    failure localization
+        -> MFS
+        -> repair-set search
+        -> MCR
+        -> validation
+
+A minimum repair set R must satisfy:
+
+    fail(candidate - R) == false
+
+while minimizing |R|.
+
+The corrected harness explicitly tests proper subsets of the MFS before accepting removal of the whole set.
+
+## 21.4 Consequence for the architecture
+
+The retained architecture is:
+
+    candidate
+       |
+       v
+    coarse localization (ddmin)
+       |
+       v
+    interaction analysis on suspicious cluster
+       |
+       v
+    minimum repair-set search
+       |
+       v
+    replay / generalize / preserve
+       |
+       +---- PASS ----> converged
+       |
+       +---- FAIL ----> re-localize residual failure
+
+The distinction is now contractual:
+
+    MFS != MCR
+
+and:
+
+    interaction diagnosis != repair selection
+
+## 21.5 Scaling boundary
+
+The exact Yates interaction pass requires the relevant factorial probes. For k edits, exhaustive factorial evaluation is O(2^k).
+
+Therefore the current evidence justifies:
+
+1. use adaptive/coarse localization on a large candidate set;
+2. run exact factorial interaction analysis only inside a small suspicious cluster;
+3. search minimum repair sets inside that cluster;
+4. validate and re-localize residual faults.
+
+It does not yet establish that fractional designs or screening methods provide an equivalent guarantee at larger k.
+
+A particular caution is required for Plackett-Burman designs: they are primarily main-effect screening designs, and interactions can be aliased with main effects. They should not be treated as a generic interaction detector without an explicit resolution/aliasing analysis.
+
+## 21.6 Verification status of the current follow-up harness
+
+The AND/OR contrast and MFS/MCR conclusions above are recorded from the executed experimental results discussed in the conversation.
+
+The fixed source harness was not independently re-executed by this ChatGPT session after the final code revision because the available user-visible execution tool was temporarily rate-limited. Accordingly, this addendum does not upgrade those follow-up results beyond the evidence already reported in the conversation.
+
+Repository provenance for this addendum:
+
+- repository: Loofy147/Machine
+- branch: research/machine-native-primitives-v0
+- prior document blob: 4fd7ff629c3d23dd33528fc6d802b908af060b99
+- date: 2026-09-21
+- raw fixed harness: not committed by this update
+
+## 21.7 Updated claim frontier
+
+### EXPERIMENTALLY_SUPPORTED / USER-REPORTED
+
+- marginal presence/absence gaps can be identical for AND and OR fault structures;
+- an interaction contrast can distinguish the demonstrated AND/OR pair under the fixed factorial design;
+- ddmin can expose an MFS larger than a minimum repair set;
+- whole-MFS deletion is therefore not a generally valid minimal-repair rule.
+
+### OPEN
+
+- adaptive interaction localization at larger candidate-set sizes;
+- fractional/sparse interaction designs with explicit aliasing guarantees;
+- convergence bounds for repeated multi-fault repair;
+- equivalence classes of valid diagnoses across different ddmin search paths;
+- challenge-directed validation and independent challenger evidence.
+
+## 21.8 Engineering rule
+
+The durable rule extracted from this correction is:
+
+> Never infer repair directly from a failure-inducing subset.
+
+Instead:
+
+> localize the failure structure -> model interactions -> search the repair space -> validate the repair -> re-localize any residual failure.
+
+This is the correction that should govern subsequent composite-repair experiments.
