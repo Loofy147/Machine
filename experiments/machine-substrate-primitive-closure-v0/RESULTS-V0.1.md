@@ -148,3 +148,20 @@ Held fixed:
 
 A future canonical closure test must first freeze the abstract Machine primitive contract. Without that freeze, claiming that Rev 2.1 is either a primitive or not a primitive would be specification debt.
 
+
+
+## Re-execution check
+
+The same committed experiment was re-executed at the later branch head
+`7d5a33e27c8aa14ebf817d1c5d9dd7e308b8a943`.
+
+- workflow run: `36351038863`
+- job: `108709642134`
+- conclusion: **success**
+- artifact: `10941734374`
+- artifact SHA-256: `e1ebd6d0baa7b9e741b0975c75618324b3cc98b8f25724fa3251c034e089cac9`
+- raw result SHA-256: `d9752a6b7d0bc0bc26a65f5005d6198209105d040a184f9e5b00024a24407331`
+
+The raw result bytes are identical to the first successful execution. This
+strengthens reproducibility of the measured disposition, but it does not
+change the contract-conditional interpretation.
