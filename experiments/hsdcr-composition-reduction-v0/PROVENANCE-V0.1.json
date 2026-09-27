@@ -1,17 +1,20 @@
 {
   "schema":"hsdcr-composition-reduction-provenance-v0.1",
-  "status":"REVALIDATION_PENDING_CI",
+  "status":"CI_REVALIDATED",
   "repository":"Loofy147/Machine",
   "branch":"research/hsdcr-reassessment-v0",
   "base_ref":"research/bidirectional-substrate-v3",
   "base_sha":"59fab62704875193801db77c7cb8361475297f48",
   "harness_commit":"81ff2ba229fb93965d0d0219ab31b705efdbce82",
-  "result_record_commit":"3de0fd14cf7e7bc3935bf683d6dbadb8ac2e1a15",
+  "result_record_commit":"dbce11e29684cad1a5e28fa0126d8cc91702d391",
   "local_result_file_sha256":"7e45c325d88613552ba11dab1799b05b3ae0be2cea2a3c9b5bd420928050f7a4",
   "result_payload_sha256":"e487676f13317834e3a330889a9c28666c571832af4c02ff8cae1ad00d2c5d4a",
   "ci_failed_prior_revision":"36360041938",
+  "ci_revalidation_run_id":"36360126367",
+  "ci_revalidation_conclusion":"success",
+  "ci_revalidation_head_sha":"dbce11e29684cad1a5e28fa0126d8cc91702d391",
   "ci_failure_class":"stored_result_did_not_match_executable_output",
-  "ci_status":"PENDING_REVALIDATION",
+  "ci_status":"SUCCESS",
   "interpretation_scope":"candidate semantic minimization only",
   "novelty_claim":false
 }
