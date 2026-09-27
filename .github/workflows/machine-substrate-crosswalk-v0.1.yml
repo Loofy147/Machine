@@ -1,0 +1,30 @@
+name: Machine Substrate Crosswalk v0.1
+
+on:
+  push:
+    branches:
+      - research/machine-substrate-crosswalk-v0
+  pull_request:
+    branches:
+      - research/bidirectional-substrate-v3
+
+jobs:
+  crosswalk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install NumPy
+        run: python -m pip install --upgrade pip numpy
+      - name: Run contract crosswalk
+        working-directory: experiments/bidirectional-substrate-v3
+        run: python ../../experiments/machine-substrate-crosswalk-v0/run_crosswalk.py
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: machine-substrate-crosswalk-v0.1
+          path: experiments/machine-substrate-crosswalk-v0/RESULTS-V0.1.json
