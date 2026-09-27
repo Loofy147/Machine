@@ -21,7 +21,6 @@ It reports:
 The intended disposition is resource/representation relocation, not a
 computational-power separation.
 """
-from __future__ import annotations
 
 import json
 from pathlib import Path
