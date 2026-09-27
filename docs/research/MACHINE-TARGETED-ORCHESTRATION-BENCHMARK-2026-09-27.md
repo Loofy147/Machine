@@ -5,104 +5,166 @@ Run ID: `MACHINE-ORCH-2026-09-27-001`
 ## Target identity
 
 Repository: `Loofy147/Machine`
-Default branch verified: `main`
-Default head: `1626bac2f5c478294afa4b9463f694608c322117`
-Research branch used for current frontier state: `research/evidence-disposition-v0`
-Research head: `137f76bc7fb56138a40b3bc98ed2a3291fe7acf5`
-Experimental substrate branch: `research/substrate-interpreter-v0`
-Experimental substrate head: `d935495355ac6b827a17d6147d7f38fbcaaeb15f`
+Default branch: `main@1626bac2f5c478294afa4b9463f694608c322117`
+Primary integrated research branch: `research/evidence-disposition-v0@137f76bc7fb56138a40b3bc98ed2a3291fe7acf5`
+Experimental CEK branch: `research/substrate-interpreter-v0@d935495355ac6b827a17d6147d7f38fbcaaeb15f`
+Concrete Machine Substrate branch discovered during continuation: `research/bidirectional-substrate-v3@59fab62704875193801db77c7cb8361475297f48`
 
-## Benchmark purpose
+## Purpose
 
 Test whether orchestration can correctly select, reconcile, and verify the next discriminating Machine research action without collapsing branch identity, specification, implementation, execution, or evidence status.
 
 ## Executed orchestration trace
 
-DISCOVER → BRANCH-RECONCILE → EVIDENCE-SELECT → OPEN-GAP-DETECT → CI-VERIFY → CANONICAL-SUBSTRATE-CHECK → BOUNDARY-DECISION
+DISCOVER → BRANCH-RECONCILE → EVIDENCE-SELECT → OPEN-GAP-DETECT → CI-VERIFY → SUBSTRATE-SEARCH → CONTRACT-CROSSWALK → CORRECTION → NEXT-ACTION
 
-## Discovery
+## Initial finding
 
-Relevant research branches were enumerated and the active substrate/frontier line was narrowed to:
-- `research/evidence-disposition-v0`
-- `research/substrate-interpreter-v0`
-- `research/machine-native-primitives-v0`
-- bidirectional/frontier research branches
+The first pass correctly detected that `research/substrate-interpreter-v0` contains an explicit CEK-style experimental S1/S2 interpreter and that this result must not automatically become the canonical Machine interpreter.
 
-The repository protocol explicitly requires repository + branch + commit as the minimum provenance identity.
+However, that was initially stated too broadly as absence of a concrete Machine substrate.
 
-## Evidence selection and verification
+## Correction discovered during continued orchestration
 
-The substrate/relation-lookup line was selected because the current Machine evidence explicitly marks canonical-substrate correspondence as OPEN and names reconciliation as the next discriminating action.
+A complete branch/source inventory found:
 
-Verified:
-- experimental S1/S2 finite same-representation semantic equivalence;
-- experimental resource vector `(B_off,R,B_on,C_access)`:
-  - S1 = `(5,5,676,291)`
-  - S2 = `(5,5,20,10)`;
-- repaired S2 candidate-target CI replay:
-  - semantic suite: 13 passed;
-  - implementation property suite: 8 passed;
-  - audit: exit 0;
-  - canonical vector equality: true;
-- latest `research/substrate-interpreter-v0` workflow run at head `d935495355ac6b827a17d6147d7f38fbcaaeb15f`: successful.
+`research/bidirectional-substrate-v3@59fab62704875193801db77c7cb8361475297f48`
 
-## Critical discrepancy / frontier finding
+with:
 
-`research/substrate-interpreter-v0` contains an explicit CEK-style experimental interpreter and its audit.
+- `docs/research/MACHINE-SUBSTRATE-SPEC-REV2.1.md`
+- `experiments/bidirectional-substrate-v3/substrate_lib.py`
+- `experiments/bidirectional-substrate-v3/substrate_bench.c`
+- `experiments/bidirectional-substrate-v3/test_correctness.py`
+- `.github/workflows/bidirectional-substrate-v3-conformance.yml`
 
-The current `main` branch does not contain a canonical executable interpreter corresponding to that experimental S1/S2 implementation. The `research/machine-native-primitives-v0` tree likewise contains the abstract Machine model and experiment documentation, but no canonical interpreter source; its executable source inventory returned only `experiments/error-source-localization/harness.py`.
+The Rev 2.1 specification explicitly defines:
 
-Therefore the experimental result cannot be promoted to either:
-- `canonical Machine substrate is S1`; or
-- `canonical Machine substrate is S2`.
+`M = (S, Sigma, delta, R, C)`
 
-Correct current disposition:
+with persistent inverse relation representation `R^-1`, including the labeled predecessor fiber `F(u)`.
 
-`canonical substrate classification = OPEN / SPECIFICATION-DEBT`
+It specifies:
 
-## Orchestrator decisions
+- P-04: build `R^-1` in `Theta(n+E)` offline work;
+- P-05: fiber lookup in `O(1)` entry time plus `O(deg^-(u))` iteration;
+- P-06: forward `delta(s,a)` evaluation in `O(1)`;
+- P-08: optional per-action fibers.
 
-Demonstrated decisions:
-- branch-specific evidence was preferred over default-branch assumptions;
-- experimental implementation was separated from canonical project state;
-- CI evidence remained tied to exact verification commit/run;
-- conditional/stale claims were not promoted;
-- the next action was narrowed to canonical substrate reconciliation rather than reflective-substrate expansion.
+The source implementation describes itself as the reference implementation of the Machine Substrate contract.
 
-## Benchmark verdict
+Therefore the earlier statement:
 
-**DEMONSTRATED:** branch/evidence discovery, provenance reconciliation, claim/evidence separation, targeted experiment selection, CI verification, open-gap detection, and bounded decision-making.
+> "no concrete Machine substrate exists"
 
-**PARTIALLY DEMONSTRATED:** fresh execution orchestration. Existing CI executions could be verified, but the available GitHub action surface did not expose workflow dispatch for creating a new Machine run during this benchmark.
+was too broad and has been retired.
 
-**BLOCKING FRONTIER:** canonical-substrate execution. The decisive minimal pair requires a concrete canonical interpreter/execution substrate to be explicitly identified or promoted.
+The defensible statement is narrower:
+
+> No canonical CEK/object-language interpreter corresponding to the experimental S1/S2 interpreter was identified. A separate concrete Machine Substrate Rev 2.1 reference implementation does exist on `research/bidirectional-substrate-v3`, but its canonical architectural status relative to the abstract Machine model remains to be reconciled.
+
+## CI verification
+
+The Rev 2.1 branch exposes a dedicated conformance workflow:
+
+`.github/workflows/bidirectional-substrate-v3-conformance.yml`
+
+The latest observed successful run:
+
+- run ID: `35585026821`
+- run number: 10
+- head: `59fab62704875193801db77c7cb8361475297f48`
+- conclusion: success
+
+The workflow performs syntax/smoke validation, artifact validation, deterministic generation of regression inputs, and the full v3 regression verifier.
+
+## Contract crosswalk
+
+The important result is that the CEK S1/S2 experiment and Machine Substrate Rev 2.1 are not the same contract.
+
+### Experimental CEK line
+
+S1:
+generic readable state + comparison + branching + iteration.
+
+S2:
+S1 + direct relation lookup.
+
+Measured finite resource comparison:
+- S1: `(B_off,R,B_on,C_access)=(5,5,676,291)`
+- S2: `(5,5,20,10)`
+
+### Machine Substrate Rev 2.1
+
+The substrate itself stores:
+
+`delta-table + R^-1`
+
+with an explicit offline build cost and online fiber-access contract.
+
+This means predecessor access is already represented as an explicit substrate/resource contract in Rev 2.1. It should not be compared to the CEK S2 primitive without first aligning:
+
+- information availability;
+- persistent representation;
+- preprocessing timing;
+- access semantics;
+- access cost;
+- update semantics;
+- correctness domain.
+
+## Current research disposition
+
+| Question | Status |
+|---|---|
+| Experimental CEK S1 derivability | EXPERIMENTALLY_SUPPORTED |
+| Experimental CEK S2 finite resource advantage | EXPERIMENTALLY_SUPPORTED |
+| Concrete Machine Substrate Rev 2.1 exists | ESTABLISHED BY SOURCE INSPECTION |
+| Rev 2.1 substrate correctness/regression workflow passes | EXPERIMENTALLY_SUPPORTED / CI |
+| Rev 2.1 = canonical architecture of Machine | OPEN |
+| CEK S1/S2 result directly classifies Rev 2.1 | CONTRADICTED BY CONTRACT MISMATCH |
+| Predecessor access can be treated as a resource/representation choice under Rev 2.1 | INFERENCE, strongly supported by the explicit `R^-1` contract |
+| General computational-power separation | OPEN / NOT SUPPORTED |
+
+## Orchestrator finding
+
+The most important benchmark result is the correction itself.
+
+The orchestrator did not stop at the first apparently coherent answer. A broader branch/source search invalidated an over-broad intermediate conclusion and replaced it with a more precise branch-specific statement.
+
+This is the desired failure mode:
+
+`candidate absence -> broader search -> contradictory evidence -> claim narrowing`
+
+rather than:
+
+`candidate absence -> premature closure`.
 
 ## Next discriminating action
 
-Audit and explicitly identify the canonical Machine execution substrate, then define a matched minimal pair:
+Do not build another generic CEK interpreter yet.
 
-Control = S1 generic state computation only.
-Treatment = S1 + direct indexed relation access.
+Instead reconcile:
 
-Hold fixed:
-- relation information;
-- target timing;
-- persistent representation;
-- correctness semantics;
-- offline/online accounting.
+1. abstract Machine model;
+2. Machine Substrate Rev 2.1;
+3. bidirectional frontier experiments;
+4. the later S1/S2 relation-lookup experiments.
 
-Measure:
-`(B_off,R,B_on,C_access)` plus semantic equivalence.
+Construct a contract matrix covering:
 
-Promotion rule:
-- traversal derivable + lower cost → resource primitive/optimization;
-- required access absent from fixed substrate → substrate extension;
-- traversal derivable but closure fails under fixed resources → resource-bounded frontier advantage; closure remains OPEN.
+`Information, Representation, Timing, Access, Cost, Mutation, Correctness`
+
+Then determine whether the existing Rev 2.1 `R^-1` substrate already subsumes the measured predecessor-frontier effect as a representation/resource choice.
+
+Only after this crosswalk should a new substrate primitive be proposed.
 
 ## Epistemic disposition
 
-No new Machine scientific claim is promoted by this benchmark.
+The benchmark yields no new universal Machine capability claim.
 
-The supported procedural result is narrower: the current research frontier can be orchestrated without losing branch/provenance/evidence distinctions, and the remaining blocker is localized to the canonical execution-substrate boundary.
+It yields a stronger procedural result:
 
-Artifact SHA-256: `2e146ea7d4f32a35b9e690b3530288ed552e70f9a19757e1096dce1b58650b27`
+> Machine research orchestration can detect and repair a provenance-level false generalization when additional branch evidence contradicts the first framing, while preserving exact branch/commit identity and evidence status.
+
+Report artifact SHA-256 from the initial generated artifact:
+`2e146ea7d4f32a35b9e690b3530288ed552e70f9a19757e1096dce1b58650b27`
