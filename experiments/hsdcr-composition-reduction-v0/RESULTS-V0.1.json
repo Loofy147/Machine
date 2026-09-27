@@ -1,0 +1,44 @@
+{
+  "candidate_classification": {
+    "behavioral_constraints": ["high sensitivity without automatic canonical reaction"],
+    "domain_semantics": ["proposal/contribution","observation","evidence","authority","decision/acceptance","canonical_state","reconstruction"],
+    "methodological_constraints": ["identity != location","signal != evidence","evidence != authority","convergence != acceptance","semantic equivalence != resource equivalence"],
+    "substrate_capabilities": ["identity","durable state","replication/synchronization","signal transport"]
+  },
+  "canonical_payload_sha256": "2954c833b999b6c9e80da7852913f4a4aeba5668ca4f774b666f5fcc4f9d0f9c",
+  "component_removal": {
+    "authority": {"collapse":"evidence/decision would need to carry mutation permission","distinction_preserved":false,"replaceable_by_ordinary_data":true},
+    "contribution_proposal": {"collapse":"no explicit proposal locus remains before canonical state","distinction_preserved":false,"replaceable_by_ordinary_data":true},
+    "decision_acceptance": {"collapse":"proposal could be treated as canonical or canonicalization becomes implicit","distinction_preserved":false,"replaceable_by_ordinary_data":true},
+    "evidence": {"collapse":"observation would need to carry evidentiary status","distinction_preserved":false,"replaceable_by_ordinary_data":true},
+    "observation": {"collapse":"signal/evidence boundary becomes unobservable without observation record","distinction_preserved":true,"replaceable_by_ordinary_data":true},
+    "reconstruction": {"collapse":"current state may exist, but durable reconstruction contract disappears","distinction_preserved":false,"replaceable_by_ordinary_data":true}
+  },
+  "disposition": {
+    "architectural_novelty":"OPEN",
+    "composition_can_be_described_with_existing_capabilities":true,
+    "irreducible_new_semantic_primitive":false,
+    "key_residual":"typed separation + explicit acceptance transition between contribution and canonical state",
+    "next_test":"implement two-provider end-to-end substitution with durable reconstruction and authority/evidence separation",
+    "protocol_status":"NOT_ASSIGNED",
+    "residual_currently_looks_like":"ordinary data + explicit transition/policy composition",
+    "single_family_absorption":"NOT_IDENTIFIED"
+  },
+  "reference_model": {
+    "authority":{"effect":"permit-canonical-transition","id":"auth-001","subject":"proposal-001"},
+    "canonical_state":{"applied_proposal":"proposal-001","derived_from":"state-A","id":"state-B"},
+    "decision":{"disposition":"accepted","id":"decision-001","subject":"proposal-001"},
+    "evidence":{"id":"evidence-001","result":"supports","subject":"proposal-001"},
+    "observation":{"id":"obs-001","signal":"signal-X","subject":"proposal-001"},
+    "proposal":{"base":"state-A","canonical":false,"change":"change-X","id":"proposal-001","provider":"GitHub PR #10"}
+  },
+  "schema":"hsdcr-composition-reduction-v0.1",
+  "scope":"semantic-minimization of the current candidate composition",
+  "status":"INTERNAL_MODEL_CHECK",
+  "substitution": {
+    "authority_provider_pair":{"adapter_type":"ordinary-policy-or-capability-normalization","normalized_semantics_equivalent":true},
+    "evidence_provider_pair":{"adapter_type":"ordinary-record-normalization","normalized_semantics_equivalent":true},
+    "github_pr_to_at_record_direct":{"adapter_required":true,"classification":"DIRECT_COLLISION","semantic_equivalence":false},
+    "reduction_observation":{"all_required_functions_have_known_provider_families":true,"new_execution_primitive_detected":false,"new_repository_primitive_detected":false}
+  }
+}
