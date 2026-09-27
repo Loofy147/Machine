@@ -1,0 +1,70 @@
+{
+  "schema": "hsdcr-experiment-provenance/v0.1",
+  "experiment": "hsdcr-real-capability-substitution-v0.1",
+  "recorded": "2026-09-28",
+  "repository": "Loofy147/Machine",
+  "branch": "research/hsdcr-neighborhood-crosswalk-v0",
+  "source_commit": "12dade33f708d66890c6c10b754f85c1d3ae13e3",
+  "real_source_snapshots": {
+    "github": {
+      "pr": 10,
+      "url": "https://github.com/Loofy147/Machine/pull/10",
+      "head_sha": "12dade33f708d66890c6c10b754f85c1d3ae13e3",
+      "base_sha": "59fab62704875193801db77c7cb8361475297f48",
+      "observation_time": "2026-09-28"
+    },
+    "atproto": {
+      "handle": "bsky.app",
+      "did": "did:plc:z72i7hdynmk6r22z27h6tvur",
+      "record_uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mp54n7zccc2j2",
+      "web_url": "https://bsky.app/profile/bsky.app/post/3mp54n7zccc2j2",
+      "observation_time": "2026-09-28"
+    }
+  },
+  "external_spec_sources": [
+    {
+      "name": "AT Protocol Repository",
+      "url": "https://atproto.com/specs/repository",
+      "relevance": "repository records, signed commits, mutation semantics"
+    },
+    {
+      "name": "AT Protocol Sync",
+      "url": "https://atproto.com/specs/sync",
+      "relevance": "full repository export and synchronization"
+    },
+    {
+      "name": "AT Protocol Sync Guide",
+      "url": "https://atproto.com/guides/sync",
+      "relevance": "self-authenticating repositories and repository identity"
+    }
+  ],
+  "method": {
+    "type": "semantic_boundary_collision_test",
+    "control": "native GitHub pull-request proposal",
+    "treatment": "native AT repository record",
+    "held_fixed": [
+      "candidate distinction under test",
+      "identity/locus separation at normalization boundary",
+      "no invented AT acceptance state"
+    ]
+  },
+  "result": {
+    "status": "PASS",
+    "classification": "PARTIAL_SUBSTITUTION / ADAPTER_REQUIRED",
+    "semantic_equivalence": false,
+    "affected_boundaries": [
+      "B03_CONTRIBUTION",
+      "B07_DECISION_ACCEPTANCE"
+    ]
+  },
+  "evidence_boundary": {
+    "positive": "GitHub PR #10 is open and unmerged, preserving proposal != canonical state.",
+    "negative": "The cited AT record is a repository record mutation; the native record surface does not itself provide a proposal-before-acceptance state.",
+    "not_claimed": [
+      "AT cannot implement application-level proposal semantics",
+      "new architecture exists",
+      "GitHub is inherently decentralized",
+      "AT and GitHub have equivalent authority models"
+    ]
+  }
+}
