@@ -1,0 +1,212 @@
+schema: atomic-repository-capability-ledger/v0.1
+status: research
+normative: false
+candidate_label: "HSDCR"
+candidate_expansion: "Highly Sensitive Decentralized Contribution Repository"
+candidate_status: "working-label-only"
+parent:
+  repository: Loofy147/Machine
+  branch: research/machine-substrate-primitive-closure-v0
+  commit: 12dade33f708d66890c6c10b754f85c1d3ae13e3
+
+fields:
+  - identity
+  - locus
+  - atom
+  - source_family
+  - state
+  - relation
+  - authority
+  - timing
+  - evidence
+  - persistence
+  - mutation
+  - reconstruction
+  - synchronization
+  - observability
+  - cost
+  - derivability
+  - status
+  - notes
+
+atomic_rules:
+  - id: R01
+    rule: "identity != mutable location"
+  - id: R02
+    rule: "contribution != canonical state"
+  - id: R03
+    rule: "signal != evidence"
+  - id: R04
+    rule: "evidence != authority"
+  - id: R05
+    rule: "observation != mutation authority"
+  - id: R06
+    rule: "derived state != new information"
+  - id: R07
+    rule: "reconstruction != synchronization"
+  - id: R08
+    rule: "convergence != acceptance"
+  - id: R09
+    rule: "sensitivity != reactivity"
+  - id: R10
+    rule: "semantic equivalence != resource equivalence"
+
+source_families:
+  - id: N1
+    name: distributed_vcs_and_code_forge
+    examples: [Git, GitHub]
+    role: substrate
+    status: established
+  - id: N2
+    name: federated_forge
+    examples: [ForgeFed, ActivityPub]
+    role: neighboring-architecture
+    status: external-prior-art
+  - id: N3
+    name: authenticated_replicated_repository
+    examples: [AT Protocol]
+    role: neighboring-architecture
+    status: external-prior-art
+  - id: N4
+    name: crdt_convergence
+    examples: [Automerge]
+    role: neighboring-architecture
+    status: external-prior-art
+  - id: N5
+    name: change_oriented_vcs
+    examples: [Pijul]
+    role: neighboring-architecture
+    status: external-prior-art
+  - id: N6
+    name: provenance
+    examples: [W3C PROV]
+    role: evidence_lineage
+    status: external-prior-art
+  - id: N7
+    name: event_sourcing
+    examples: [Event Sourcing]
+    role: reconstruction_model
+    status: external-prior-art
+  - id: N8
+    name: transparency_log
+    examples: [Rekor]
+    role: evidence_publication
+    status: external-prior-art
+  - id: N9
+    name: decentralized_capability_authorization
+    examples: [UCAN]
+    role: authority
+    status: external-prior-art
+  - id: N10
+    name: decentralized_identity
+    examples: [DID]
+    role: identity
+    status: external-prior-art
+  - id: N11
+    name: software_preservation
+    examples: [Software Heritage]
+    role: archival_lineage
+    status: external-prior-art
+  - id: N12
+    name: versioned_data
+    examples: [Dolt, lakeFS]
+    role: state_versioning
+    status: external-prior-art
+  - id: N13
+    name: observability
+    examples: [telemetry systems]
+    role: sensitivity
+    status: external-prior-art
+
+atoms:
+  - id: A001
+    atom: immutable_content_identity
+    nearest_families: [N1, N3, N11]
+    collision: false
+    current_status: established_external
+
+  - id: A002
+    atom: independent_contribution_locus
+    nearest_families: [N1, N2, N4, N5, N12]
+    collision: false
+    current_status: established_external
+
+  - id: A003
+    atom: contribution_lineage
+    nearest_families: [N1, N3, N5, N6, N11]
+    collision: false
+    current_status: established_external
+
+  - id: A004
+    atom: proposal_without_canonical_acceptance
+    nearest_families: [N1, N2, N5, N12]
+    collision: false
+    current_status: established_external
+
+  - id: A005
+    atom: durable_observation
+    nearest_families: [N7, N8, N13]
+    collision: false
+    current_status: candidate-composition
+
+  - id: A006
+    atom: evidence_as_distinct_semantic_class
+    nearest_families: [N6, N8]
+    collision: true
+    collision_rule: "signal != evidence"
+    current_status: open
+
+  - id: A007
+    atom: authority_as_distinct_semantic_class
+    nearest_families: [N9, N1]
+    collision: true
+    collision_rule: "evidence != authority"
+    current_status: open
+
+  - id: A008
+    atom: deferred_decision
+    nearest_families: [N1, N2, N9]
+    collision: true
+    collision_rule: "observation != mutation authority"
+    current_status: open
+
+  - id: A009
+    atom: reconstructible_canonical_state
+    nearest_families: [N3, N7, N11, N12]
+    collision: false
+    current_status: candidate-composition
+
+  - id: A010
+    atom: high_sensitivity_without_automatic_reaction
+    nearest_families: [N13, N7, N8]
+    collision: true
+    collision_rule: "sensitivity != reactivity"
+    current_status: open
+
+  - id: A011
+    atom: decentralized_contribution_without_decentralized_authority_assumption
+    nearest_families: [N1, N2, N4, N9]
+    collision: true
+    collision_rule: "reachability/location != authority"
+    current_status: open
+
+  - id: A012
+    atom: contract-relative-capability
+    nearest_families: [Machine substrate research]
+    collision: true
+    collision_rule: "semantic equivalence != resource equivalence"
+    current_status: experimentally-supported-by-project
+
+open_questions:
+  - id: Q001
+    question: "Can all candidate atoms be represented by an existing family without collapsing required distinctions?"
+  - id: Q002
+    question: "Which family, if any, provides the minimal canonical-state rule?"
+  - id: Q003
+    question: "Can observation/evidence/authority remain independent while sharing one durable history?"
+  - id: Q004
+    question: "Can high sensitivity coexist with explicit non-reactivity as a native invariant rather than as application policy?"
+  - id: Q005
+    question: "Is the resulting composition merely a stack of existing systems, or does interaction produce a distinct architectural object?"
+  - id: Q006
+    question: "What is the minimum substrate required for independent contribution, evidence, authority, and reconstruction?"
