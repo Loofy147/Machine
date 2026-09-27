@@ -1,0 +1,41 @@
+{
+  "schema":"machine.orchestration-benchmark.v0.1",
+  "recorded":"2026-09-27",
+  "run_id":"MACHINE-ORCH-2026-09-27-001",
+  "repository":"Loofy147/Machine",
+  "benchmark_branch":"research/orchestration-benchmark-2026-09-27",
+  "base_commit":"137f76bc7fb56138a40b3bc98ed2a3291fe7acf5",
+  "status":"COMPLETED_WITH_BLOCKED_CANONICAL_EXECUTION",
+  "demonstrated":[
+    "branch-aware provenance reconciliation",
+    "evidence/claim separation",
+    "targeted discriminating-test selection",
+    "CI evidence verification",
+    "canonical-vs-experimental boundary detection"
+  ],
+  "partial":[
+    "fresh execution orchestration",
+    "workflow dispatch"
+  ],
+  "open":[
+    "canonical executable Machine substrate",
+    "canonical S1/S2 classification"
+  ],
+  "evidence":[
+    {
+      "path":"docs/research/MACHINE-TARGETED-ORCHESTRATION-BENCHMARK-2026-09-27.md",
+      "sha256":"2e146ea7d4f32a35b9e690b3530288ed552e70f9a19757e1096dce1b58650b27"
+    },
+    {
+      "source_branch":"research/substrate-interpreter-v0",
+      "source_commit":"d935495355ac6b827a17d6147d7f38fbcaaeb15f",
+      "result":"experimental S1/S2 substrate evidence only"
+    },
+    {
+      "source_branch":"research/machine-native-primitives-v0",
+      "source_commit":"f752aac015d9f837bc6a89d44eed50e0325b60a6",
+      "result":"abstract Machine model and research documentation; no canonical interpreter in executable-source inventory"
+    }
+  ],
+  "next_discriminating_action":"identify or implement canonical Machine execution substrate, then run matched S1/S2 minimal pair"
+}
