@@ -21,8 +21,13 @@ jobs:
       - name: Validate frozen resource schema
         working-directory: experiments/machine-substrate-resource-contract-v0
         run: python validate_contract.py
+      - name: Validate concrete contract instances
+        working-directory: experiments/machine-substrate-resource-contract-v0
+        run: python validate_instances.py
       - name: Upload validation
         uses: actions/upload-artifact@v4
         with:
           name: machine-substrate-resource-contract-v0.1
-          path: experiments/machine-substrate-resource-contract-v0/VALIDATION-V0.1.json
+          path: |
+            experiments/machine-substrate-resource-contract-v0/VALIDATION-V0.1.json
+            experiments/machine-substrate-resource-contract-v0/INSTANCE-VALIDATION-V0.1.json
