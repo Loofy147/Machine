@@ -5,7 +5,7 @@
   "canonical_payload_sha256": "e487676f13317834e3a330889a9c28666c571832af4c02ff8cae1ad00d2c5d4a",
   "component_removal": {
     "authority": {
-      "collapse": "evidence/decision would need to carry mutation permission",
+      "collapse": "evidence/decision would need mutation permission",
       "distinction_preserved": false,
       "ordinary_data_replacement_possible": true
     },
