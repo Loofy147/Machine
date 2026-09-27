@@ -1,0 +1,50 @@
+schema: hsdcr-minimal-semantic-boundary/v0.1
+status: research
+normative: false
+candidate_status: working-label-only
+
+domain_semantics:
+  - D01: proposal_contribution
+  - D02: observation
+  - D03: evidence
+  - D04: authority
+  - D05: decision_acceptance
+  - D06: canonical_state
+  - D07: reconstruction
+
+known_substrate_capabilities:
+  - identity
+  - immutable_content_addressing
+  - versioning
+  - concurrent_change
+  - replication
+  - synchronization
+  - signal_transport
+  - persistence
+  - orchestration
+
+behavioral_constraints:
+  - high_sensitivity_without_automatic_canonical_reaction
+
+methodological_constraints:
+  - identity != location
+  - signal != evidence
+  - observation != evidence
+  - evidence != authority
+  - observation != mutation_authority
+  - reconstruction != synchronization
+  - convergence != acceptance
+  - semantic_equivalence != resource_equivalence
+
+non_atoms:
+  decentralized_contribution_as_topology_property:
+    reason: topology/separation constraint, not a semantic primitive
+  contract_relative_capability:
+    reason: Machine research method, not repository ontology
+
+promotion_gate:
+  - semantics_not_representable_as_ordinary_typed_data
+  - removal_collapses_required_distinction
+  - at_least_two_independent_realizations
+  - survives_provider_substitution
+  - resource_contract_explicit
