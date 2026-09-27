@@ -1,41 +1,57 @@
 {
-  "schema":"machine.orchestration-benchmark.v0.1",
+  "schema":"machine.orchestration-benchmark.v0.2",
   "recorded":"2026-09-27",
   "run_id":"MACHINE-ORCH-2026-09-27-001",
   "repository":"Loofy147/Machine",
   "benchmark_branch":"research/orchestration-benchmark-2026-09-27",
   "base_commit":"137f76bc7fb56138a40b3bc98ed2a3291fe7acf5",
-  "status":"COMPLETED_WITH_BLOCKED_CANONICAL_EXECUTION",
+  "status":"COMPLETED_WITH_CORRECTED_SUBSTRATE_FINDING",
   "demonstrated":[
     "branch-aware provenance reconciliation",
     "evidence/claim separation",
     "targeted discriminating-test selection",
     "CI evidence verification",
-    "canonical-vs-experimental boundary detection"
+    "branch-wide source inventory",
+    "correction of an over-broad absence claim",
+    "contract mismatch detection"
   ],
   "partial":[
     "fresh execution orchestration",
     "workflow dispatch"
   ],
+  "established_or_supported":[
+    "experimental CEK S1/S2 line exists",
+    "concrete Machine Substrate Rev 2.1 reference implementation exists",
+    "Rev 2.1 conformance workflow passed at head 59fab62704875193801db77c7cb8361475297f48",
+    "Rev 2.1 explicitly models inverse relation R^-1 as part of the substrate/resource contract"
+  ],
   "open":[
-    "canonical executable Machine substrate",
-    "canonical S1/S2 classification"
+    "whether Rev 2.1 is canonical/merged into main",
+    "exact crosswalk between abstract Machine model and Rev 2.1",
+    "whether R^-1 should be classified as representation, native substrate capability, or both",
+    "direct transferability of CEK S1/S2 conclusions to Rev 2.1"
+  ],
+  "contradicted_or_retired":[
+    "broad statement that no concrete Machine substrate exists"
   ],
   "evidence":[
     {
       "path":"docs/research/MACHINE-TARGETED-ORCHESTRATION-BENCHMARK-2026-09-27.md",
-      "sha256":"2e146ea7d4f32a35b9e690b3530288ed552e70f9a19757e1096dce1b58650b27"
+      "sha256":"initial artifact 2e146ea7d4f32a35b9e690b3530288ed552e70f9a19757e1096dce1b58650b27"
+    },
+    {
+      "source_branch":"research/bidirectional-substrate-v3",
+      "source_commit":"59fab62704875193801db77c7cb8361475297f48",
+      "spec":"docs/research/MACHINE-SUBSTRATE-SPEC-REV2.1.md",
+      "implementation":"experiments/bidirectional-substrate-v3/substrate_lib.py",
+      "workflow":".github/workflows/bidirectional-substrate-v3-conformance.yml",
+      "latest_successful_run_id":35585026821
     },
     {
       "source_branch":"research/substrate-interpreter-v0",
       "source_commit":"d935495355ac6b827a17d6147d7f38fbcaaeb15f",
-      "result":"experimental S1/S2 substrate evidence only"
-    },
-    {
-      "source_branch":"research/machine-native-primitives-v0",
-      "source_commit":"f752aac015d9f837bc6a89d44eed50e0325b60a6",
-      "result":"abstract Machine model and research documentation; no canonical interpreter in executable-source inventory"
+      "result":"experimental S1/S2 evidence only"
     }
   ],
-  "next_discriminating_action":"identify or implement canonical Machine execution substrate, then run matched S1/S2 minimal pair"
+  "next_discriminating_action":"build the seven-axis contract crosswalk: Information, Representation, Timing, Access, Cost, Mutation, Correctness; then classify the Rev 2.1 inverse-fiber frontier without importing CEK S1/S2 semantics uncritically"
 }
