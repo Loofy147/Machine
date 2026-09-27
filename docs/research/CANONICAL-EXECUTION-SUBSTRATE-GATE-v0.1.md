@@ -1,4 +1,4 @@
-# Canonical Execution-Substrate Gate v0.1
+# Canonical Machine Substrate Gate v0.2
 
 Recorded: 2026-09-27
 Repository: `Loofy147/Machine`
@@ -7,115 +7,153 @@ Parent research state: `research/evidence-disposition-v0@137f76bc7fb56138a40b3bc
 
 ## Purpose
 
-Close the provenance gap exposed by the Machine-targeted orchestration benchmark:
+Close the provenance and contract gap around the phrase "canonical Machine substrate".
 
-> Which concrete executable substrate is authoritative for claims about the canonical Machine transition semantics?
+The benchmark initially found no canonical CEK interpreter. Continued branch/source inspection then found a separate concrete Machine Substrate Rev 2.1 reference implementation. This revision records that correction and narrows the remaining question.
 
-This gate prevents an experimental interpreter from silently becoming the canonical Machine implementation.
+## Repository state
 
-## Observed repository state
-
-### Default branch
-
-`main@1626bac2f5c478294afa4b9463f694608c322117`
-
-The verified root contains a minimal README and documentation surfaces. No canonical interpreter source corresponding to the experimental S1/S2 interpreter was found in the verified default-branch tree.
-
-### Machine-native research branch
+### Abstract Machine model
 
 `research/machine-native-primitives-v0@f752aac015d9f837bc6a89d44eed50e0325b60a6`
 
-The recursive source inventory found:
-- `docs/ABSTRACT-MACHINE.md`
-- reflection and operational research documentation;
-- experiment documentation;
-- only one Python executable source path: `experiments/error-source-localization/harness.py`.
+`docs/ABSTRACT-MACHINE.md` defines:
 
-No canonical interpreter implementation was found in that branch's executable-source inventory.
+`S` = operational state,
+`O` = executable operation,
+`T(S,O,input) -> (S',result)`,
+and a control/scheduling relation.
 
-### Experimental substrate branch
+The document deliberately leaves the concrete storage and interpreter substrate open.
+
+### Concrete Machine Substrate Rev 2.1
+
+`research/bidirectional-substrate-v3@59fab62704875193801db77c7cb8361475297f48`
+
+Relevant authoritative branch-local artifacts:
+
+- `docs/research/MACHINE-SUBSTRATE-SPEC-REV2.1.md`
+- `experiments/bidirectional-substrate-v3/substrate_lib.py`
+- `experiments/bidirectional-substrate-v3/substrate_bench.c`
+- `experiments/bidirectional-substrate-v3/test_correctness.py`
+- `.github/workflows/bidirectional-substrate-v3-conformance.yml`
+
+The specification explicitly defines:
+
+`M = (S, Sigma, delta, R, C)`
+
+with:
+
+- dense finite states;
+- partial deterministic transition function `delta`;
+- stored forward transition table;
+- stored inverse relation `R^-1`;
+- labeled predecessor fibers `F(u)`;
+- explicit resource contracts P-01..P-09.
+
+The inverse index is constructed offline and then queried online. P-04 charges `Theta(n+E)` construction; P-05 exposes fiber lookup at `O(1)` entry plus output-sensitive iteration.
+
+### CI evidence
+
+Latest observed successful Rev 2.1 branch workflow:
+
+- workflow: `Bidirectional Substrate v3 Conformance`
+- run ID: `35585026821`
+- run number: 10
+- head: `59fab62704875193801db77c7cb8361475297f48`
+- conclusion: success
+
+The workflow performs source syntax/smoke validation, committed artifact validation, deterministic regression-input generation, and full regression verification.
+
+### Experimental CEK interpreter
 
 `research/substrate-interpreter-v0@d935495355ac6b827a17d6147d7f38fbcaaeb15f`
 
-Contains the explicit CEK-style experimental implementation:
+Contains:
+
 `experiments/substrate-interpreter-v0/machine.py`
 
-Its S1/S2 results are experimentally supported for the declared finite fixture and were replayed by CI.
+This is a CEK-style experimental interpreter used for the S1/S2 relation-lookup target. Its results remain valid evidence about that implementation and contract.
 
-## Current classification
+## Corrected classification
 
 | Question | Status |
 |---|---|
-| Experimental CEK substrate exists | ESTABLISHED |
-| Experimental S1 derivability on that substrate | EXPERIMENTALLY_SUPPORTED |
-| Experimental S2 finite semantic/resource result | EXPERIMENTALLY_SUPPORTED |
-| Experimental S2 candidate conformance | EXPERIMENTALLY_SUPPORTED / PRE-FREEZE source |
-| Experimental substrate = canonical Machine substrate | OPEN |
-| Canonical executable interpreter currently identified | OPEN |
-| Canonical S1/S2 classification | OPEN / SPECIFICATION-DEBT |
+| Abstract Machine execution semantics defined | ESTABLISHED |
+| Concrete Machine Substrate Rev 2.1 exists | ESTABLISHED BY SOURCE INSPECTION |
+| Rev 2.1 implementation has CI conformance evidence | EXPERIMENTALLY_SUPPORTED |
+| Rev 2.1 is explicitly called a reference implementation of the substrate contract | ESTABLISHED BY SOURCE INSPECTION |
+| Rev 2.1 is merged/canonical on `main` | OPEN / NOT ESTABLISHED |
+| A canonical CEK/object-language interpreter exists on `main` | OPEN / NOT ESTABLISHED |
+| CEK S1/S2 experiment directly classifies Rev 2.1 | CONTRADICTED BY CONTRACT MISMATCH |
+| Rev 2.1 predecessor access is part of its explicit resource/substrate contract | ESTABLISHED BY SOURCE INSPECTION |
+| Whether Rev 2.1's `R^-1` is better described as representation, native substrate capability, or both under the abstract Machine model | OPEN / CONTRACT-CROSSWALK |
+| General computational-power separation | OPEN / NOT SUPPORTED |
 
-## Required closure
+## Contract mismatch
 
-Before any claim about a Machine mechanism being a new primitive, an optimization, or a changed computation frontier can be promoted to canonical Machine status, record all of:
+The CEK S1/S2 experiment and Rev 2.1 are not interchangeable.
 
-1. canonical repository/branch/commit;
-2. executable substrate source path;
-3. transition/state/control semantics implemented by that source;
-4. allowed state-access operations;
-5. relation representation and traversal semantics;
-6. cost accounting;
-7. replay command or CI workflow;
-8. evidence/result artifact tied to the exact source commit.
+CEK experiment:
 
-## Decisive minimal pair after closure
+`S1 = generic readable state`
+versus
+`S2 = S1 + direct indexed relation lookup`
 
-Control:
-`S1 = generic readable state + comparison + branching + iteration`
+Rev 2.1:
 
-Treatment:
-`S2 = S1 + direct indexed relation access`
+`M = (S,Sigma,delta,R,C)`
+with `R^-1` itself included in the substrate's declared representation/resource contract.
 
-Fixed:
-- information;
+Therefore the measured CEK S1/S2 delta cannot be imported as a classification of Rev 2.1 without first equalizing:
+
+- information source;
+- representation;
 - timing;
-- persistent representation;
-- correctness contract;
-- offline budget;
-- online budget;
-- access-cost accounting.
+- access semantics;
+- construction cost;
+- query cost;
+- dynamic update model;
+- correctness contract.
 
-Observed outputs:
-- semantic equivalence;
-- `(B_off,R,B_on,C_access)`;
-- full feasible-set frontier where applicable.
+## Decisive crosswalk
 
-## Promotion rules
+The next artifact should map both systems into:
 
-**Resource primitive / optimization**
+`Information | Representation | Timing | Access | Cost | Mutation | Correctness`
 
-If relation traversal is derivable from the canonical substrate and the direct mechanism only changes cost.
+Then evaluate:
 
-**Substrate extension**
+### Case A
 
-If the direct relation capability requires an access/interpretation operation absent from the canonical fixed substrate.
+The inverse relation is merely a representation derivable under the fixed Machine substrate.
 
-**Resource-bounded frontier advantage**
+Disposition:
+resource placement / optimization.
 
-If traversal is semantically derivable but no matched representation reproduces the direct mechanism within the declared resource contract.
+### Case B
 
-This classification remains relative to the frozen substrate/resource contract.
+The abstract Machine substrate excludes the access needed to exploit the stored inverse relation.
 
-## Explicit non-goals
+Disposition:
+substrate capability expansion.
 
-This gate does not:
-- declare S2 frozen;
-- declare a new computational-power separation;
-- broaden the reflective substrate;
-- infer implementation lineage from terminology;
-- treat documentation as executable evidence.
+### Case C
 
-## Current next action
+The inverse relation is admissible, but its construction/storage/access cost creates a distinct Pareto point.
 
-Identify or implement the canonical Machine execution substrate, then run the minimal pair on that actual substrate.
+Disposition:
+resource-bounded frontier shift.
 
-Until that happens, the experimental substrate remains evidence about its own implementation only.
+### Case D
+
+Different contracts are being compared.
+
+Disposition:
+INCONCLUSIVE / CONTRACT MISMATCH until normalized.
+
+## Gate
+
+No new primitive or computational-power claim should be promoted until the crosswalk is complete.
+
+The immediate target is contract reconciliation, not further substrate expansion.
