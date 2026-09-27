@@ -1,0 +1,13 @@
+{
+  "schema":"machine.substrate-contract-crosswalk.v0.1",
+  "status":"EXPERIMENTALLY_SUPPORTED / CI EXECUTED",
+  "run_id":"36350447694",
+  "job_id":"108707987716",
+  "head_commit":"b1afea87bf8f10c0edc313be0797d8e540f8fc9c",
+  "base_contract":"research/bidirectional-substrate-v3@59fab62704875193801db77c7cb8361475297f48",
+  "workload":{"systems":72,"lookups":576,"basin_queries":216,"families":6},
+  "verification":{"builder_failures":0,"lookup_semantic_failures":0,"basin_semantic_failures":0,"all_semantics_equal":true},
+  "aggregate":{"lookup_control_probes":601248,"lookup_treatment_entry_reads":2675,"lookup_treatment_access_ops_lower_bound":3827,"lookup_ratio":157.1068722236739,"basin_control_full_table_inspections":1378965,"basin_treatment_fiber_entries":204752,"basin_ratio":6.734806009220911,"mean_forward_delta_bytes":8350.666666666666,"mean_incremental_inverse_bytes":5927.694444444444,"mean_offline_build_units":2237.277777777778},
+  "disposition":{"information_new":false,"target_dependent_preprocessing":false,"extra_representation_storage":true,"offline_work_charged":true,"semantic_equivalence":true,"classification":"representation/resource relocation under the Rev 2.1 contract","absolute_computational_power_claim":"NOT_SUPPORTED"},
+  "artifact":{"id":10942405552,"zip_sha256":"1f93998bfc57d84e06924e16bd1317f911669a65bad233e65beb72f039511aa0","raw_results_bytes":10188,"raw_results_sha256":"e175ee43cd433cad8b1baa11bdd668733cc77dc18979727b081da63d2a6bf61e"}
+}
