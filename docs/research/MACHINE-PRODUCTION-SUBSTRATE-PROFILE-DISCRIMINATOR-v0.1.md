@@ -1,6 +1,6 @@
 # Production Substrate Profile Discriminator v0.1
 
-Status: **EXECUTION PENDING / DECISION GATED**
+Status: **LOCAL REPLAY PASS / CI STATUS NOT YET OBSERVED / DECISION GATED**
 
 Recorded: 2026-09-27
 
@@ -60,9 +60,9 @@ After execution, profile selection must use two separate questions:
 1. **Capability minimum:** what is the least specialized profile that closes the frozen production workload set?
 2. **Resource envelope:** under the actual production limits for online work, persistent representation, preprocessing, and mutation, which profile(s) are admissible?
 
-Until the production resource envelope is itself frozen, the repository-wide canonical production profile remains **OPEN**.
+Local execution closed the tested inverse workload family for A0/A1/A2 with zero semantic failures. This does not by itself freeze the production profile. Until the production resource envelope is frozen, the repository-wide canonical production profile remains **OPEN**.
 
-## Expected result categories
+## Observed local result\n\nThe committed discriminator was replayed independently with the following outcome:\n\n- 60 systems across 6 generated families.\n- 4 inverse-dependent workload classes.\n- semantic failures: A0=0, A1=0, A2=0.\n- aggregate access work: A0=169090253, A1=976186, A2=488093.\n- A0/A1 = 173.2152x.\n- A1/A2 = 2.0x under the declared access-count model.\n\nIndependent checks added outside the primary run covered 100 additional systems × 20 targets with 0 semantic failures, and 1000 degree values with 0 violations of the declared A1/A2 cost relation.\n\nTherefore the present evidence supports this narrower statement:\n\n> **A1 is sufficient and is the least semantically specialized profile tested for the inverse workload family; A2 is not necessary for semantic closure, but remains the explicit Rev 2.1 interface.**\n\nThis is still not a repository-wide production decision because the actual production resource envelope and mutation requirements have not been frozen.\n\n## Expected result categories
 
 - **A1 closes + A2 not required:** inverse access is representation/resource closure at the minimal generic level; Rev 2.1 may remain A2 as a concrete specialized interface.
 - **A1 fails while A2 closes:** specialized inverse access is necessary under the frozen abstract workload contract.
@@ -75,10 +75,7 @@ Parent branch:
 
 `research/machine-substrate-primitive-closure-v0`
 
-Parent contract repair:
-
-`c0fd531cfd0d447e321ed552770ac4b77c4cb95a0` (reported branch head identifier; connector normalization may vary)
-
+Parent contract repair:\n\n`c0fd531cfd0d447e321ed552770ac4b77c4cb95a0`\n
 Concrete Rev 2.1 contract instance:
 
 `experiments/machine-substrate-resource-contract-v0/CONTRACT-INSTANCES-v0.1.json`
