@@ -1,0 +1,14 @@
+{
+  "schema":"hsdcr-e2e-composition-provenance-v0.1",
+  "status":"LOCAL_REPLAY",
+  "repository":"Loofy147/Machine",
+  "branch":"research/hsdcr-e2e-composition-v0",
+  "base_ref":"research/hsdcr-reassessment-v0",
+  "base_sha":"dc11fb21dc3ba136b2193e9ea6c324a0aa79a2f1",
+  "source_fixtures":"REAL-SOURCES-v0.1.json",
+  "harness":"run.py",
+  "result_payload_sha256":"3b14b6c0a0151c76f5a4de35505f1e3e2ecb56bde3cd065cf1e8bfce3bb694cd",
+  "semantic_scope":"proposal/non-canonicality + evidence/authority separation + explicit acceptance + reconstruction",
+  "external_provider_status":"real contribution fixtures; normalized evidence/authority fixtures",
+  "ci_status":"PENDING"
+}
