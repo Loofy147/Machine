@@ -1,0 +1,45 @@
+{
+  "schema": "machine.relation-lookup-substrate-claims.v0.1",
+  "recorded": "2026-09-19",
+  "branch": "research/evidence-disposition-v0",
+  "claims": [
+    {
+      "claim_id": "CL-RELATION-LOOKUP-NOT-INTRINSIC-PRIMITIVE-V0",
+      "claim": "Relation lookup is not intrinsically a new computational capability; under a substrate that already provides generic state access, key comparison, branching, and iteration, finite relation lookup is derivable as ordinary computation over stored data.",
+      "status": "EXPERIMENTALLY_SUPPORTED / CONDITIONALLY_ESTABLISHED",
+      "scope": "explicit S1 substrate contract and finite relation audit",
+      "evidence": [
+        "experiments/relation-lookup-substrate-audit-v0/run.py",
+        "experiments/relation-lookup-substrate-audit-v0/RESULTS-V0.md"
+      ],
+      "limits": [
+        "S1 generic state-readable contract is not yet the declared concrete contract of the current Machine substrate",
+        "the local executable audit is a minimal finite-map demonstration, not a universal proof"
+      ],
+      "next_discriminating_test": "Specify the concrete Machine substrate's state-access primitives and determine whether S1 is actually satisfied."
+    },
+    {
+      "claim_id": "CL-DIRECT-LOOKUP-CAN-BE-RESOURCE-PRIMITIVE-V0",
+      "claim": "Even when direct relation lookup is derivable from a generic substrate, a direct indexed lookup primitive can occupy a better resource point without expanding the underlying computable relation set.",
+      "status": "EXPERIMENTALLY_SUPPORTED / CONDITIONALLY_ESTABLISHED",
+      "scope": "minimal relation audit and universal-machine resource distinction",
+      "evidence": [
+        "experiments/relation-lookup-substrate-audit-v0/RESULTS-V0.md"
+      ],
+      "limits": [
+        "the local cost model uses abstract ticks",
+        "real substrate cost depends on representation and hardware/runtime"
+      ]
+    },
+    {
+      "claim_id": "CL-CURRENT-SUBSTRATE-LOOKUP-BOUNDARY-OPEN-V0",
+      "claim": "The current abstract Machine model does not specify enough concrete state-access semantics to classify generic relation_lookup as already contained in the fixed substrate or as a new primitive.",
+      "status": "OPEN / SPECIFICATION-DEBT",
+      "scope": "docs/ABSTRACT-MACHINE.md and docs/FOUNDATION.md",
+      "evidence": [
+        "repository audit of current abstract model"
+      ],
+      "next_discriminating_test": "Declare and implement the minimal concrete state access contract used by the current interpreter core, then re-run the relation-lookup closure test."
+    }
+  ]
+}

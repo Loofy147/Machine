@@ -1,0 +1,93 @@
+{
+  "schema": "machine.mechanism-frontier-claims.v0.4",
+  "recorded": "2026-09-19",
+  "branch": "research/evidence-disposition-v0",
+  "claims": [
+    {
+      "claim_id": "CL-FIXED-BUDGET-FRONTIER-SHIFT-BIDI-V0",
+      "claim": "Under B_off=0, R=0, identical edge-examination accounting, direct predecessor access shifts the sampled online feasible-set frontier relative to successor-only forward BFS.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "finite arithmetic graph; M in {30,300,3000}; three seeds",
+      "evidence": [
+        "experiments/mechanism-frontier-shift-v0/run.py",
+        "experiments/mechanism-frontier-shift-v0/RESULTS-V0.md"
+      ],
+      "limits": [
+        "resource-bounded result",
+        "not an ultimate computational-power separation",
+        "one graph family in the native-access comparison"
+      ]
+    },
+    {
+      "claim_id": "CL-SUCCESSOR-ONLY-REVERSE-EMULATION-V0",
+      "claim": "Exhaustive online predecessor emulation using only successor operations does not recover the native predecessor frontier at the tight budgets tested.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "same finite arithmetic graph fixture",
+      "evidence": [
+        "experiments/mechanism-frontier-shift-v0/emulation_control.py",
+        "experiments/mechanism-frontier-shift-v0/RESULTS-V0.md"
+      ],
+      "limits": [
+        "not an optimality proof over all successor-only encodings"
+      ],
+      "next_discriminating_test": "Test stronger state representations and independent graph families."
+    },
+    {
+      "claim_id": "CL-TARGET-OBLIVIOUS-MACRO-SHIFTS-FRONTIER-V0",
+      "claim": "A fixed successor-only executor can shift its online frontier by using target-oblivious multi-step macro state without changing transition topology.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "affine, permutation, and opaque finite graph controls; macro2/3/4; seeds 17,23,41",
+      "evidence": [
+        "experiments/mechanism-frontier-shift-v0/samples-v0/run.py",
+        "experiments/mechanism-frontier-shift-v0/samples-v0/RESULTS-REPRESENTATION-CONTROL-V0.md"
+      ],
+      "limits": [
+        "only one macro representation family",
+        "B_off and R are nonzero"
+      ]
+    },
+    {
+      "claim_id": "CL-REVERSE-INDEX-CLOSES-NATIVE-FRONTIER-V0",
+      "claim": "A target-oblivious reverse adjacency index reproduces the native bidirectional online success pattern and minimum online budgets exactly in the tested finite arithmetic graph, at the cost of B_off=3M and R=3M.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "M in {30,100,300}; seeds 17,23,41; caps 10..640",
+      "evidence": [
+        "experiments/pareto-representation-closure-v0/run.py",
+        "experiments/pareto-representation-closure-v0/RESULTS-V0.md",
+        "experiments/pareto-representation-closure-v0/REPRESENTATIVE-SAMPLES-V0.csv"
+      ],
+      "limits": [
+        "the reverse-index consumer uses generic stored-neighbor traversal",
+        "whether that traversal is part of the fixed substrate must be specified explicitly"
+      ],
+      "interpretation": "direct predecessor access can be represented as frozen state if the substrate admits generic stored-relation traversal"
+    },
+    {
+      "claim_id": "CL-ALL-PAIRS-POLICY-COLLAPSES-ONLINE-COST-V0",
+      "claim": "A target-oblivious all-pairs next-action table used by a fixed successor executor can reduce the maximum sampled post-instance budget to 9, 13, and 17 for M=30,100,300 respectively, at approximately O(M^2) offline construction and storage.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "same finite arithmetic graph; seeds 17,23,41",
+      "evidence": [
+        "experiments/pareto-representation-closure-v0/run.py",
+        "experiments/pareto-representation-closure-v0/PARETO-FRONTIER-V0.csv"
+      ],
+      "limits": [
+        "finite exact graph domain",
+        "large state/storage cost",
+        "does not address scalable compact representations"
+      ],
+      "interpretation": "online computation can be traded for offline computation and persistent representation without changing successor execution semantics"
+    },
+    {
+      "claim_id": "CL-MECHANISM-CATEGORY-NOT-ABSOLUTE-V0",
+      "claim": "Mechanism change should be judged by whether it adds a Pareto-frontier point under a fully specified resource and substrate contract; a mechanism-name difference alone does not establish capability expansion.",
+      "status": "INFERENCE",
+      "scope": "cross-experiment synthesis",
+      "limits": [
+        "generic state-relation traversal boundary is not yet fully formalized",
+        "compact representation search remains incomplete"
+      ],
+      "next_discriminating_test": "Specify the minimal generic state-indexed relation-lookup primitive, then determine whether it is already contained in the fixed substrate or is itself a new transition primitive."
+    }
+  ]
+}

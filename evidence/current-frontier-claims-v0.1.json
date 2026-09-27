@@ -1,0 +1,75 @@
+{
+  "schema": "machine.current-frontier-claims.v0.1",
+  "recorded": "2026-09-19",
+  "repository": "Loofy147/Machine",
+  "audit_branch": "research/evidence-disposition-v0",
+  "audit_base_commit": "78fa2f77e12acfec295d696790594ae71332e0a0",
+  "claims": [
+    {
+      "claim_id": "CL-FRONTIER-DETECTOR-THIRD-VERDICT-V0",
+      "claim": "Finite black-box evidence cannot in general justify a global expressive-insufficiency conclusion; an explicit INCONCLUSIVE_AT_RESOLUTION(delta) verdict is required unless an independent regularity/certificate supports a negative conclusion.",
+      "status": "EXPERIMENTALLY_SUPPORTED",
+      "scope": "adversarial one-dimensional detector fixtures A, A2, B, D, E",
+      "evidence": [
+        "experiments/frontier-insufficiency-adversarial-v0/detector.py",
+        "experiments/frontier-insufficiency-adversarial-v0/RESULTS-V0.md"
+      ],
+      "provenance": [
+        "commit:72dce24466a86d395174a6e4995d20f9fecdd523",
+        "commit:78fa2f77e12acfec295d696790594ae71332e0a0"
+      ],
+      "limits": [
+        "local execution only; CI replay not yet added",
+        "fixture family is one-dimensional",
+        "certified negative result depends on independently supplied Lipschitz bounds"
+      ],
+      "next_discriminating_test": "Expand to independently generated sufficient/insufficient families varying search difficulty, sparsity, near-miss density, and multiscale structure."
+    },
+    {
+      "claim_id": "CL-FIXED-SUBSTRATE-COMPUTATION-PLACEMENT-V0",
+      "claim": "A fixed transition mechanism can exhibit different computational behavior when state contains richer policy/program/table data; the policy-table result does not show that computation disappeared, only that prior search can be represented and reused later.",
+      "status": "USER_REPORTED",
+      "evidence_status": "CONVERSATION_ONLY",
+      "scope": "policy-table/BFS graph experiment discussed on 2026-09-19",
+      "limits": [
+        "generator and raw run artifact are not yet committed",
+        "BFS construction cost and lookup cost were reported from the conversation"
+      ],
+      "next_discriminating_test": "Package the generator, freeze order, raw outputs, operation accounting, and replay harness in the repository."
+    },
+    {
+      "claim_id": "CL-OFFLINE-ALLOCATION-MISSED-INSTANCE-FLOOR-V0",
+      "claim": "Increasing exact target-specific offline coverage increases hit proportion while leaving miss cost approximately unchanged in the current allocation experiment.",
+      "status": "USER_REPORTED",
+      "evidence_status": "CONVERSATION_ONLY",
+      "scope": "M=30 allocation sweep discussed on 2026-09-19",
+      "limits": [
+        "allocation generator and raw outputs are not yet committed",
+        "reported values are not yet CI-replayable"
+      ],
+      "next_discriminating_test": "Commit the h-sweep harness and raw result artifact; then add compact target-oblivious structures with partial benefit on misses."
+    },
+    {
+      "claim_id": "CL-MEMOIZATION-SAME-FEASIBLE-SET-V0",
+      "claim": "The reported memoized-lookahead variant preserved the same success/failure pattern and minimum depth while reducing substrate operations by approximately 19.3% in the tested workload.",
+      "status": "USER_REPORTED",
+      "evidence_status": "CONVERSATION_ONLY",
+      "scope": "M=30 lookahead/memoization experiment discussed on 2026-09-19",
+      "limits": [
+        "source harness and raw outputs are not yet committed",
+        "the result is a single workload measurement"
+      ],
+      "next_discriminating_test": "Package the baseline and memoized implementations with matched workloads and raw per-query cost traces."
+    },
+    {
+      "claim_id": "CL-CAPABILITY-MUST-BE-CONTRACT-RELATIVE-V0",
+      "claim": "Whether a substrate is sufficient or capable is relative to the complete execution contract: transition mechanism, frozen representation/state budget, preprocessing budget, post-instance budget, information timing, correctness criterion, and allowed operations.",
+      "status": "INFERENCE",
+      "scope": "cross-experiment synthesis",
+      "limits": [
+        "formal feasibility-frontier comparison has not yet been executed across multiple transition mechanisms"
+      ],
+      "next_discriminating_test": "Compare feasible instance sets F(T,A,Q) under matched artifact, offline, online, timing, and correctness constraints."
+    }
+  ]
+}
