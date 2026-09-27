@@ -1,0 +1,37 @@
+{
+  "schema": "machine.substrate-primitive-closure.v0.1.summary",
+  "status": "EXPERIMENTALLY_SUPPORTED / CONTRACT-BOUND",
+  "run_id": 36350976788,
+  "job_id": 108709474992,
+  "head_commit": "35c5f21aef945170f42b64f4f3feefc209659747",
+  "artifact_id": 10942640440,
+  "artifact_sha256": "72716cbdba4027dfd7d9ad90d6d83f9eddcc09322b9be029263d48646b98537e",
+  "raw_result_sha256": "d9752a6b7d0bc0bc26a65f5005d6198209105d040a184f9e5b00024a24407331",
+  "workload": {
+    "systems": 72,
+    "lookups": 720,
+    "basin_queries": 72,
+    "families": 6
+  },
+  "verification": {
+    "builder_failures": 0,
+    "predecessor_semantic_failures": 0,
+    "basin_semantic_failures": 0,
+    "all_equal": true
+  },
+  "aggregate": {
+    "control_total_online_probes": 751560,
+    "random_state_total_reads": 6320,
+    "fiber_primitive_total_ops": 3160,
+    "random_state_ratio": 118.91772151898734,
+    "mean_inverse_extra_bytes": 5774.222222222223,
+    "mean_offline_build_units": 2175.8888888888887
+  },
+  "classification": {
+    "random_access_state": "DERIVABLE / REPRESENTATION-LEVEL CLOSURE",
+    "opaque_forward": "NOT_DERIVABLE_WITHOUT_ACCESS_EXTENSION",
+    "fiber_primitive": "EXPLICIT_SUBSTRATE_EXTENSION",
+    "absolute_computational_power_claim": "NOT_SUPPORTED",
+    "canonical_machine_closure": "OPEN"
+  }
+}\n
