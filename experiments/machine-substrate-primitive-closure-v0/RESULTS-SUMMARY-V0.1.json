@@ -33,5 +33,12 @@
     "fiber_primitive": "EXPLICIT_SUBSTRATE_EXTENSION",
     "absolute_computational_power_claim": "NOT_SUPPORTED",
     "canonical_machine_closure": "OPEN"
-  }
-}\n
+  },
+  "model_source": {
+    "repository": "Loofy147/Machine",
+    "path": "docs/ABSTRACT-MACHINE.md",
+    "commit": "f752aac015d9f837bc6a89d44eed50e0325b60a6",
+    "key_boundary": "state representation, state data structure, and resource/access costs are intentionally unspecified at this abstract level"
+  },
+  "formal_disposition": "ABSTRACT-LEVEL NON-IDENTIFIABILITY: primitive-vs-representation status of inverse-fiber access cannot be determined until a substrate/resource contract freezes state addressing and access semantics"
+}
