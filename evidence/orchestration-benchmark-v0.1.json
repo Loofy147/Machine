@@ -58,7 +58,7 @@
       "result": "experimental S1/S2 evidence only"
     }
   ],
-  "next_discriminating_action": "freeze the canonical abstract Machine state-access primitive contract; then rerun the closure test against that frozen contract, explicitly distinguishing semantic primitives from generic representation access",
+  "next_discriminating_action": "select or formally justify the production substrate access profile (A0, A1, or A2); then perform primitive-closure tests only against that frozen profile",
   "executed_crosswalk": {
     "branch": "research/machine-substrate-crosswalk-v0",
     "execution_head": "b1afea87bf8f10c0edc313be0797d8e540f8fc9c",
@@ -144,5 +144,17 @@
       "finding": "the abstract model leaves state representation and concrete access/resource primitives unspecified"
     },
     "formal_disposition": "ABSTRACT-LEVEL NON-IDENTIFIABILITY: inverse-fiber primitive-vs-representation status cannot be fixed without a frozen substrate/resource contract"
+  },
+  "frozen_resource_contract": {
+    "schema_path": "experiments/machine-substrate-resource-contract-v0/CONTRACT-v0.1.json",
+    "document_path": "docs/research/MACHINE-SUBSTRATE-RESOURCE-CONTRACT-v0.1.md",
+    "instance_matrix": "docs/research/FROZEN-SUBSTRATE-CONTRACT-INSTANCE-MATRIX-v0.1.md",
+    "status": "FROZEN_SCHEMA",
+    "validation_workflow_run_id": 36351626389,
+    "validation_job_id": 108711287508,
+    "schema_validation": "SUCCESS",
+    "instance_validation": "SUCCESS",
+    "profile_rule": "abstract model remains profile-unfrozen; concrete substrates must declare A0/A1/A2 before comparison",
+    "key_consequence": "primitive classification is relative to declared access contract"
   }
 }
