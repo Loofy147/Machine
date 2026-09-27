@@ -1,3 +1,6 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'bidirectional-substrate-v3'))
 """Machine Substrate Rev 2.1 contract crosswalk experiment.
 
 Control:
