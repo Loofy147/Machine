@@ -137,6 +137,12 @@
       "artifact_sha256": "e1ebd6d0baa7b9e741b0975c75618324b3cc98b8f25724fa3251c034e089cac9",
       "raw_results_sha256": "d9752a6b7d0bc0bc26a65f5005d6198209105d040a184f9e5b00024a24407331",
       "raw_results_identical_to_first_execution": true
-    }
+    },
+    "abstract_model_source": {
+      "path": "docs/ABSTRACT-MACHINE.md",
+      "source_commit": "f752aac015d9f837bc6a89d44eed50e0325b60a6",
+      "finding": "the abstract model leaves state representation and concrete access/resource primitives unspecified"
+    },
+    "formal_disposition": "ABSTRACT-LEVEL NON-IDENTIFIABILITY: inverse-fiber primitive-vs-representation status cannot be fixed without a frozen substrate/resource contract"
   }
 }
