@@ -1,0 +1,15 @@
+{
+  "schema":"hsdcr-composition-reduction-provenance-v0.1",
+  "status":"LOCAL_REPLAY",
+  "repository":"Loofy147/Machine",
+  "branch":"research/hsdcr-reassessment-v0",
+  "base_ref":"research/bidirectional-substrate-v3",
+  "base_sha":"59fab62704875193801db77c7cb8361475297f48",
+  "harness_commit":"81ff2ba229fb93965d0d0219ab31b705efdbce82",
+  "result_record_commit":"66cb2667b4406829543e410f4b6c521b0fa23b62",
+  "local_execution_command":"python /mnt/data/hsdcr_composition_reduction_v0.py > /mnt/data/HSDCR-COMPOSITION-REDUCTION-V0.1.json",
+  "result_payload_sha256":"2954c833b999b6c9e80da7852913f4a4aeba5668ca4f774b666f5fcc4f9d0f9c",
+  "ci_status":"NOT_OBSERVED",
+  "interpretation_scope":"candidate semantic minimization only",
+  "novelty_claim":false
+}
