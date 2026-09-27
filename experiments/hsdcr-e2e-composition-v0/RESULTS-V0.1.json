@@ -1,0 +1,69 @@
+{
+  "boundary_tests": {
+    "accepted_transition_is_explicit": true,
+    "duplicate_acceptance_is_idempotent": true,
+    "evidence_cannot_authorize_alone": true,
+    "reconstruction_matches_canonical": true,
+    "rejected_decision_does_not_canonicalize": true,
+    "signal_loss_does_not_change_canonical_state": true
+  },
+  "disposition": {
+    "architectural_novelty": "OPEN",
+    "irreducible_residual": "NOT_DETECTED",
+    "next_test": "replace normalized evidence and authority fixtures with independent real implementations and re-run the same transition oracle",
+    "protocol_status": "NOT_ASSIGNED",
+    "strongest_current_kill_hypothesis_survives": true
+  },
+  "equivalence_dimensions": {
+    "authority": "NOT_EQUALIZED",
+    "durability": "NOT_EQUALIZED",
+    "resource": "NOT_EXECUTED",
+    "semantic": true
+  },
+  "provider_substitution": {
+    "github_vs_at_direct": {
+      "adapter_required": true,
+      "classification": "DIRECT_COLLISION",
+      "semantic_equivalence": false
+    },
+    "github_vs_at_wrapped": {
+      "adapter_type": "ordinary_application_record_plus_transition",
+      "classification": "SEMANTIC_BOUNDARY_PRESERVED",
+      "new_primitive_required": false,
+      "semantic_equivalence": true
+    }
+  },
+  "reduction": {
+    "acceptance_relation_reducible_to": "ordinary typed data + explicit transition/policy",
+    "new_execution_primitive_detected": false,
+    "new_repository_primitive_detected": false,
+    "operations_used": [
+      "typed-record-create",
+      "field-validation",
+      "deterministic-transition",
+      "append-history",
+      "replay"
+    ]
+  },
+  "result_payload_sha256": "3b14b6c0a0151c76f5a4de35505f1e3e2ecb56bde3cd065cf1e8bfce3bb694cd",
+  "schema": "hsdcr-e2e-composition-v0.1",
+  "source_fixtures": {
+    "at_public_record": {
+      "native_repository_mutation": true,
+      "provider": "atproto",
+      "record_type": "app.bsky.feed.post",
+      "record_uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mp54n7zccc2j2",
+      "surface": "repository_record"
+    },
+    "github_pr_10": {
+      "base": "59fab62704875193801db77c7cb8361475297f48",
+      "head": "12dade33f708d66890c6c10b754f85c1d3ae13e3",
+      "merged": false,
+      "proposal_id": "github-pr-10",
+      "provider": "github",
+      "state": "open",
+      "surface": "pull_request"
+    }
+  },
+  "status": "CONTRACT_COMPOSITION_CHECK"
+}
