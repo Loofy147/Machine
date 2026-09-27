@@ -16,6 +16,7 @@ This ledger is a reduction experiment, not an architecture specification.
 | Authority | ability to cause permitted effects | identity, provenance | authority must not arise from reachability or evidence | UCAN, GitHub rulesets, ACL/capability layer | Not removed yet | OPEN |
 | Acceptance/decision | transition from proposed/non-canonical to canonical | authority, review | decision must be distinguishable from evidence and observation | PR merge rules, domain transition function | Not removed yet | OPEN |
 | Reconstruction | derive canonical/temporal state from durable records | history, event log, repository | reconstruction must not be conflated with synchronization | Git history, AT repo, event sourcing | Not removed yet | OPEN |
+| **2026-09-28 real substitution** | **GitHub PR → contribution proposal** | proposal/decision/canonical state | **AT native repository record collapses into canonical repository mutation if used directly** | AT application-level proposal record would be required | **GitHub→AT direct substitution fails B03/B07** | **EXPERIMENTALLY_SUPPORTED / CONTRACT-BOUND** |
 | Sensitivity | early/weak signal detection | observation, observability | sensitivity must not imply automatic reaction | telemetry + durable observation rules | Not removed yet | OPEN |
 | Synchronization | state propagation among loci | reconstruction, CRDT | synchronization must not be required for local reconstruction | AT sync, CRDT sync, Git fetch/push | Not removed yet | OPEN |
 
