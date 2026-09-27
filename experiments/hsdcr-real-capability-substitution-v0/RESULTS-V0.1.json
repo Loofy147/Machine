@@ -1,0 +1,47 @@
+{
+  "schema": "hsdcr-real-capability-substitution-result/v0.1",
+  "status": "EXPERIMENTALLY_SUPPORTED / CONTRACT-BOUND",
+  "recorded": "2026-09-28",
+  "question": "Can a native AT Protocol repository record directly substitute for a GitHub Pull Request while preserving proposal != canonical state?",
+  "real_sources": {
+    "github": {
+      "repository": "Loofy147/Machine",
+      "pull_request": 10,
+      "url": "https://github.com/Loofy147/Machine/pull/10",
+      "state": "open",
+      "merged": false,
+      "base_sha": "59fab62704875193801db77c7cb8361475297f48",
+      "head_sha": "12dade33f708d66890c6c10b754f85c1d3ae13e3"
+    },
+    "atproto": {
+      "handle": "bsky.app",
+      "did": "did:plc:z72i7hdynmk6r22z27h6tvur",
+      "record_uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mp54n7zccc2j2",
+      "record_type": "app.bsky.feed.post",
+      "published": "2026-06-25T19:03:39.565Z"
+    }
+  },
+  "observations": {
+    "github_noncanonical_proposal": true,
+    "at_native_repository_record": true,
+    "at_native_proposal_before_acceptance": false
+  },
+  "result": {
+    "status": "PASS",
+    "classification": "PARTIAL_SUBSTITUTION / ADAPTER_REQUIRED",
+    "semantic_equivalence": false,
+    "affected_boundaries": ["B03_CONTRIBUTION", "B07_DECISION_ACCEPTANCE"],
+    "collision": "Directly mapping an AT repository record to a GitHub PR collapses proposal and canonical repository mutation."
+  },
+  "limits": [
+    "Does not show that AT Protocol cannot host application-level proposal semantics.",
+    "Does not establish architectural novelty.",
+    "Does not establish production suitability or security equivalence.",
+    "Does not compare performance."
+  ],
+  "next": [
+    "substitute evidence/provenance",
+    "substitute authority",
+    "perform component-removal tests on the resulting composition"
+  ]
+}
