@@ -1,0 +1,41 @@
+{
+  "schema": "hsdcr-real-capability-substitution-fixture/v0.1",
+  "recorded": "2026-09-28",
+  "sources": {
+    "github_pr": {
+      "repository": "Loofy147/Machine",
+      "pr_number": 10,
+      "url": "https://github.com/Loofy147/Machine/pull/10",
+      "state": "open",
+      "merged": false,
+      "base": "research/bidirectional-substrate-v3",
+      "base_sha": "59fab62704875193801db77c7cb8361475297f48",
+      "head": "research/machine-substrate-primitive-closure-v0",
+      "head_sha": "12dade33f708d66890c6c10b754f85c1d3ae13e3",
+      "commits": 127,
+      "changed_files": 75
+    },
+    "atproto_profile": {
+      "handle": "bsky.app",
+      "did": "did:plc:z72i7hdynmk6r22z27h6tvur",
+      "url": "https://bsky.app/profile/bsky.app"
+    },
+    "atproto_record": {
+      "uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mp54n7zccc2j2",
+      "url": "https://bsky.app/profile/bsky.app/post/3mp54n7zccc2j2",
+      "record_type": "app.bsky.feed.post",
+      "repository_did": "did:plc:z72i7hdynmk6r22z27h6tvur",
+      "repository_handle": "bsky.app",
+      "published": "2026-06-25T19:03:39.565Z"
+    }
+  },
+  "source_notes": {
+    "github": "PR 10 is an actual open proposal from the Machine primitive-closure branch against bidirectional-substrate-v3. It has not been merged, so the proposal and canonical base remain distinct.",
+    "atproto": "The cited public AT record is an actual record inside the account repository. AT Protocol repository semantics define mutations as repository commits; this fixture does not identify a native proposal-before-acceptance state.",
+    "external_basis": [
+      "https://atproto.com/specs/repository",
+      "https://atproto.com/specs/sync",
+      "https://atproto.com/guides/sync"
+    ]
+  }
+}
