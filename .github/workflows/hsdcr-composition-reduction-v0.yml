@@ -6,6 +6,11 @@ on:
       - 'experiments/hsdcr-composition-reduction-v0/**'
       - 'docs/research/HSDCR-MINIMAL-SEMANTIC-BOUNDARY-v0.1.yaml'
       - 'docs/research/HSDCR-REASSESSMENT-v0.1.md'
+  pull_request:
+    paths:
+      - 'experiments/hsdcr-composition-reduction-v0/**'
+      - 'docs/research/HSDCR-MINIMAL-SEMANTIC-BOUNDARY-v0.1.yaml'
+      - 'docs/research/HSDCR-REASSESSMENT-v0.1.md'
 
 jobs:
   reduction:
