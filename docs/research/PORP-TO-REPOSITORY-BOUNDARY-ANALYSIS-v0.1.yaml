@@ -1,0 +1,67 @@
+schema: porp-to-repository-boundary/v0.1
+status: research
+normative: false
+porp_role: control_orchestration_layer
+candidate_status: working_label_only
+
+adoptable_capabilities:
+  - capability_registry
+  - normalized_capability_descriptor
+  - capability_substitution
+  - task_dag
+  - context_handoff
+  - freshness
+  - contradiction_protocol
+  - dynamic_replanning
+  - failure_taxonomy
+  - idempotency
+  - duplicate_execution_guard
+  - authority_boundary
+  - approval_state
+  - verification_levels
+  - artifact_lifecycle
+  - cross_surface_boundary
+  - durable_event_record
+  - claim_model
+  - run_manifest
+  - self_adversarial_checks
+
+non_closed_repository_semantics:
+  - contribution_locus
+  - contribution_noncanonicality
+  - canonical_repository_state
+  - replicated_state_convergence
+  - repository_reconstruction
+  - repository_native_evidence_ontology
+  - sensitivity_definition
+
+non_collapse:
+  - "task != contribution"
+  - "tool_success != completion"
+  - "documentation != runtime_evidence"
+  - "user_intent != unlimited_authority"
+  - "alternative_provider != valid_substitution"
+  - "retry != recovery"
+  - "contribution != canonical_state"
+  - "observation != evidence"
+  - "evidence != authority"
+  - "authority != decision"
+  - "reconstruction != synchronization"
+  - "sensitivity != reactivity"
+
+placement:
+  layer: control_orchestration
+  below:
+    - repository_state
+    - contribution_substrate
+    - evidence_substrate
+    - authority_substrate
+
+decision:
+  porp_as_known_capability_source: "HIGH_VALUE"
+  porp_as_complete_candidate: "NOT_ESTABLISHED"
+  porp_as_candidate_ontology: "REJECTED_FOR_NOW"
+  repository_residual: "OPEN"
+  architecture: "NOT_ASSIGNED"
+  protocol: "NOT_ASSIGNED"
+  novelty: "NOT_CLAIMED"
