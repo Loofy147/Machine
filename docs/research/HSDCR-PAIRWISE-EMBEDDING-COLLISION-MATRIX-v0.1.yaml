@@ -1,0 +1,296 @@
+schema: hsdcr-embedding-collision-matrix/v0.1
+status: research
+normative: false
+classification_rule:
+  N: native_coverage
+  C: composable_without_changing_family_identity
+  X: extension_required
+  K: collision_or_semantic_collapse_risk
+  U: unresolved
+  E: external_component_only
+notes:
+  - "This matrix is an analytical crosswalk, not a claim made by the referenced projects."
+  - "A cell marked C means the capability can be composed from the family but is not a defining primitive of that family."
+  - "A cell marked X means preserving the candidate distinction requires a semantic extension."
+  - "K marks cases where absorbing the candidate concept into the family risks collapsing a distinction that the candidate investigation requires."
+  - "No novelty or superiority conclusion follows from matrix coverage."
+
+atoms:
+  A001: immutable_content_identity
+  A002: independent_contribution_locus
+  A003: contribution_lineage
+  A004: proposal_without_canonical_acceptance
+  A005: durable_observation
+  A006: evidence_as_distinct_semantic_class
+  A007: authority_as_distinct_semantic_class
+  A008: deferred_decision
+  A009: reconstructible_canonical_state
+  A010: high_sensitivity_without_automatic_reaction
+  A011: decentralized_contribution_without_decentralized_authority_assumption
+  A012: contract_relative_capability
+
+families:
+  N1:
+    name: distributed_vcs_and_code_forge
+    examples: [Git, GitHub]
+    source_basis:
+      - https://docs.github.com/en/pull-requests/get-started/about-pull-requests
+      - https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets
+    cells:
+      A001: N
+      A002: N
+      A003: N
+      A004: N
+      A005: C
+      A006: X
+      A007: N
+      A008: N
+      A009: C
+      A010: X
+      A011: K
+      A012: E
+
+  N2:
+    name: federated_forge
+    examples: [ForgeFed, ActivityPub]
+    source_basis:
+      - https://forgefed.org/spec
+    cells:
+      A001: N
+      A002: N
+      A003: N
+      A004: N
+      A005: N
+      A006: X
+      A007: C
+      A008: N
+      A009: X
+      A010: X
+      A011: K
+      A012: E
+
+  N3:
+    name: authenticated_replicated_repository
+    examples: [AT Protocol]
+    source_basis:
+      - https://atproto.com/specs/repository
+      - https://atproto.com/specs/sync
+    cells:
+      A001: N
+      A002: N
+      A003: N
+      A004: X
+      A005: N
+      A006: C
+      A007: C
+      A008: X
+      A009: N
+      A010: X
+      A011: K
+      A012: C
+
+  N4:
+    name: crdt_convergence
+    examples: [Automerge]
+    source_basis:
+      - https://automerge.org/docs/hello
+      - https://automerge.org/docs/cookbook/modeling-data
+    cells:
+      A001: N
+      A002: N
+      A003: N
+      A004: X
+      A005: C
+      A006: X
+      A007: X
+      A008: X
+      A009: N
+      A010: X
+      A011: K
+      A012: C
+
+  N5:
+    name: change_oriented_vcs
+    examples: [Pijul]
+    source_basis:
+      - https://pijul.org/manual/why_pijul
+      - https://pijul.org/manual/theory
+    cells:
+      A001: N
+      A002: N
+      A003: N
+      A004: X
+      A005: C
+      A006: X
+      A007: X
+      A008: X
+      A009: N
+      A010: X
+      A011: K
+      A012: C
+
+  N6:
+    name: provenance
+    examples: [W3C PROV]
+    source_basis:
+      - https://www.w3.org/TR/prov-overview
+    cells:
+      A001: N
+      A002: X
+      A003: N
+      A004: X
+      A005: C
+      A006: C
+      A007: X
+      A008: X
+      A009: X
+      A010: X
+      A011: X
+      A012: X
+
+  N7:
+    name: event_sourcing
+    examples: [Event Sourcing]
+    source_basis:
+      - https://martinfowler.com/eaaDev/EventSourcing.html
+    cells:
+      A001: C
+      A002: C
+      A003: N
+      A004: C
+      A005: N
+      A006: X
+      A007: X
+      A008: C
+      A009: N
+      A010: X
+      A011: X
+      A012: C
+
+  N8:
+    name: transparency_log
+    examples: [Rekor]
+    source_basis:
+      - https://docs.sigstore.dev/about/security
+    cells:
+      A001: N
+      A002: X
+      A003: N
+      A004: X
+      A005: N
+      A006: C
+      A007: X
+      A008: X
+      A009: X
+      A010: X
+      A011: X
+      A012: C
+
+  N9:
+    name: decentralized_capability_authorization
+    examples: [UCAN]
+    source_basis:
+      - https://github.com/ucan-wg/spec
+      - https://github.com/ucan-wg/delegation
+    cells:
+      A001: C
+      A002: X
+      A003: N
+      A004: X
+      A005: C
+      A006: N
+      A007: N
+      A008: C
+      A009: X
+      A010: X
+      A011: N
+      A012: C
+
+  N10:
+    name: decentralized_identity
+    examples: [DID]
+    source_basis:
+      - https://www.w3.org/TR/did-core
+    cells:
+      A001: N
+      A002: X
+      A003: C
+      A004: X
+      A005: X
+      A006: C
+      A007: C
+      A008: X
+      A009: X
+      A010: X
+      A011: C
+      A012: C
+
+  N11:
+    name: software_preservation
+    examples: [Software Heritage]
+    source_basis:
+      - https://docs.softwareheritage.org
+    cells:
+      A001: N
+      A002: C
+      A003: N
+      A004: X
+      A005: C
+      A006: C
+      A007: X
+      A008: X
+      A009: N
+      A010: X
+      A011: X
+      A012: C
+
+  N12:
+    name: versioned_data
+    examples: [Dolt, lakeFS]
+    source_basis:
+      - https://docs.lakefs.io/guides/version-data
+      - https://docs.lakefs.io/concepts/internals
+    cells:
+      A001: N
+      A002: N
+      A003: N
+      A004: N
+      A005: C
+      A006: C
+      A007: N
+      A008: N
+      A009: N
+      A010: X
+      A011: K
+      A012: C
+
+  N13:
+    name: observability
+    examples: [OpenTelemetry]
+    source_basis:
+      - https://opentelemetry.io/docs/concepts/signals
+    cells:
+      A001: N
+      A002: X
+      A003: N
+      A004: X
+      A005: N
+      A006: X
+      A007: X
+      A008: X
+      A009: X
+      A010: N
+      A011: X
+      A012: C
+
+pairwise_test_rule:
+  full_absorption: "Every required atom maps to N or C and every collision invariant remains expressible without a semantic extension."
+  partial_embedding: "Some atoms map to N/C but at least one required distinction maps to X or K."
+  non_embedding: "The family cannot preserve multiple required atoms without changing its defining semantics."
+  unresolved: "Available documentation is insufficient to decide the mapping."
+
+current_result:
+  full_absorption_identified: false
+  strongest_partial_embeddings: [N1, N3, N4, N7, N9, N12]
+  architectural_novelty: "OPEN / NOT CLAIMED"
+  candidate_status: "working-label-only"
