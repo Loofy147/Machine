@@ -49,9 +49,15 @@ This is a **direct substitution collision**, not a general limitation of AT Prot
 
 This experiment is an internal deterministic model check. It is not independent empirical evidence about production systems and does not establish architectural novelty.
 
+## Regression finding
+
+The first GitHub Actions execution of this gate failed at the **evidence comparison step**, while the harness itself passed. The stored result did not byte-match the current executable output. The fixture was corrected and the gate is now configured to run on both push and pull_request events.
+
+The failure is treated as an **evidence-integrity / reproducibility defect in the experiment package**, not as evidence against the research hypothesis.
+
 ## Canonical payload hash
 
-`2954c833b999b6c9e80da7852913f4a4aeba5668ca4f774b666f5fcc4f9d0f9c`
+`e487676f13317834e3a330889a9c28666c571832af4c02ff8cae1ad00d2c5d4a`
 
 ## Next discriminating test
 
