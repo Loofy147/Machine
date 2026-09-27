@@ -1,0 +1,68 @@
+schema: hsdcr-known-capability-adoption-map/v0.1
+status: research
+normative: false
+candidate_status: working-label-only
+principle: adopt-proven-capabilities-without-adopting-source-ontology
+
+capability_sources:
+  immutable_identity:
+    sources: [Git, AT_Protocol, Software_Heritage]
+    boundary: "content/state identity"
+  contribution_loci:
+    sources: [Git, GitHub, Automerge, Pijul, lakeFS]
+    boundary: "independent change locations"
+  concurrent_change:
+    sources: [Automerge, Pijul]
+    boundary: "change and reconciliation"
+  reconstructible_state:
+    sources: [Git, AT_Protocol, lakeFS, Event_Sourcing]
+    boundary: "durable history to state"
+  provenance:
+    sources: [W3C_PROV]
+    boundary: "derivation/attribution relation"
+  transparency:
+    sources: [Rekor_Sigstore]
+    boundary: "append-only externally verifiable evidence"
+  authority:
+    sources: [UCAN, GitHub_rulesets]
+    boundary: "who/what may cause a permitted transition"
+  validation_gates:
+    sources: [GitHub_rulesets, lakeFS_branch_protection]
+    boundary: "transition acceptance conditions"
+  signal_acquisition:
+    sources: [OpenTelemetry, AT_Protocol_event_stream]
+    boundary: "fast observation surface"
+  data_versioning:
+    sources: [lakeFS, Dolt]
+    boundary: "versioned non-code state"
+
+non_collapse_invariants:
+  - "identity != location"
+  - "contribution != canonical_state"
+  - "signal != evidence"
+  - "evidence != authority"
+  - "observation != mutation_authority"
+  - "reconstruction != synchronization"
+  - "convergence != acceptance"
+  - "sensitivity != reactivity"
+  - "semantic_equivalence != resource_equivalence"
+
+composition_tests:
+  - identity_substitution
+  - contribution_substitution
+  - evidence_substitution
+  - authority_substitution
+  - signal_substitution
+  - reconstruction_substitution
+
+success_condition:
+  description: "Candidate semantics survive component substitution without semantic collapse."
+  status: open
+
+novelty_gate:
+  required:
+    - "irreducible semantic dependency"
+    - "independent reproduction"
+    - "non-platform-specific definition"
+    - "survives component substitution"
+  status: not_claimed
