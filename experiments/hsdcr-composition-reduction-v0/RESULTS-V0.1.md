@@ -1,6 +1,6 @@
 # HSDCR Composition Reduction v0.1 — Results
 
-Status: **INTERNAL MODEL CHECK / LOCAL REPLAY**
+Status: **INTERNAL MODEL CHECK / CI-REVALIDATED**
 
 Repository: `Loofy147/Machine`
 Branch: `research/hsdcr-reassessment-v0`
@@ -51,9 +51,9 @@ This experiment is an internal deterministic model check. It is not independent 
 
 ## Regression finding
 
-The first GitHub Actions execution of this gate failed at the **evidence comparison step**, while the harness itself passed. The stored result did not byte-match the current executable output. The fixture was corrected and the gate is now configured to run on both push and pull_request events.
+The first GitHub Actions execution of this gate failed at the **evidence comparison step**, while the harness itself passed. The stored result did not byte-match the current executable output. The fixture was corrected; the pull-request gate now reproduces the executable output byte-for-byte.
 
-The failure is treated as an **evidence-integrity / reproducibility defect in the experiment package**, not as evidence against the research hypothesis.
+The failure is treated as an **evidence-integrity / reproducibility defect in the experiment package**, not as evidence against the research hypothesis. After correction, run `36360126367` completed successfully.
 
 ## Canonical payload hash
 
