@@ -1,0 +1,37 @@
+{
+  "schema": "machine.substrate-resource-contract.instances.v0.1",
+  "contract_schema": "experiments/machine-substrate-resource-contract-v0/CONTRACT-v0.1.json",
+  "instances": {
+    "abstract_machine": {
+      "source": "docs/ABSTRACT-MACHINE.md",
+      "commit": "f752aac015d9f837bc6a89d44eed50e0325b60a6",
+      "state_addressing_profile": "PROFILE_SET_UNFROZEN",
+      "admissible_profiles": ["A0_OPAQUE","A1_RANDOM_ACCESS","A2_SPECIALIZED_INDEX"],
+      "derived_state_policy": "NOT_SPECIFIED_BY_ABSTRACT_MODEL",
+      "cost_model": "NOT_SPECIFIED_BY_ABSTRACT_MODEL",
+      "mutation_model": "NOT_SPECIFIED_BY_ABSTRACT_MODEL",
+      "classification_status": "UNDERDETERMINED_AT_ABSTRACT_LEVEL"
+    },
+    "machine_substrate_rev2_1": {
+      "source": "docs/research/MACHINE-SUBSTRATE-SPEC-REV2.1.md",
+      "commit": "59fab62704875193801db77c7cb8361475297f48",
+      "state_addressing_profile": "A2_SPECIALIZED_INDEX",
+      "semantic_transition_access": "forward_delta_table",
+      "derived_state_policy": "target_oblivious_R_inverse_allowed_and_charged",
+      "timing": "T1_TARGET_AFTER_TARGET_OBLIVIOUS_PREPROCESSING",
+      "offline_work": "Theta(n+E)",
+      "persistent_extra_representation": "CSR_bytes_charged",
+      "online_access": "P05_FIBER_LOOKUP",
+      "mutation_model": "M0_STATIC_or_M1_REBUILD_or_M2_DYNAMIC_VARIANT",
+      "correctness": "I1-I4_plus_semantic_algorithm_checks",
+      "classification_status": "CONCRETE_CONTRACT_ESTABLISHED"
+    }
+  },
+  "comparison_constraints": [
+    "Never compare primitive status across different state-access profiles without declaring the profile delta.",
+    "Never treat representation storage as free when it is an explicit resource.",
+    "Never infer a generic state-read primitive from implementation syntax.",
+    "Never infer a specialized primitive merely from measured speed.",
+    "Primitive classification is relative to the frozen declared contract."
+  ]
+}
