@@ -249,3 +249,37 @@ For each candidate component:
 6. record any required semantic adapter.
 
 The adapter itself is the object of scrutiny: it may be ordinary translation, or it may reveal a genuine missing abstraction.
+
+
+## Real substitution result added 2026-09-28
+
+A real-source test compared:
+- GitHub `Loofy147/Machine` PR #10, an open/unmerged proposal with distinct base/head commits;
+- a real public AT Protocol `bsky.app` repository record.
+
+Result:
+
+```
+PARTIAL_SUBSTITUTION / ADAPTER_REQUIRED
+```
+
+The native AT repository record does not directly preserve the GitHub semantic boundary:
+
+[
+Contribution 
+eq CanonicalState
+]
+
+in the specific sense of "proposal exists before canonical acceptance".
+
+This does not establish an AT Protocol limitation in general. It establishes that an application-level proposal/acceptance layer is required for this substitution.
+
+Evidence:
+`experiments/hsdcr-real-capability-substitution-v0/RESULTS-V0.1.md`
+`experiments/hsdcr-real-capability-substitution-v0/RESULTS-V0.1.json`
+
+Disposition:
+- B03 Contribution: **PARTIAL SUBSTITUTION**
+- B07 Decision/Acceptance: **ADAPTER REQUIRED**
+- Architecture: **OPEN**
+- Novelty: **NOT CLAIMED**
