@@ -5,6 +5,13 @@ on:
     paths:
       - "experiments/hsdcr-real-capability-substitution-v0/**"
       - ".github/workflows/hsdcr-real-capability-substitution-v0.yml"
+  pull_request:
+    paths:
+      - "experiments/hsdcr-real-capability-substitution-v0/**"
+      - ".github/workflows/hsdcr-real-capability-substitution-v0.yml"
+    paths:
+      - "experiments/hsdcr-real-capability-substitution-v0/**"
+      - ".github/workflows/hsdcr-real-capability-substitution-v0.yml"
 
 jobs:
   test:
