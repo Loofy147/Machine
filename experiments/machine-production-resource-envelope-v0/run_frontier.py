@@ -122,7 +122,7 @@ def run_case(n, k, seed, updates=200):
     delta_query = [1 + degrees[u] for u in range(n)]
 
     d2 = [row[:] for row in d]
-    o2, s2, a2 = [x[:] for x in offs], src[:], act[:]
+    o2, s2, a2 = offs[:], src[:], act[:]
     update_costs = []
     noops = 0
     for _ in range(updates):
