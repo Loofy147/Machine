@@ -88,7 +88,7 @@ A production contract claiming M2 must report, per update:
 
 The v0.2 discriminator tests these conditions structurally.
 
-## Current relationship to Rev 2.1
+## Experimental support added\n\nThe follow-up M2 representation experiment now provides a stronger existence test: a fixed-capacity mutable inverse representation using only ordinary mutable state links and generic addressing can preserve predecessor correctness after every committed update. The local replay covered 100 cases and 19,720 updates with zero semantic/invariant failures. This supports A1+generic-write closure as an existence result, while leaving the resource cost and exact compatibility with Rev 2.1 CSR open.\n\n## Current relationship to Rev 2.1
 
 The existing concrete instance remains:
 
