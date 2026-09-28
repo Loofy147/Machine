@@ -160,3 +160,25 @@ A status change requires:
 - exact provenance;
 - comparison against the previous canonical artifact;
 - explicit disposition of contradictions and retired claims.
+
+
+## 5. Execution record
+
+2026-09-28:
+- Program branch created from research/bidirectional-grounded-verification-v0.
+- Program commit: 566aba464d0f47b22eb91de78a5cc97ca153bb3b.
+- Proof branch created; formalization target added in commit a6182207aa236b8c093ebe47ca48d63dbc173e61.
+- Adversarial branch created; n=2 post-edge audit script added in commit c8ab7a889395b47c559162b14e1837b397277a37.
+- MEP, cost, native-C and product branches created from the program branch.
+- Issues opened: #14 proof, #15 adversarial, #16 cost, #17 MEP, #18 native-C, #19 product.
+- Draft PRs opened: #20 proof -> program, #21 adversarial -> program.
+- The n=2 script has been added but its execution result is NOT YET EVIDENCE; no status upgrade is made until execution is observed and recorded.
+
+## 6. Revalidation rule
+
+No claim changes status because prose was edited or because the result was repeated informally.
+A status change requires:
+- new evidence;
+- exact provenance;
+- comparison against the previous canonical artifact;
+- explicit disposition of contradictions and retired claims.
