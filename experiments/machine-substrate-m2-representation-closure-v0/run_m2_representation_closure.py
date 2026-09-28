@@ -186,8 +186,8 @@ def one_case(n, k, seed):
         # Specialized structured update.
         old_b = delta_b[s][a]
         if old_b != v:
-            delta_b[s][a] = v
             ib.update(s, a, v)
+            delta_b[s][a] = v
             a2_work += 1
 
         delta_a[s][a] = v
