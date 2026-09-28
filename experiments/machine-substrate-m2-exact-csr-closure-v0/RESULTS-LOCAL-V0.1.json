@@ -1,0 +1,25 @@
+{
+  "schema": "machine.substrate-m2-exact-csr-closure.v0.1",
+  "status": "LOCAL_REPLAY_PASS",
+  "cases": 100,
+  "families": 5,
+  "systems_per_family": 20,
+  "updates_total": 19720,
+  "semantic_and_structure_failures": 0,
+  "generic_rw_csr_maintenance_work": 15726709,
+  "mean_generic_rw_work_per_update": 797.5004563894523,
+  "representation": "contiguous CSR logical layout: offs[n+1], src[E], act[E]",
+  "capacity": "S*Sigma fixed capacity",
+  "classification": {
+    "A1_RW_M2_exact_CSR": "REPRESENTATION_LEVEL_CLOSURE",
+    "A2_structured_update": "CONCRETE_ACCESS_EXTENSION",
+    "A1_read_only_M2": "NOT_EXPRESSIBLE"
+  },
+  "verification": {
+    "initial_full_validation": true,
+    "affected_fibers_checked_after_every_update": true,
+    "structure_checked_after_every_update": true,
+    "final_full_validation": true
+  },
+  "limitation": "Generic maintenance is expressible, but its update work is large and representation/resource trade-offs remain. This does not imply A1_RW is preferable to A2 for production."
+}
