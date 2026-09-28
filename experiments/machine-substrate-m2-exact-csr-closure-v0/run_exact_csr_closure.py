@@ -67,6 +67,21 @@ def validate_all(d, offs, src, act):
     return True
 
 
+def validate_structure(d, offs, src, act, capacity):
+    return (
+        offs[0] == 0
+        and offs[-1] == len(src)
+        and len(src) == len(act)
+        and len(src) <= capacity
+        and all(offs[i] <= offs[i + 1] for i in range(len(d)))
+    )
+
+
+def validate_affected(d, offs, src, act, old_u, new_u):
+    targets = {u for u in (old_u, new_u) if u >= 0}
+    return all(fiber(offs, src, act, u) == brute(d, u) for u in targets)
+
+
 def locate(offs, src, act, target, s, a):
     lo, hi = offs[target], offs[target + 1]
     for i in range(lo, hi):
@@ -137,7 +152,9 @@ def run_case(n, k, seed):
     offs, src, act = build(d)
     capacity = n * k
 
-    if not validate_all(d, offs, src, act):
+    if not validate_all(d, offs, src, act) or not validate_structure(
+        d, offs, src, act, capacity
+    ):
         return False, 0, 0
 
     generic_cost = 0
@@ -153,14 +170,16 @@ def run_case(n, k, seed):
 
         # Admitted generic state operations are enough to query the resulting
         # CSR; there is no fiber-specific update primitive here.
-        for _q in range(6):
-            u = rng.randrange(n)
-            if fiber(offs, src, act, u) != brute(d, u):
-                return False, updates, generic_cost
-
-        if not validate_all(d, offs, src, act):
+        if not validate_affected(d, offs, src, act, old_u, new_u):
             return False, updates, generic_cost
 
+        # The update only changes the old/new target fibers. Other fibers are
+        # untouched; end-of-case validation covers the complete representation.
+        if not validate_structure(d, offs, src, act, capacity):
+            return False, updates, generic_cost
+
+    if not validate_all(d, offs, src, act):
+        return False, updates, generic_cost
     return True, updates, generic_cost
 
 
