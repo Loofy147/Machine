@@ -182,3 +182,28 @@ A status change requires:
 - exact provenance;
 - comparison against the previous canonical artifact;
 - explicit disposition of contradictions and retired claims.
+
+
+## 7. Audit blockers discovered during revalidation
+
+### B-01 — v0.4 source closure
+
+The v0.4 runner imports a module named `core`, but the expected `core.py`/equivalent source could not be located through the repository file endpoint on `research/bidirectional-grounded-verification-v0`.
+
+Disposition: REPRODUCIBILITY BLOCKED for independent repository re-execution.
+Issue: #22.
+
+This does not erase the durable v0.4 evidence record. It means the repository-level source chain is incomplete until the exact module used for the run is recovered or its external artifact boundary is documented by immutable hash.
+
+Do not substitute the v3 implementation for v0.4. The two evidence lineages must remain distinct.
+
+### B-02 — n=2 status
+
+An older v0.3 durable record states that exhaustive n=2 search over 16 ordered-edge states found 12 solvable instances and no finite-cost naive-guard counterexample. This is inherited historical evidence, not a new 2026-09-28 execution.
+
+A fresh n=2 executable audit has been committed on the adversarial branch, but no execution result is currently attached to it.
+
+Therefore:
+- n=2 historical result: SUPPLIED/HISTORICAL;
+- n=2 fresh re-execution: OPEN;
+- canonical n=3 v0.4 result: CURRENT durable evidence.
