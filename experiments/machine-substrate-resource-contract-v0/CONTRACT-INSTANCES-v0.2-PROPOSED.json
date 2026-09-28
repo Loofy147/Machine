@@ -1,0 +1,67 @@
+{
+  "schema": "machine.substrate-resource-contract.instances.v0.2-proposed",
+  "status": "PROPOSED / NOT FROZEN",
+  "axes": {
+    "A_r": {
+      "name": "state read addressing",
+      "allowed_profiles": [
+        "A0_OPAQUE",
+        "A1_RANDOM_ACCESS",
+        "A2_SPECIALIZED_INDEX"
+      ]
+    },
+    "A_w": {
+      "name": "state update/write addressing",
+      "allowed_profiles": [
+        "W0_NONE",
+        "W1_GENERIC_CELL_WRITE",
+        "W2_STRUCTURED_UPDATE"
+      ]
+    },
+    "T": "semantic transition access",
+    "D": "derived-state policy",
+    "tau": "timing / information-reveal boundary",
+    "B_off": "offline construction/rebuild work",
+    "R_extra": "persistent extra representation",
+    "B_on": "online computational/access work",
+    "M": "mutation mode",
+    "K": "correctness/observability"
+  },
+  "instances": {
+    "abstract_machine": {
+      "A_r": "UNFROZEN",
+      "A_w": "UNFROZEN",
+      "M": "UNFROZEN",
+      "classification_status": "UNDERDETERMINED"
+    },
+    "rev2_1": {
+      "A_r": "A2_SPECIALIZED_INDEX",
+      "A_w": "W2_STRUCTURED_UPDATE_VARIANT",
+      "M": "M0_STATIC_or_M1_REBUILD_or_M2_DYNAMIC_VARIANT",
+      "source_commit": "59fab62704875193801db77c7cb8361475297f48",
+      "status": "CONCRETE_INTERFACE_ESTABLISHED"
+    },
+    "tested_generic_dynamic": {
+      "A_r": "A1_RANDOM_ACCESS",
+      "A_w": "W1_GENERIC_CELL_WRITE",
+      "M": "M2_DYNAMIC",
+      "representation": "fixed_capacity_mutable_inverse_links_as_ordinary_state",
+      "capacity": "S*Sigma",
+      "status": "EXPERIMENTALLY_SUPPORTED_LOCAL_REPLAY"
+    }
+  },
+  "decision_rules": {
+    "M0": "A_w may be W0_NONE after materialization.",
+    "M1": "rebuild authority and B_off must be declared; no free rebuilds.",
+    "M2": "A_w must provide a maintenance path that preserves the derived-index correctness invariant after every commit.",
+    "A1_is_not_automatically_A1_RW": "read addressing does not imply write/update addressing.",
+    "A2_is_not_automatically_required": "specialized inverse semantics are not required when a generic mutable representation closes the workload."
+  },
+  "open": {
+    "production_A_r": "OPEN",
+    "production_A_w": "OPEN",
+    "production_M": "OPEN",
+    "production_resource_envelope": "OPEN",
+    "rev2_1_CSR_dynamic_compatibility": "OPEN"
+  }
+}
