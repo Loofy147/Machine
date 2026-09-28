@@ -164,6 +164,7 @@ def run_case(n, k, seed):
         a = rng.randrange(k)
         new_u = -1 if rng.random() < 0.22 else rng.randrange(n)
 
+        old_u = d[s][a]
         generic_cost += exact_csr_update(
             d, offs, src, act, s, a, new_u, capacity
         )
