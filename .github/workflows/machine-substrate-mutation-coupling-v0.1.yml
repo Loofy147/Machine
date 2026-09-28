@@ -1,0 +1,27 @@
+name: Machine Substrate Mutation Coupling v0.1
+
+on:
+  push:
+    branches:
+      - research/machine-substrate-primitive-closure-v0
+  pull_request:
+    branches:
+      - research/bidirectional-substrate-v3
+
+jobs:
+  mutation-coupling:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run mutation coupling experiment
+        run: python experiments/machine-substrate-mutation-coupling-v0/run_mutation_coupling.py > experiments/machine-substrate-mutation-coupling-v0/RESULTS-V0.1.json
+      - name: Validate JSON
+        run: python -c "import json; json.load(open('experiments/machine-substrate-mutation-coupling-v0/RESULTS-V0.1.json'))"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: machine-substrate-mutation-coupling-v0.1
+          path: experiments/machine-substrate-mutation-coupling-v0/RESULTS-V0.1.json
