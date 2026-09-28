@@ -169,8 +169,9 @@ def run_case(d, seed):
 
     # M2: every committed mutation is checked immediately.
     d2 = clone_delta(d)
+    d3 = clone_delta(d)
     i1 = build_index(d2)
-    i2 = build_index(d2)
+    i2 = build_index(d3)
     a1_cost = 0
     a2_cost = 0
     a1_possible = True
@@ -184,7 +185,7 @@ def run_case(d, seed):
         a1_possible = False
 
         a1_cost += dynamic_update_a1_rw(d2, i1, s, a, new_u)
-        a2_cost += dynamic_update_a2(d2, i2, s, a, new_u)
+        a2_cost += dynamic_update_a2(d3, i2, s, a, new_u)
 
         probes = [rng.randrange(n) for _ in range(5)]
         if not check_queries(d2, i1, probes):
@@ -194,7 +195,7 @@ def run_case(d, seed):
                 "resource": {"a1_dynamic": a1_cost, "a2_dynamic": a2_cost},
                 "failure": "A1_RW index invariant"
             }
-        if not check_queries(d2, i2, probes):
+        if not check_queries(d3, i2, probes):
             return {
                 "m0": m0, "m1": m1,
                 "m2": {"A1_RW": False, "A2": False},
