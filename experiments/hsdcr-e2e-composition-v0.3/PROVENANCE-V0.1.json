@@ -9,7 +9,7 @@
   "result_fixture": "experiments/hsdcr-e2e-composition-v0.3/RESULTS-V0.1.json",
   "semantic_scope": "proposal/non-canonicality + evidence/authority separation + explicit acceptance + actual signal loss + serialized history rehydration + reconstruction",
   "external_provider_status": "current GitHub metadata; pinned historical AT fixture; normalized evidence/authority fixtures",
-  "result_payload_sha256": "943057a9eecbc1236eb332735cc0df09ad546abacd515e1bae7927e880eeb0be",
+  "result_payload_sha256": "3ece639ae24d7a8499e51858aa7ddee83847e820b96f54db257563e9432d2f98",
   "ci_status": "PENDING",
   "next_provenance_rule": "record the successful CI run against the experiment commit; do not describe provider equivalence as established"
 }
