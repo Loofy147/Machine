@@ -11,6 +11,7 @@ Updated: 2026-09-29
 4. Final E2E experiment: experiments/hsdcr-e2e-composition-v0.3/
 5. Earlier reduction: experiments/hsdcr-composition-reduction-v0/
 6. Historical E2E: experiments/hsdcr-e2e-composition-v0/ and experiments/hsdcr-e2e-composition-v0.2/
+7. Legacy-scope control: docs/research/HSDCR-LEGACY-ARTIFACTS-STATUS-v0.1.md
 
 ## Frozen current disposition
 
@@ -25,6 +26,7 @@ architecture                  = NOT_ASSIGNED
 protocol                      = NOT_ASSIGNED
 novelty                       = NOT_CLAIMED
 research_package              = DELIVERY_READY
+final_e2e_ci                  = REVALIDATED
 
 ## Interpretation
 
