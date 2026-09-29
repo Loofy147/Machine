@@ -160,9 +160,6 @@ def e1_inverse(samples: int = 200_000) -> dict:
     rng = random.Random(2026)
     a_inv = pow(A, -1, MOD)
     b_inv = pow(B, -1, MOD)
-    fwd = sum(unmix64(mix64(rng.getrandbits(64))) != x
-              for x in [rng.getrandbits(64) for _ in range(0)])
-    # Use explicit loops so the sampled inputs are independently recorded.
     fwd = 0
     for _ in range(samples):
         x = rng.getrandbits(64)
