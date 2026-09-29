@@ -148,6 +148,8 @@ The final oracle closes the known local methodological defects:
 - explicit historical status for the AT fixture;
 - abstract-boundary equivalence separated from provider semantic equivalence.
 
+The recorded result is reproducible in CI. The finalized experiment commit was b90f3a07ade917ff7bc8b663b7de3269fd5a40fd and CI run 36616680163 completed successfully with both the oracle and byte-level fixture comparison passing.
+
 The recorded result is:
 
 all declared boundary tests = PASS
@@ -170,7 +172,7 @@ The following are satisfied:
 - real-source contribution boundary test;
 - current versus historical provenance separation;
 - deterministic reduction harness;
-- CI byte-for-byte evidence reproduction;
+- CI byte-for-byte evidence reproduction at the finalized v0.3 experiment commit;
 - actual signal perturbation;
 - serialized-history rehydration;
 - explicit reconstruction;
