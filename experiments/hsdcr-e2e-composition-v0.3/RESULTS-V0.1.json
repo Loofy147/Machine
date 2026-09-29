@@ -1,0 +1,76 @@
+{
+  "boundary_tests": {
+    "accepted_transition_is_explicit": true,
+    "canonical_state_survives_signal_loss_and_rehydration": true,
+    "duplicate_acceptance_is_idempotent": true,
+    "evidence_cannot_authorize_alone": true,
+    "history_is_serialized_and_rehydrated": true,
+    "reconstruction_matches_canonical": true,
+    "rejected_decision_does_not_canonicalize": true,
+    "signal_is_actually_dropped": true
+  },
+  "disposition": {
+    "architectural_novelty": "OPEN",
+    "irreducible_residual": "NOT_DETECTED",
+    "next_test": "replace normalized evidence and authority fixtures with independent real implementations and execute a crash/restart persistence test",
+    "protocol_status": "NOT_ASSIGNED",
+    "strongest_current_kill_hypothesis_survives": true
+  },
+  "equivalence_dimensions": {
+    "authority": "NOT_EQUALIZED",
+    "durability": "LOCAL_PERSISTENCE_REHYDRATION_ONLY",
+    "provider_semantic": "NOT_ESTABLISHED",
+    "resource": "NOT_EXECUTED",
+    "semantic": "ABSTRACT_BOUNDARY_ONLY"
+  },
+  "provider_substitution": {
+    "github_vs_at_direct": {
+      "abstract_boundary_equivalence": false,
+      "adapter_required": true,
+      "classification": "DIRECT_COLLISION"
+    },
+    "github_vs_at_wrapped": {
+      "abstract_boundary_equivalence": true,
+      "adapter_type": "ordinary_application_record_plus_transition",
+      "classification": "SEMANTIC_BOUNDARY_PRESERVED_IN_MODEL",
+      "new_primitive_required": false
+    },
+    "provider_semantic_equivalence": "NOT_ESTABLISHED"
+  },
+  "reduction": {
+    "acceptance_relation_reducible_to": "ordinary typed data + explicit transition/policy",
+    "new_execution_primitive_detected": false,
+    "new_repository_primitive_detected": false,
+    "operations_used": [
+      "typed-record-create",
+      "field-validation",
+      "deterministic-transition",
+      "append-history",
+      "serialize",
+      "replay"
+    ],
+    "reconstruction_source": "rehydrated_acceptance_history_not_signal_stream"
+  },
+  "result_payload_sha256": "3ece639ae24d7a8499e51858aa7ddee83847e820b96f54db257563e9432d2f98",
+  "schema": "hsdcr-e2e-composition-v0.3",
+  "source_fixtures": {
+    "at_public_record": {
+      "fixture_status": "PINNED_HISTORICAL_OBSERVATION",
+      "native_repository_mutation": true,
+      "provider": "atproto",
+      "record_type": "app.bsky.feed.post",
+      "record_uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mp54n7zccc2j2",
+      "surface": "repository_record"
+    },
+    "github_pr_10": {
+      "base": "59fab62704875193801db77c7cb8361475297f48",
+      "head": "5db33b068c0973606e08b596a300e99952764aeb",
+      "merged": false,
+      "proposal_id": "github-pr-10",
+      "provider": "github",
+      "state": "open",
+      "surface": "pull_request"
+    }
+  },
+  "status": "FINALIZED_CONTRACT_COMPOSITION_CHECK"
+}

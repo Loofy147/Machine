@@ -1,0 +1,19 @@
+{
+  "schema": "hsdcr-e2e-composition-provenance-v0.3",
+  "status": "CI_REVALIDATED",
+  "repository": "Loofy147/Machine",
+  "branch": "research/hsdcr-full-finding-v0",
+  "base_ref": "research/hsdcr-e2e-composition-v0.2",
+  "source_fixtures": "experiments/hsdcr-e2e-composition-v0.3/REAL-SOURCES-v0.1.json",
+  "harness": "experiments/hsdcr-e2e-composition-v0.3/run.py",
+  "result_fixture": "experiments/hsdcr-e2e-composition-v0.3/RESULTS-V0.1.json",
+  "semantic_scope": "proposal/non-canonicality + evidence/authority separation + explicit acceptance + actual signal loss + serialized history rehydration + reconstruction",
+  "external_provider_status": "current GitHub metadata; pinned historical AT fixture; normalized evidence/authority fixtures",
+  "result_payload_sha256": "3ece639ae24d7a8499e51858aa7ddee83847e820b96f54db257563e9432d2f98",
+  "ci_status": "PASS",
+  "ci_verified_experiment_commit": "b90f3a07ade917ff7bc8b663b7de3269fd5a40fd",
+  "ci_run_id": 36616680163,
+  "ci_conclusion": "success",
+  "ci_verified_steps": ["Run finalized composition oracle", "Compare recorded evidence"],
+  "next_provenance_rule": "keep provider semantic equivalence separate from abstract-boundary equivalence"
+}

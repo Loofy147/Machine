@@ -1,0 +1,25 @@
+name: hsdcr-e2e-composition-v0.3
+
+on:
+  push:
+    paths:
+      - 'experiments/hsdcr-e2e-composition-v0.3/**'
+      - '.github/workflows/hsdcr-e2e-composition-v0.3.yml'
+  pull_request:
+    paths:
+      - 'experiments/hsdcr-e2e-composition-v0.3/**'
+      - '.github/workflows/hsdcr-e2e-composition-v0.3.yml'
+
+jobs:
+  composition:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run finalized composition oracle
+        run: python experiments/hsdcr-e2e-composition-v0.3/run.py > /tmp/result.json
+
+      - name: Compare recorded evidence
+        run: diff -u experiments/hsdcr-e2e-composition-v0.3/RESULTS-V0.1.json /tmp/result.json
+
+# v0.3 revalidation gate: executable result must match recorded fixture byte-for-byte.

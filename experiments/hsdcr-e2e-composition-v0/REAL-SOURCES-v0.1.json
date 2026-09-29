@@ -1,0 +1,23 @@
+{
+  "schema":"hsdcr-e2e-source-fixtures-v0.1",
+  "observed_date":"2026-09-28",
+  "github":{
+    "repository":"Loofy147/Machine",
+    "pull_request":10,
+    "url":"https://github.com/Loofy147/Machine/pull/10",
+    "base_branch":"research/bidirectional-substrate-v3",
+    "base_sha":"59fab62704875193801db77c7cb8361475297f48",
+    "head_branch":"research/machine-substrate-primitive-closure-v0",
+    "head_sha":"12dade33f708d66890c6c10b754f85c1d3ae13e3",
+    "state":"open",
+    "merged":false
+  },
+  "at_protocol":{
+    "handle":"bsky.app",
+    "did":"did:plc:z72i7hdynmk6r22z27h6tvur",
+    "record_uri":"at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mp54n7zccc2j2",
+    "repository_spec":"https://atproto.com/specs/repository",
+    "sync_spec":"https://atproto.com/specs/sync"
+  },
+  "scope_note":"Real source observations are used only at the contribution/provider boundary. Evidence and authority are normalized fixtures, not claims of live provider equivalence."
+}
