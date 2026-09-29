@@ -1,0 +1,15 @@
+{
+  "schema": "hsdcr-e2e-composition-provenance-v0.3",
+  "status": "PENDING_CI",
+  "repository": "Loofy147/Machine",
+  "branch": "research/hsdcr-full-finding-v0",
+  "base_ref": "research/hsdcr-e2e-composition-v0.2",
+  "source_fixtures": "experiments/hsdcr-e2e-composition-v0.3/REAL-SOURCES-v0.1.json",
+  "harness": "experiments/hsdcr-e2e-composition-v0.3/run.py",
+  "result_fixture": "experiments/hsdcr-e2e-composition-v0.3/RESULTS-V0.1.json",
+  "semantic_scope": "proposal/non-canonicality + evidence/authority separation + explicit acceptance + actual signal loss + serialized history rehydration + reconstruction",
+  "external_provider_status": "current GitHub metadata; pinned historical AT fixture; normalized evidence/authority fixtures",
+  "result_payload_sha256": "943057a9eecbc1236eb332735cc0df09ad546abacd515e1bae7927e880eeb0be",
+  "ci_status": "PENDING",
+  "next_provenance_rule": "record the successful CI run against the experiment commit; do not describe provider equivalence as established"
+}
