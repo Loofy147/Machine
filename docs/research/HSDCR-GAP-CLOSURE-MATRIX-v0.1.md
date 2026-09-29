@@ -33,9 +33,12 @@ Reviewed: 2026-09-29
 5. Related capability families are recorded with primary sources.
 6. Open gaps are explicit and have a next discriminating test.
 7. No architecture/protocol/novelty claim is made without satisfying the promotion gate.
+8. Final E2E v0.3 is CI-revalidated at experiment commit b90f3a07ade917ff7bc8b663b7de3269fd5a40fd by run 36616680163.
 
 Current acceptance:
 
 PASS WITH OPEN RESEARCH GAPS
+
+Final experiment reproducibility: CI_REVALIDATED
 
 This is a delivery-ready research package, not a finished architecture.
