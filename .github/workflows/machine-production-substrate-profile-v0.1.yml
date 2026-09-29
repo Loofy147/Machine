@@ -1,0 +1,29 @@
+name: Machine Production Substrate Profile v0.1
+
+on:
+  push:
+    branches:
+      - research/machine-substrate-primitive-closure-v0
+  pull_request:
+    branches:
+      - research/bidirectional-substrate-v3
+
+jobs:
+  profile-discriminator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run profile discriminator
+        run: python experiments/machine-production-substrate-profile-v0/run_profile_discriminator.py > experiments/machine-production-substrate-profile-v0/RESULTS-V0.1.json
+      - name: Validate JSON
+        run: python -c "import json; json.load(open('experiments/machine-production-substrate-profile-v0/RESULTS-V0.1.json'))"
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: machine-production-substrate-profile-v0.1
+          path: experiments/machine-production-substrate-profile-v0/RESULTS-V0.1.json

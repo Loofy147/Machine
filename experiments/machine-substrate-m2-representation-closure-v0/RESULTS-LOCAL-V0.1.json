@@ -1,0 +1,23 @@
+{
+  "schema": "machine.substrate-m2-representation-closure.v0.1",
+  "status": "LOCAL_REPLAY_PASS",
+  "cases": 100,
+  "families": 5,
+  "systems_per_family": 20,
+  "updates_total": 19720,
+  "semantic_and_invariant_failures": 0,
+  "aggregate_generic_rw_update_work": 242169,
+  "aggregate_specialized_update_work": 18646,
+  "ratio_generic_rw_over_specialized": 12.987718545532553,
+  "capacity": "S*Sigma fixed state capacity; no external allocator",
+  "classification": {
+    "A1_RW_M2": "REPRESENTATION_LEVEL_CLOSURE_WITH_EXPLICIT_MUTABLE_STATE",
+    "A2_M2": "EXPLICIT_STRUCTURED_ACCESS_EXTENSION",
+    "A1_read_only_M2": "NOT_EXPRESSIBLE"
+  },
+  "critical_limit": "Existence proof for generic read/write state addressing with a fixed-capacity mutable inverse representation. Does not prove that Rev 2.1 contiguous CSR supports M2 with the same representation or cost.",
+  "reproducibility": {
+    "harness_correction_applied": "A2 replica now receives the update before mutating its semantic delta mirror",
+    "local_check": "100/100 cases passed"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "machine.production-resource-envelope-frontier.v0.1",
+  "status": "LOCAL_REPLAY_PASS",
+  "provenance": {
+    "branch": "research/machine-substrate-primitive-closure-v0",
+    "independent_replay": "same structural formulas as committed frontier harness; no wall-clock classification"
+  },
+  "sample": {
+    "cases": 50,
+    "families": 5,
+    "systems_per_family": 10,
+    "updates_per_case": 200
+  },
+  "aggregate": {
+    "mean_A1_query": 9.851425036194252,
+    "mean_query_delta_A1_minus_A2": 4.925712518097126,
+    "mean_A1_update": 817.8133021999653,
+    "p95_A1_update": 1547.42,
+    "mean_live_csr_bytes": 4642.1
+  },
+  "break_even_formula": "c2 <= mean_A1_update + (Q/U)*mean_query_delta_A1_minus_A2",
+  "break_even_table": [
+    {
+      "Q_over_U": 0.01,
+      "A2_break_even_update_cost": 817.8625593251462
+    },
+    {
+      "Q_over_U": 0.1,
+      "A2_break_even_update_cost": 818.305873451775
+    },
+    {
+      "Q_over_U": 0.25,
+      "A2_break_even_update_cost": 819.0447303294895
+    },
+    {
+      "Q_over_U": 0.5,
+      "A2_break_even_update_cost": 820.2761584590138
+    },
+    {
+      "Q_over_U": 1,
+      "A2_break_even_update_cost": 822.7390147180624
+    },
+    {
+      "Q_over_U": 2,
+      "A2_break_even_update_cost": 827.6647272361595
+    },
+    {
+      "Q_over_U": 4,
+      "A2_break_even_update_cost": 837.5161522723538
+    },
+    {
+      "Q_over_U": 8,
+      "A2_break_even_update_cost": 857.2190023447423
+    },
+    {
+      "Q_over_U": 16,
+      "A2_break_even_update_cost": 896.6247024895193
+    },
+    {
+      "Q_over_U": 32,
+      "A2_break_even_update_cost": 975.4361027790733
+    },
+    {
+      "Q_over_U": 64,
+      "A2_break_even_update_cost": 1133.0589033581814
+    },
+    {
+      "Q_over_U": 128,
+      "A2_break_even_update_cost": 1448.3045045163974
+    }
+  ],
+  "interpretation": {
+    "A1_RW": "Representationally closed; dynamic exact-CSR maintenance has explicit structural cost.",
+    "A2": "Structured read/update costs are not normalized yet; c2 remains an explicit unknown.",
+    "production_profile": "OPEN"
+  },
+  "limitations": [
+    "A2 update cost is not assumed to be 1 or free.",
+    "M2 storage capacity/reallocation policy is not yet frozen.",
+    "The local replay does not establish a repository-wide canonical production profile."
+  ]
+}

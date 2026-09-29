@@ -1,0 +1,27 @@
+name: Machine M2 Exact CSR Closure v0.1
+
+on:
+  push:
+    branches:
+      - research/machine-substrate-primitive-closure-v0
+  pull_request:
+    branches:
+      - research/bidirectional-substrate-v3
+
+jobs:
+  exact-csr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run exact CSR closure
+        run: python experiments/machine-substrate-m2-exact-csr-closure-v0/run_exact_csr_closure.py > experiments/machine-substrate-m2-exact-csr-closure-v0/RESULTS-V0.1.json
+      - name: Validate JSON
+        run: python -c "import json; json.load(open('experiments/machine-substrate-m2-exact-csr-closure-v0/RESULTS-V0.1.json'))"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: machine-m2-exact-csr-closure-v0.1
+          path: experiments/machine-substrate-m2-exact-csr-closure-v0/RESULTS-V0.1.json

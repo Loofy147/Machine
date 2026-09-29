@@ -1,0 +1,28 @@
+name: Machine Substrate Primitive Closure v0.1
+
+on:
+  push:
+    branches:
+      - research/machine-substrate-primitive-closure-v0
+  pull_request:
+    branches:
+      - research/bidirectional-substrate-v3
+
+jobs:
+  primitive-closure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run primitive-closure experiment
+        working-directory: experiments/machine-substrate-primitive-closure-v0
+        run: python run_primitive_closure.py
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: machine-substrate-primitive-closure-v0.1
+          path: experiments/machine-substrate-primitive-closure-v0/RESULTS-V0.1.json

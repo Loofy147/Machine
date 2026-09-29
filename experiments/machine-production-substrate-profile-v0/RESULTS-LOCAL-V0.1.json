@@ -1,0 +1,74 @@
+{
+  "decision_boundary": {
+    "A2_necessary_for_semantic_closure": false,
+    "canonical_production_profile": "OPEN_PENDING_FROZEN_PRODUCTION_RESOURCE_ENVELOPE",
+    "minimal_generic_profile_for_inverse_closure": "A1_RANDOM_ACCESS"
+  },
+  "independent_checks": {
+    "A1_cost_formula_violations": 0,
+    "A1_equals_2_times_A2": true,
+    "additional_systems": 100,
+    "cost_formula_samples": 1000,
+    "max_A0_over_A1_single_query": 899.5,
+    "semantic_failures": 0,
+    "targets_per_system": 20
+  },
+  "provenance": {
+    "branch": "research/machine-substrate-primitive-closure-v0",
+    "ci_status": "NOT_VISIBLE_THROUGH_CURRENT_GITHUB_CONNECTOR_RESULT",
+    "experiment": "experiments/machine-production-substrate-profile-v0/run_profile_discriminator.py",
+    "note": "Local replay used the committed experiment logic; this file is local execution evidence, not CI evidence.",
+    "repository": "Loofy147/Machine"
+  },
+  "resource": {
+    "A0_over_A1": 173.21519976725747,
+    "A0_total": 169090253,
+    "A1_over_A2": 2.0,
+    "A1_total": 976186,
+    "A2_total": 488093,
+    "aggregate_access_work": {
+      "A0_OPAQUE": {
+        "basin": 39190447,
+        "bidir": 5119472,
+        "predecessor": 1047680,
+        "retro": 123732654
+      },
+      "A1_RANDOM_ACCESS": {
+        "basin": 232026,
+        "bidir": 28990,
+        "predecessor": 10410,
+        "retro": 704760
+      },
+      "A2_SPECIALIZED_INDEX": {
+        "basin": 116013,
+        "bidir": 14495,
+        "predecessor": 5205,
+        "retro": 352380
+      }
+    }
+  },
+  "schema": "machine.production-substrate-profile-discriminator.v0.1",
+  "semantic": {
+    "closure": {
+      "A0_OPAQUE": true,
+      "A1_RANDOM_ACCESS": true,
+      "A2_SPECIALIZED_INDEX": true
+    },
+    "failures": {
+      "A0_OPAQUE": 0,
+      "A1_RANDOM_ACCESS": 0,
+      "A2_SPECIALIZED_INDEX": 0
+    }
+  },
+  "status": "LOCAL_REPLAY_EXECUTED",
+  "workload": {
+    "families": 6,
+    "inverse_workloads": [
+      "predecessor_enumeration",
+      "backward_basin",
+      "retrograde_value",
+      "mixed_bidirectional_reachability"
+    ],
+    "systems": 60
+  }
+}

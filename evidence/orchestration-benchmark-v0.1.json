@@ -1,0 +1,95 @@
+{
+  "schema": "machine.orchestration-benchmark.v0.2",
+  "recorded": "2026-09-27",
+  "run_id": "MACHINE-ORCH-2026-09-27-001",
+  "repository": "Loofy147/Machine",
+  "benchmark_branch": "research/orchestration-benchmark-2026-09-27",
+  "base_commit": "137f76bc7fb56138a40b3bc98ed2a3291fe7acf5",
+  "status": "COMPLETED_WITH_EXECUTED_CROSSWALK",
+  "demonstrated": [
+    "branch-aware provenance reconciliation",
+    "evidence/claim separation",
+    "targeted discriminating-test selection",
+    "CI evidence verification",
+    "branch-wide source inventory",
+    "correction of an over-broad absence claim",
+    "contract mismatch detection"
+  ],
+  "partial": [
+    "fresh execution orchestration",
+    "workflow dispatch"
+  ],
+  "established_or_supported": [
+    "experimental CEK S1/S2 line exists",
+    "concrete Machine Substrate Rev 2.1 reference implementation exists",
+    "Rev 2.1 conformance workflow passed at head 59fab62704875193801db77c7cb8361475297f48",
+    "Rev 2.1 explicitly models inverse relation R^-1 as part of the substrate/resource contract"
+  ],
+  "open": [
+    "whether Rev 2.1 is canonical/merged into main",
+    "exact crosswalk between abstract Machine model and Rev 2.1",
+    "whether R^-1 should be classified as representation, native substrate capability, or both",
+    "direct transferability of CEK S1/S2 conclusions to Rev 2.1",
+    "whether the abstract Machine substrate primitives can derive the Rev 2.1 inverse-fiber access path without adding a new primitive",
+    "whether the Rev 2.1 contract should be treated as the canonical resource model"
+  ],
+  "contradicted_or_retired": [
+    "broad statement that no concrete Machine substrate exists"
+  ],
+  "evidence": [
+    {
+      "path": "docs/research/MACHINE-TARGETED-ORCHESTRATION-BENCHMARK-2026-09-27.md",
+      "sha256": "initial artifact 2e146ea7d4f32a35b9e690b3530288ed552e70f9a19757e1096dce1b58650b27"
+    },
+    {
+      "source_branch": "research/bidirectional-substrate-v3",
+      "source_commit": "59fab62704875193801db77c7cb8361475297f48",
+      "spec": "docs/research/MACHINE-SUBSTRATE-SPEC-REV2.1.md",
+      "implementation": "experiments/bidirectional-substrate-v3/substrate_lib.py",
+      "workflow": ".github/workflows/bidirectional-substrate-v3-conformance.yml",
+      "latest_successful_run_id": 35585026821
+    },
+    {
+      "source_branch": "research/substrate-interpreter-v0",
+      "source_commit": "d935495355ac6b827a17d6147d7f38fbcaaeb15f",
+      "result": "experimental S1/S2 evidence only"
+    }
+  ],
+  "next_discriminating_action": "build the seven-axis contract crosswalk: Information, Representation, Timing, Access, Cost, Mutation, Correctness; then classify the Rev 2.1 inverse-fiber frontier without importing CEK S1/S2 semantics uncritically",
+  "executed_crosswalk": {
+    "branch": "research/machine-substrate-crosswalk-v0",
+    "execution_head": "b1afea87bf8f10c0edc313be0797d8e540f8fc9c",
+    "workflow_run_id": 36350447694,
+    "workflow_job_id": 108707987716,
+    "conclusion": "success",
+    "workload": {
+      "systems": 72,
+      "lookups": 576,
+      "basin_queries": 216,
+      "families": 6
+    },
+    "verification": {
+      "builder_failures": 0,
+      "lookup_semantic_failures": 0,
+      "basin_semantic_failures": 0,
+      "all_semantics_equal": true
+    },
+    "aggregate": {
+      "lookup_control_probes": 601248,
+      "lookup_treatment_access_ops_lower_bound": 3827,
+      "lookup_ratio": 157.1068722236739,
+      "basin_control_full_table_inspections": 1378965,
+      "basin_treatment_fiber_entries": 204752,
+      "basin_ratio": 6.734806009220911,
+      "mean_forward_delta_bytes": 8350.666666666666,
+      "mean_incremental_inverse_bytes": 5927.694444444444,
+      "mean_offline_build_units": 2237.277777777778
+    },
+    "artifact": {
+      "id": 10942405552,
+      "zip_sha256": "1f93998bfc57d84e06924e16bd1317f911669a65bad233e65beb72f039511aa0",
+      "raw_results_sha256": "e175ee43cd433cad8b1baa11bdd668733cc77dc18979727b081da63d2a6bf61e"
+    },
+    "disposition": "EXPERIMENTALLY_SUPPORTED / CONTRACT-BOUND / representation-resource relocation under Rev 2.1"
+  }
+}

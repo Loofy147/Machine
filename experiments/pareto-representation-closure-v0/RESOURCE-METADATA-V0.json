@@ -1,0 +1,23 @@
+{
+  "schema": "machine.pareto-representation-closure.v0",
+  "status": "LOCAL_REPLAY",
+  "M_values": [30,100,300],
+  "seeds": [17,23,41],
+  "queries_per_seed": 80,
+  "caps": [10,20,40,80,160,320,640],
+  "resource_definitions": {
+    "B_off": "candidate-edge evaluations used to build a frozen representation",
+    "R": "stored relation/policy entries",
+    "B_on": "post-instance candidate-edge examinations or policy lookup/execution ticks"
+  },
+  "resource_points": [
+    {"M":30,"reverse_index":{"B_off":90,"R":90},"all_pairs_policy":{"B_off":2700,"R":870}},
+    {"M":100,"reverse_index":{"B_off":300,"R":300},"all_pairs_policy":{"B_off":30000,"R":9900}},
+    {"M":300,"reverse_index":{"B_off":900,"R":900},"all_pairs_policy":{"B_off":270000,"R":89700}}
+  ],
+  "notes": [
+    "reverse-index and native-bidirectional success patterns were identical for all tested summary rows",
+    "all-pairs policy used only successor execution after table lookup",
+    "the generic stored-neighbor traversal boundary must be made explicit before calling reverse-index a pure representation within the original substrate"
+  ]
+}

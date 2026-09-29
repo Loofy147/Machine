@@ -1,0 +1,68 @@
+{
+  "schema": "machine.substrate-resource-contract.v0.1",
+  "status": "FROZEN_SCHEMA",
+  "axes": {
+    "A": {
+      "name": "state_addressing",
+      "allowed_profiles": [
+        "A0_OPAQUE",
+        "A1_RANDOM_ACCESS",
+        "A2_SPECIALIZED_INDEX"
+      ],
+      "required": true
+    },
+    "T": {
+      "name": "semantic_transition_access",
+      "required": true
+    },
+    "D": {
+      "name": "derived_state_policy",
+      "required": true
+    },
+    "tau": {
+      "name": "timing_information_boundary",
+      "allowed": [
+        "T0_TARGET_BEFORE_PREPROCESSING",
+        "T1_TARGET_AFTER_TARGET_OBLIVIOUS_PREPROCESSING",
+        "T2_TARGET_BEFORE_TARGET_DEPENDENT_PREPROCESSING"
+      ],
+      "required": true
+    },
+    "B_off": {
+      "name": "offline_work",
+      "units_must_be_declared": true,
+      "required": true
+    },
+    "R_extra": {
+      "name": "persistent_extra_representation",
+      "units": "bytes",
+      "required": true
+    },
+    "B_on": {
+      "name": "online_work",
+      "units_must_be_declared": true,
+      "required": true
+    },
+    "M": {
+      "name": "mutation",
+      "allowed": [
+        "M0_STATIC",
+        "M1_BATCHED",
+        "M2_DYNAMIC"
+      ],
+      "required": true
+    },
+    "K": {
+      "name": "correctness_observability",
+      "semantic_reference_required": true,
+      "required": true
+    }
+  },
+  "classification_rules": {
+    "R": "operation derivable from admitted state access + arithmetic + iteration + derived-state policy",
+    "E": "operation requires an access capability absent from the declared contract",
+    "F": "same semantics/information but changed feasible resource frontier",
+    "X": "mandatory contract axis is unmatched"
+  },
+  "normative_boundary": "The schema is canonical for disclosure/comparison, not for selecting one physical access profile."
+}
