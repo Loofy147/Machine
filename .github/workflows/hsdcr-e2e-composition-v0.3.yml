@@ -21,3 +21,5 @@ jobs:
 
       - name: Compare recorded evidence
         run: diff -u experiments/hsdcr-e2e-composition-v0.3/RESULTS-V0.1.json /tmp/result.json
+
+# v0.3 revalidation gate: executable result must match recorded fixture byte-for-byte.
