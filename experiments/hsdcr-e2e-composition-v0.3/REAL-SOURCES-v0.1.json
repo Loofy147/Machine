@@ -1,0 +1,27 @@
+{
+  "schema": "hsdcr-e2e-source-fixtures-v0.2",
+  "observed_date": "2026-09-29",
+  "github": {
+    "repository": "Loofy147/Machine",
+    "pull_request": 10,
+    "url": "https://github.com/Loofy147/Machine/pull/10",
+    "base_branch": "research/bidirectional-substrate-v3",
+    "base_sha": "59fab62704875193801db77c7cb8361475297f48",
+    "head_branch": "research/machine-substrate-primitive-closure-v0",
+    "head_sha": "5db33b068c0973606e08b596a300e99952764aeb",
+    "state": "open",
+    "merged": false,
+    "source_status": "CURRENT_METADATA_OBSERVATION"
+  },
+  "at_protocol": {
+    "handle": "bsky.app",
+    "did": "did:plc:z72i7hdynmk6r22z27h6tvur",
+    "record_uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mp54n7zccc2j2",
+    "record_type": "app.bsky.feed.post",
+    "repository_spec": "https://atproto.com/specs/repository",
+    "sync_spec": "https://atproto.com/specs/sync",
+    "source_status": "PINNED_HISTORICAL_OBSERVATION",
+    "live_recheck_2026_09_29": "FAILED_TEMPORARY_GATEWAY_504"
+  },
+  "scope_note": "The GitHub source is current metadata as observed on 2026-09-29. The AT record is retained as an immutable historical fixture from the prior run because live retrieval on 2026-09-29 returned a temporary 504. The experiment therefore does not claim current live AT-record state."
+}
