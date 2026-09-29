@@ -51,7 +51,7 @@
     ],
     "reconstruction_source": "rehydrated_acceptance_history_not_signal_stream"
   },
-  "result_payload_sha256": "943057a9eecbc1236eb332735cc0df09ad546abacd515e1bae7927e880eeb0be",
+  "result_payload_sha256": "3ece639ae24d7a8499e51858aa7ddee83847e820b96f54db257563e9432d2f98",
   "schema": "hsdcr-e2e-composition-v0.3",
   "source_fixtures": {
     "at_public_record": {
