@@ -404,6 +404,29 @@ def e7_full_period_certificate(bits=tuple(range(1, 64))) -> dict:
     return out
 
 
+def information_lower_bound(state_bits: int, observation_bits: int) -> int:
+    """Information-theoretic lower bound on history depth for state recovery.
+
+    H_k contains k+1 observations, each with at most 2^b values. Injectivity
+    over a 2^state_bits state space therefore requires b * (k+1) >= state_bits.
+    """
+    if state_bits < 1 or observation_bits < 1:
+        raise ValueError("state_bits and observation_bits must be positive")
+    return math.ceil(state_bits / observation_bits) - 1
+
+
+def e10_information_bounds(state_bits: int = 64, bits=tuple(range(1, 64))) -> dict:
+    rows = []
+    for b in bits:
+        rows.append({
+            "observation_bits": b,
+            "lower_bound_k": information_lower_bound(state_bits, b),
+        })
+    return {
+        "state_bits": state_bits,
+        "rows": rows,
+    }
+
 def e8_history(widths=(6, 8, 10)) -> dict:
     out = {}
     for w in widths:
@@ -508,12 +531,20 @@ def main() -> None:
 
     print("\n== E8 exact history refinement ==")
     for w, row in e8_history(args.history_width).items():
-        print(f"w={w}: d={row['stabilization_depth']} r={row['recovery_depth']}")
+        lower = information_lower_bound(w, row["observation_bits"])
+        print(f"w={w}: d={row['stabilization_depth']} r={row['recovery_depth']} information_lower_bound={lower}")
         for item in row["rows"]:
             print(" ", item)
 
     print("\n== E9 single-cycle period/quotient ==")
     print(e9_single_cycle_period())
+
+    print("\n== E10 information-theoretic lower bounds for 64-bit state ==")
+    e10 = e10_information_bounds()
+    print({
+        "state_bits": e10["state_bits"],
+        "selected": {b: e10["rows"][b - 1]["lower_bound_k"] for b in (1, 2, 4, 8, 16, 32, 63)},
+    })
 
 
 if __name__ == "__main__":
