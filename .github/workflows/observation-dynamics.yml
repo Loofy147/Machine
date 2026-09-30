@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: observation-dynamics
+  cancel-in-progress: true
+
 jobs:
   regression:
     runs-on: ubuntu-latest
