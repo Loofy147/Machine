@@ -68,7 +68,7 @@ class ObservationDynamicsRegressionTests(unittest.TestCase):
 
 
     def test_longest_repeat_depth_matches_partition_depth(self):
-        from experiments.observation_depth_scaling import exact_cyclic_depth
+        from experiments.observation_depth_scaling import exact_single_cycle_depth
 
         cases = [
             ([0, 0, 1, 0, 1, 1], 1),
@@ -109,7 +109,7 @@ class ObservationDynamicsRegressionTests(unittest.TestCase):
                 obs = next_obs
 
             self.assertIsNotNone(expected)
-            self.assertEqual(exact_cyclic_depth(word, bits), expected)
+            self.assertEqual(exact_single_cycle_depth(word, bits), expected)
 
 
     def test_balanced_word_small_cardinality(self):
