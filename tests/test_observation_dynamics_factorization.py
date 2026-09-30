@@ -17,6 +17,7 @@ from experiments.observation_dynamics_factorization import (
     e7_full_period_certificate,
     mix64,
     unmix64,
+    information_lower_bound,
 )
 
 
@@ -57,6 +58,13 @@ class ObservationDynamicsRegressionTests(unittest.TestCase):
         result = e4_exhaustive_small(3)
         self.assertTrue(result["all_pass"])
         self.assertEqual(result["total_instances"], 282314)
+
+    def test_information_lower_bound(self):
+        self.assertEqual(information_lower_bound(64, 64), 0)
+        self.assertEqual(information_lower_bound(64, 32), 1)
+        self.assertEqual(information_lower_bound(64, 16), 3)
+        self.assertEqual(information_lower_bound(64, 8), 7)
+        self.assertEqual(information_lower_bound(64, 1), 63)
 
 
 if __name__ == "__main__":
