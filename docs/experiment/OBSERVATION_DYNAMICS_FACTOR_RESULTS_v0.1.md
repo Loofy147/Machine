@@ -156,6 +156,28 @@ Consequences:
 
 
 
+## E7A — information-theoretic recovery lower bound
+
+For an n-bit hidden state and at most b bits per observation,
+
+    r >= ceil(n/b) - 1.
+
+Because the universal full-period certificate gives p_b=2^64 for every b=1..63, the single-cycle theorem also gives:
+
+    d_b = r_b >= ceil(64/b) - 1.
+
+Selected lower bounds:
+
+    b=1  -> 63
+    b=2  -> 31
+    b=4  -> 15
+    b=8  -> 7
+    b=16 -> 3
+    b=32 -> 1
+    b=63 -> 1
+
+This bound is exact by counting possible histories; it is not a random-output heuristic.
+
 ## E8 — exact history refinement
 
 ### w=6, M=64, observation=3 bits
