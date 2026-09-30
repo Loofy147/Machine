@@ -24,6 +24,14 @@ jobs:
             bitblast: eager
             sat_solver: cadical
             abstraction: "false"
+          - name: lazy-cadical
+            bitblast: lazy
+            sat_solver: cadical
+            abstraction: "false"
+          - name: eager-cadical-abstraction
+            bitblast: eager
+            sat_solver: cadical
+            abstraction: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
