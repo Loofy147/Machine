@@ -44,6 +44,69 @@ def mix64(x: int) -> int:
     return x
 
 
+def collision_status(bits: int, length: int, timeout_ms: int) -> dict[str, Any]:
+    """Decide whether H_{length-1} is globally non-injective.
+
+    SAT gives two distinct hidden states with identical observed history.
+    UNSAT proves no such pair exists and therefore proves injectivity of
+    the length-history map for the specified b and length.
+    UNKNOWN is retained as UNKNOWN.
+    """
+    if not 1 <= bits <= 64:
+        raise ValueError("bits must be in [1,64]")
+    if length < 1:
+        raise ValueError("length must be positive")
+
+    mask = (1 << bits) - 1
+    left = BitVec("left_state", 64)
+    right = BitVec("right_state", 64)
+    solver = Solver()
+    solver.set(timeout=timeout_ms)
+    solver.add(left != right)
+
+    for k in range(length):
+        offset = BitVecVal((k + 1) * GAMMA & MASK, 64)
+        left_output = mix_bv(left + offset)
+        right_output = mix_bv(right + offset)
+        solver.add(
+            Extract(bits - 1, 0, left_output)
+            == Extract(bits - 1, 0, right_output)
+        )
+
+    started = time.perf_counter()
+    result = solver.check()
+    elapsed = time.perf_counter() - started
+
+    if result == sat:
+        model = solver.model()
+        s1 = model.eval(left).as_long()
+        s2 = model.eval(right).as_long()
+        return {
+            "status": "ambiguous",
+            "history_depth": length - 1,
+            "states": [s1, s2],
+            "observations": [
+                mix64((s1 + (k + 1) * GAMMA) & MASK) & mask
+                for k in range(length)
+            ],
+            "elapsed_seconds": elapsed,
+        }
+
+    if result == unsat:
+        return {
+            "status": "injective",
+            "history_depth": length - 1,
+            "elapsed_seconds": elapsed,
+        }
+
+    return {
+        "status": "unknown",
+        "history_depth": length - 1,
+        "reason": solver.reason_unknown(),
+        "elapsed_seconds": elapsed,
+    }
+
+
 def generate_outputs(seed: int, length: int) -> list[int]:
     state = seed & MASK
     out = []
@@ -137,7 +200,7 @@ def main() -> None:
     max_length = max(args.lengths)
     outputs = generate_outputs(args.seed, max_length)
 
-    print("== exact truncated SplitMix64 recovery ==")
+    print("== exact truncated SplitMix64 recovery for one observed stream ==")
     print(json.dumps({
         "seed": hex(args.seed),
         "timeout_ms": args.timeout_ms,
@@ -151,6 +214,16 @@ def main() -> None:
                 "bits": bits,
                 "length": length,
                 "history_depth_k": length - 1,
+                **result,
+            }))
+
+    print("\n== global history injectivity collision check ==")
+    for bits in args.bits:
+        for length in args.lengths:
+            result = collision_status(bits, length, args.timeout_ms)
+            print(json.dumps({
+                "bits": bits,
+                "length": length,
                 **result,
             }))
 
