@@ -138,5 +138,18 @@ class ObservationDynamicsRegressionTests(unittest.TestCase):
             0,
         )
 
+    def test_de_bruijn_extremal_baseline(self):
+        from experiments.observation_depth_scaling import binary_de_bruijn
+
+        for order in (1, 2, 3, 4, 5):
+            word = binary_de_bruijn(order)
+            self.assertEqual(len(word), 1 << order)
+
+            blocks = {
+                tuple(word[(i + j) % len(word)] for j in range(order))
+                for i in range(len(word))
+            }
+            self.assertEqual(len(blocks), 1 << order)
+
 if __name__ == "__main__":
     unittest.main()
