@@ -49,6 +49,27 @@ For every sampled arbitrary bijection and tested increment, the entire state spa
 
 This is exhaustive over each sampled instance, not exhaustive over all bijections.
 
+## E4X — exhaustive all-bijection check for w<=3
+
+A true exhaustive enumeration was executed independently in a Python analysis environment.
+
+    total_bijection_increment_instances=282314
+    all_pass=True
+
+Breakdown:
+
+    w=1:  2! permutations × 1 increment = 2 instances
+    w=2:  4! permutations × 3 increments = 72 instances
+    w=3:  8! permutations × 7 increments = 282240 instances
+
+Every instance checked:
+
+- complete cycle partition equality;
+- the analytic cycle-count formula;
+- all-state trajectory consistency.
+
+This upgrades the abstract computational check from sampled arbitrary permutations to exhaustive verification for every permutation and nonzero increment at widths w<=3.
+
 ## E5 — truncation sanity
 
     b=32: trials=300000, distinct=299991, repeated_arrivals=9
@@ -98,17 +119,42 @@ but
 
 Therefore one-observation factorization fails for each tested width.
 
-## E7 — full-period certificate
+## E7 — universal full-period certificate
 
-A witness at state 0 was found for each tested width:
+A single deterministic witness state is sufficient for every truncation width 1..63:
 
-    b=8:  h(0)=0,          h(2^63)=138
-    b=16: h(0)=0,          h(2^63)=43402
-    b=32: h(0)=0,          h(2^63)=2043586954
+    witness_state = 0x443CDEF36840FF07
+    half_period_state = 0xC43CDEF36840FF07
 
-Since the hidden translation is a single 2^64-cycle and every proper divisor of 2^64 divides 2^63, each unequal half-period pair certifies observation-word period 2^64.
+    mix64(witness_state)          = 0x3A2791A602721CD9
+    mix64(half_period_state)      = 0x8A3DB804F344A45E
+    xor                           = 0xB01A29A2F136B887
 
-This establishes eventual state recovery for these tested widths, but not the minimal history depth.
+The least significant bit changes:
+
+    1 -> 0
+
+Therefore the truncated observations differ for every b>=1:
+
+    low_b(mix64(witness_state))
+    !=
+    low_b(mix64(half_period_state))
+
+for all b=1,...,63.
+
+Because every proper divisor of 2^64 divides 2^63, the half-period inequality certifies:
+
+    p_b = 2^64
+
+for every truncation width b=1,...,63.
+
+Consequences:
+
+- eventual state recovery is finite for every nonzero truncation width;
+- in the single-cycle setting, d_b = r_b for every b=1,...,63;
+- the unresolved problem is the minimal depth/complexity, not whether finite recovery exists.
+
+
 
 ## E8 — exact history refinement
 
@@ -175,7 +221,8 @@ EXPERIMENTALLY_SUPPORTED:
 
 OPEN:
 - exact 64-bit values d_b and r_b;
-- exact observation-word period p_b beyond the cheap full-period certificate;
+- minimal observation history depth for b=1..63;
+- scalable algorithms for computing p_b/d_b/r_b without enumerating the 2^64 orbit;
 - practical state recovery and prediction complexity from truncated streams;
 - whether minimal recovery depth follows a tractable asymptotic law in b.
 
