@@ -71,76 +71,107 @@ def splitmix_prefix(length: int, seed: int) -> list[int]:
     return out
 
 
-def _window_code(word: list[int], start: int, length: int, bits: int) -> int:
+def has_repeated_cyclic_block(word: list[int], bits: int, length: int) -> bool:
+    """Exact test for a repeated cyclic block of a given length."""
+    n = len(word)
+    if length <= 0:
+        return True
+    if length > n:
+        return False
+
+    q = 1 << bits
+    high = 1 << (bits * (length - 1))
+    stream = word + word[: length - 1]
+
     code = 0
-    for j in range(length):
-        code = (code << bits) | word[start + j]
-    return code
+    for value in stream[:length]:
+        code = (code << bits) | value
+
+    seen = {code}
+    for i in range(1, n):
+        code = (code - stream[i - 1] * high) * q + stream[i + length - 1]
+        if code in seen:
+            return True
+        seen.add(code)
+
+    return False
 
 
 def max_repeated_cyclic_block(word: list[int], bits: int) -> int:
     """Return the exact longest repeated cyclic block length.
 
-    Exact for finite words. Since the implementation uses integer encoding,
-    there is no hash-collision risk while bits*L fits Python's integers.
+    Exact for finite words. Python integers are used for window encoding, so
+    there is no hash-collision risk.
     """
     n = len(word)
     if n < 2:
         return 0
 
-    doubled = word + word
-    for length in range(1, n):
-        seen = set()
-        repeated = False
+    # Existence of a repeated block is monotone in the block length:
+    # if length L repeats, every shorter length also repeats.
+    lo, hi = 1, n - 1
+    if not has_repeated_cyclic_block(word, bits, lo):
+        return 0
 
-        for start in range(n):
-            code = _window_code(doubled, start, length, bits)
-            if code in seen:
-                repeated = True
-                break
-            seen.add(code)
+    best = 1
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        if has_repeated_cyclic_block(word, bits, mid):
+            best = mid
+            lo = mid + 1
+        else:
+            hi = mid - 1
 
-        if not repeated:
-            return length - 1
-
-    return n - 1
+    return best
 
 
 def exact_cyclic_depth(word: list[int], bits: int) -> int:
     return max_repeated_cyclic_block(word, bits)
 
 
+def has_repeated_linear_block(word: list[int], bits: int, length: int) -> bool:
+    """Exact test for a repeated block in a linear prefix."""
+    n = len(word)
+    if length <= 0:
+        return True
+    if length > n:
+        return False
+
+    q = 1 << bits
+    high = 1 << (bits * (length - 1))
+
+    code = 0
+    for value in word[:length]:
+        code = (code << bits) | value
+
+    seen = {code}
+    for i in range(1, n - length + 1):
+        code = (code - word[i - 1] * high) * q + word[i + length - 1]
+        if code in seen:
+            return True
+        seen.add(code)
+
+    return False
+
+
 def sampled_prefix_depth(word: list[int], bits: int) -> int | None:
     """Return exact repeated-block depth for a linear prefix.
 
-    If the returned depth is d, every length-(d+2) block in the prefix is
-    unique while some shorter length-(d+1) block repeats. Therefore this is
-    an exact statistic for the prefix. For the full 2^64 cyclic word it is
-    only a lower-bound witness when a repetition is observed.
+    If the returned depth is d, length d+1 blocks are not all necessarily
+    unique; rather d is the longest repeated block length discovered before
+    the first unique length. If the search limit is reached while repetitions
+    remain, the returned value is a lower-bound witness only.
     """
     n = len(word)
     if n < 2:
         return 0
 
-    q = 1 << bits
-    for length in range(1, min(n, max(1, 64 // bits)) + 1):
-        codes = []
-        code = 0
-        high = 1 << (bits * (length - 1))
-
-        for i, value in enumerate(word):
-            if i < length:
-                code = (code << bits) | value
-                if i == length - 1:
-                    codes.append(code)
-            else:
-                code = (code - word[i - length] * high) * q + value
-                codes.append(code)
-
-        if len(set(codes)) == len(codes):
+    max_length = min(n, max(1, 64 // bits))
+    for length in range(1, max_length + 1):
+        if not has_repeated_linear_block(word, bits, length):
             return length - 1
 
-    return min(n - 2, max(0, 64 // bits - 1))
+    return max_length
 
 
 @dataclass(frozen=True)
