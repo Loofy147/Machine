@@ -1,0 +1,27 @@
+name: observation-recovery-bitwuzla
+
+on:
+  push:
+    branches:
+      - research/observation-dynamics-factorization-v0.1
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: observation-recovery-bitwuzla
+  cancel-in-progress: true
+
+jobs:
+  bitwuzla-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Bitwuzla
+        run: python -m pip install --disable-pip-version-check bitwuzla==0.9.1
+      - name: Run b=32 boundary
+        run: python experiments/splitmix_recovery_bitwuzla.py --bits 32 --lengths 2 3 --timeout-ms 30000
