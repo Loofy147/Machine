@@ -79,7 +79,7 @@ def collision_status(bits: int, length: int, timeout_ms: int) -> dict[str, Any]:
 
     deadline = time.monotonic() + timeout_ms / 1000.0
 
-    def terminator(_):
+    def terminator():
         return time.monotonic() >= deadline
 
     solver.configure_terminator(terminator)
