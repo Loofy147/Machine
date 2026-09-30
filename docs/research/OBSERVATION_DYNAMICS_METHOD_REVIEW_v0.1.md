@@ -235,3 +235,25 @@ Every future result must record:
     remaining limitation
 
 A conceptual claim without these fields remains UNKNOWN/OPEN when the fields are needed to distinguish competing explanations.
+
+## 10. Solver boundary
+
+A sound recovery result for a fixed finite observation history requires two checks:
+
+1. satisfiable: at least one 64-bit state matches every observed b-bit output;
+2. uniqueness: after blocking that model, the solver returns UNSAT.
+
+SAT for a second model proves ambiguity.
+
+UNKNOWN, timeout, parser failure, or infrastructure failure does not prove either side.
+
+The repository therefore records solver status as:
+
+    unique
+    ambiguous
+    unsat
+    unknown
+
+Only the first two are substantive state-count outcomes, and both require the corresponding solver certificates.
+
+The Z3 experiment encodes the complete 64-bit SplitMix64 mix as bit-vector arithmetic, including modular multiplication through fixed-width bit-vectors. No floating-point arithmetic or probabilistic hash is used.
