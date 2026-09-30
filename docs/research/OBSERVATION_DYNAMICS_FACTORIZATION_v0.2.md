@@ -199,6 +199,52 @@ d_b ≤ 2^64−2^b.
 
 This is an existence bound, not a practical computational bound.
 
+## 11A. Information-theoretic lower bound
+
+If h has at most 2^b possible observations, then H_k takes at most
+
+2^(b(k+1))
+
+distinct values.
+
+Therefore injective state recovery over a 2^n-state system requires
+
+b(k+1) >= n,
+
+so
+
+\[
+\boxed{
+r \ge \left\lceil\frac{n}{b}\right\rceil-1.
+}
+\]
+
+For the 64-bit SplitMix64 state:
+
+\[
+\boxed{
+r_b \ge \left\lceil\frac{64}{b}\right\rceil-1.
+}
+\]
+
+Once the universal full-period certificate establishes p_b=2^64, the single-cycle theorem gives d_b=r_b, hence the same lower bound applies to prediction depth:
+
+\[
+\boxed{
+d_b \ge \left\lceil\frac{64}{b}\right\rceil-1.
+}
+\]
+
+Examples:
+
+    b=1  -> d_b,r_b >= 63
+    b=8  -> d_b,r_b >= 7
+    b=16 -> d_b,r_b >= 3
+    b=32 -> d_b,r_b >= 1
+    b=64 -> d_b,r_b >= 0
+
+This is an exact counting bound, not a heuristic.
+
 ## 12. State-recovery depth
 
 Define
