@@ -94,6 +94,7 @@ def collision_status(bits: int, length: int, timeout_ms: int, bv_solver: str) ->
         "elapsed_seconds": elapsed,
         "solver": "bitwuzla",
         "timeout_ms": timeout_ms,
+        "bv_solver": bv_solver,
     }
 
     if status == "sat":
@@ -130,7 +131,9 @@ def main() -> None:
             print(json.dumps({
                 "bits": bits,
                 "length": length,
-                **collision_status(bits, length, args.timeout_ms),
+                **collision_status(
+                    bits, length, args.timeout_ms, args.bv_solver
+                ),
             }))
 
 
