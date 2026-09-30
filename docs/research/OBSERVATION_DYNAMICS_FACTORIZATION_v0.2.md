@@ -17,6 +17,28 @@ The framework separates hidden-state recovery, one-observation observable determ
 
 The factorization/conjugacy framework is standard mathematics. The targeted research contribution is quantitative analysis of lossy observations of a single-cycle SplitMix64 system.
 
+## 1A. Parameter-knowledge contract
+
+All single-output prediction claims in this document assume that the hidden transition \(	au\) and observation map \(h\) are known to the observer.
+
+For fixed SplitMix64 this includes the fixed increment
+
+    gamma = 0x9E3779B97F4A7C15.
+
+If gamma is itself unknown or treated as part of hidden state, the observation problem changes: one output need not identify the full hidden configuration, and recovery/prediction must be analyzed jointly over state and transition parameters.
+
+Therefore:
+
+    known transition + bijective output + efficient inverse
+        -> one-output prediction
+
+is distinct from:
+
+    unknown transition parameters + observed outputs
+        -> parameter/state identification problem.
+
+This research branch currently studies the fixed-known-gamma case.
+
 ## 2. One-step factorization theorem
 
 Define
