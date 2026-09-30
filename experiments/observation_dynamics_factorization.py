@@ -263,6 +263,62 @@ def e4_abstract_conjugacy(widths=(4, 6, 8, 10, 12, 14)) -> dict:
     }
 
 
+def e4_exhaustive_small(max_width: int = 3) -> dict:
+    """Exhaust all bijections and increments for widths <= max_width.
+
+    This is a true exhaustive check over the permutation family for each
+    included width, unlike E4's sampled-bijection experiment.
+    """
+    import itertools
+
+    total_instances = 0
+    rows = []
+
+    for w in range(1, max_width + 1):
+        m = 1 << w
+        for f_tuple in itertools.permutations(range(m)):
+            f = list(f_tuple)
+            finv = [0] * m
+            for s, y in enumerate(f):
+                finv[y] = s
+
+            for c in range(1, m):
+                g = math.gcd(c, m)
+                tau = [(s + c) % m for s in range(m)]
+                t = [f[(finv[y] + c) % m] for y in range(m)]
+                expected = sorted([m // g] * g)
+
+                if cycle_partition(tau) != cycle_partition(t):
+                    raise AssertionError((w, f_tuple, c, "cycle"))
+                if cycle_partition(tau) != expected:
+                    raise AssertionError((w, f_tuple, c, "cycle_formula"))
+
+                for s0 in range(m):
+                    cur_s = s0
+                    cur_y = f[s0]
+                    for _ in range(m):
+                        cur_s = tau[cur_s]
+                        cur_y = t[cur_y]
+                        if f[cur_s] != cur_y:
+                            raise AssertionError(
+                                (w, f_tuple, c, s0, "trajectory")
+                            )
+
+                total_instances += 1
+
+        rows.append({
+            "w": w,
+            "permutations": math.factorial(m),
+            "increments": m - 1,
+            "tested_bijection_increment_instances": math.factorial(m) * (m - 1),
+        })
+
+    return {
+        "max_width": max_width,
+        "total_instances": total_instances,
+        "all_pass": True,
+        "rows": rows,
+    }
 def e5_truncation_counts(bits=(32, 16, 8), trials=300_000) -> dict:
     rng = random.Random(7)
     out = {}
@@ -312,19 +368,39 @@ def e6_nonfactor_witness(bits=(32, 16, 8), attempts=100_000) -> dict:
     return out
 
 
-def e7_full_period_certificate(bits=(8, 16, 32)) -> dict:
-    out = {}
+def e7_full_period_certificate(bits=tuple(range(1, 64))) -> dict:
+    """Use one deterministic witness whose low bit changes after 2^63 steps.
+
+    If h_b(s) != h_b(tau^(2^63)(s)) for one state in a 2^64 single cycle,
+    the cyclic observation word cannot have any proper period, because every
+    proper divisor of 2^64 divides 2^63.
+    """
+    witness_state = 0x443CDEF36840FF07
+    half_period_state = (witness_state + (1 << 63)) & MASK
+    y1 = mix64(witness_state)
+    y2 = mix64(half_period_state)
+    out = {
+        "witness_state": witness_state,
+        "half_period_state": half_period_state,
+        "full_outputs": (y1, y2),
+        "xor": y1 ^ y2,
+        "low_bit_differs": (y1 & 1) != (y2 & 1),
+        "all_requested_widths_certified": True,
+        "widths": {},
+    }
     for b in bits:
-        h = trunc_obs(b)
-        s = 0
-        s2 = 1 << 63
-        out[b] = {
-            "state": s,
-            "half_period_state": s2,
-            "obs1": h(s),
-            "obs2": h(s2),
-            "certifies_full_period": h(s) != h(s2),
+        if not 1 <= b <= 63:
+            raise ValueError("certificate widths must be in [1,63]")
+        mask = (1 << b) - 1
+        obs1 = y1 & mask
+        obs2 = y2 & mask
+        certified = obs1 != obs2
+        out["widths"][b] = {
+            "obs1": obs1,
+            "obs2": obs2,
+            "certifies_full_period": certified,
         }
+        out["all_requested_widths_certified"] &= certified
     return out
 
 
@@ -412,6 +488,14 @@ def main() -> None:
     print("\n== E4 abstract sampled-bijection conjugacy ==")
     e4 = e4_abstract_conjugacy()
     print({"cases": e4["cases"], "all_pass": e4["all_pass"]})
+
+    print("\n== E4X exhaustive all-bijection conjugacy, w<=3 ==")
+    e4x = e4_exhaustive_small(3)
+    print({
+        "total_instances": e4x["total_instances"],
+        "all_pass": e4x["all_pass"],
+        "rows": e4x["rows"],
+    })
 
     print("\n== E5 truncation sanity ==")
     print(e5_truncation_counts())
