@@ -371,6 +371,52 @@ This converts the exact history problem into a classical repeated-substring prob
 
 For random strings, the expected longest repeated-substring length has first-order scale 2 log_{|Σ|} M + O(1). This is used only as a null-model heuristic here; the balanced-word model and the fixed SplitMix64 word remain distinct objects.
 
+## 14C. Extremal baseline: de Bruijn cycles
+
+The information lower bound
+
+[
+d_b ge leftlceilrac{n}{b}ightceil-1
+]
+
+is tight for the unconstrained observation-word family whenever b divides n.
+
+Let
+
+[
+k=n/b,qquad q=2^b.
+]
+
+A de Bruijn cycle of order k over an alphabet of size q has length
+
+[
+q^k=2^n=M
+]
+
+and contains every k-symbol block exactly once.
+
+Therefore its observation word has
+
+[
+d_b=k-1=rac{n}{b}-1,
+]
+
+meeting the information lower bound exactly.
+
+This establishes a useful three-way separation for b|n:
+
+    extremal structured word:
+        d = n/b - 1
+
+    random-like word:
+        d ≈ 2n/b - 1   (first-order birthday scale)
+
+    SplitMix64:
+        exact d_b unknown; empirical prefix measurements are compared
+        against both baselines without promoting either to a theorem.
+
+Thus any large depth observed for SplitMix64 is not forced by bijectivity alone.
+
 ## 15. Implemented experiments
 
 The repository implementation is experiments/observation_dynamics_factorization.py.
