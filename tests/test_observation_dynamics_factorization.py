@@ -71,45 +71,46 @@ class ObservationDynamicsRegressionTests(unittest.TestCase):
         from experiments.observation_depth_scaling import exact_cyclic_depth
 
         cases = [
-            ([0, 1, 0, 1], 1),
+            ([0, 0, 1, 0, 1, 1], 1),
             ([0, 0, 1, 1, 0, 1], 1),
             ([0, 1, 1, 0, 1, 0, 0, 1], 1),
         ]
 
-        # Each case is checked through an independent direct partition
-        # computation for the full cyclic word.
+        def normalize(values):
+            labels = {}
+            result = []
+            for value in values:
+                if value not in labels:
+                    labels[value] = len(labels)
+                result.append(labels[value])
+            return result
+
         for word, bits in cases:
-            q = 1 << bits
             n = len(word)
-
-            part = {}
-            labels = []
-            for x in word:
-                part.setdefault(x, len(part))
-                labels.append(part[x])
-
-            previous = None
-            expected = None
+            labels = normalize(word)
             obs = list(word)
+            previous_classes = None
+            expected = None
 
             for depth in range(n):
                 classes = len(set(labels))
-                if previous is not None and classes == previous:
+
+                if previous_classes is not None and classes == previous_classes:
                     expected = depth - 1
                     break
-                previous = classes
+
+                if classes == n:
+                    expected = depth
+                    break
+
+                previous_classes = classes
                 next_obs = obs[1:] + obs[:1]
-                refined = {}
-                new_labels = []
-                for old, nxt in zip(labels, next_obs):
-                    key = (old, nxt)
-                    refined.setdefault(key, len(refined))
-                    new_labels.append(refined[key])
-                labels = new_labels
+                labels = normalize(list(zip(labels, next_obs)))
                 obs = next_obs
 
             self.assertIsNotNone(expected)
             self.assertEqual(exact_cyclic_depth(word, bits), expected)
+
 
     def test_balanced_word_small_cardinality(self):
         from experiments.observation_depth_scaling import balanced_word
