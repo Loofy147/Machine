@@ -257,3 +257,20 @@ The repository therefore records solver status as:
 Only the first two are substantive state-count outcomes, and both require the corresponding solver certificates.
 
 The Z3 experiment encodes the complete 64-bit SplitMix64 mix as bit-vector arithmetic, including modular multiplication through fixed-width bit-vectors. No floating-point arithmetic or probabilistic hash is used.
+
+## 11. Parameter-knowledge boundary
+
+The one-output SplitMix64 prediction claim assumes the transition function is fixed and known, including gamma.
+
+This matters because some SplitMix-family implementations keep gamma as a configurable/hidden component of generator state. Such a generator is a different recovery problem.
+
+The branch therefore treats:
+
+    fixed known gamma
+    fixed known mix function
+    hidden initial state
+
+as part of the formal experiment contract.
+
+Unknown gamma, unknown mixer parameters, or implementation-family uncertainty are outside the current theorem instance and must not be silently folded into the one-output result.
+
