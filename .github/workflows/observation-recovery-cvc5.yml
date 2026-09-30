@@ -15,7 +15,27 @@ concurrency:
 jobs:
   cvc5-boundary:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: eager-cadical
+            bitblast: eager
+            sat_solver: cadical
+            abstraction: "false"
+          - name: eager-kissat
+            bitblast: eager
+            sat_solver: kissat
+            abstraction: "false"
+          - name: lazy-cadical
+            bitblast: lazy
+            sat_solver: cadical
+            abstraction: "false"
+          - name: eager-kissat-abstraction
+            bitblast: eager
+            sat_solver: kissat
+            abstraction: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -23,5 +43,12 @@ jobs:
           python-version: "3.11"
       - name: Install cvc5
         run: python -m pip install --disable-pip-version-check cvc5
-      - name: 32-bit collision boundary
-        run: python experiments/splitmix_recovery_cvc5.py --bits 32 --lengths 2 3 --timeout-ms 30000 --fail-on-unknown
+      - name: Run boundary
+        run: >
+          python experiments/splitmix_recovery_cvc5.py
+          --bits 32 --lengths 2 3
+          --timeout-ms 30000
+          --bitblast ${{ matrix.bitblast }}
+          --bv-sat-solver ${{ matrix.sat_solver }}
+          ${{ matrix.abstraction == 'true' && '--bv-abstraction' || '' }}
+          --fail-on-unknown
