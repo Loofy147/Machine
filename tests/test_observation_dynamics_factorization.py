@@ -120,5 +120,17 @@ class ObservationDynamicsRegressionTests(unittest.TestCase):
         self.assertEqual(counts, {0: 2, 1: 2, 2: 2, 3: 2})
         self.assertEqual(len(word), 8)
 
+    def test_sampled_prefix_depth_exact_window_logic(self):
+        from experiments.observation_depth_scaling import sampled_prefix_depth
+
+        self.assertEqual(
+            sampled_prefix_depth([0, 1, 0, 0, 1, 1], 1),
+            2,
+        )
+        self.assertEqual(
+            sampled_prefix_depth([0, 1, 2, 3], 2),
+            0,
+        )
+
 if __name__ == "__main__":
     unittest.main()
