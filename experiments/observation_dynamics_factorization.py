@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import math
 import random
+import time
 from dataclasses import asdict, dataclass
 from typing import Callable, Sequence
 
@@ -273,6 +274,7 @@ def e4_exhaustive_small(max_width: int = 3) -> dict:
 
     total_instances = 0
     rows = []
+    started = time.perf_counter()
 
     for w in range(1, max_width + 1):
         m = 1 << w
@@ -518,6 +520,7 @@ def main() -> None:
         "total_instances": e4x["total_instances"],
         "all_pass": e4x["all_pass"],
         "rows": e4x["rows"],
+        "elapsed_seconds": e4x["elapsed_seconds"],
     })
 
     print("\n== E5 truncation sanity ==")
