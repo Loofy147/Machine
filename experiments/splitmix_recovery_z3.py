@@ -74,7 +74,7 @@ def make_solver(timeout_ms: int):
     """Create the dedicated quantifier-free bit-vector solver."""
     solver = SolverFor(SOLVER_LOGIC)
     solver.set(timeout=timeout_ms)
-    solver.set("sat.random_seed", SOLVER_SEED)
+    solver.set("random_seed", SOLVER_SEED)
     return solver
 
 
