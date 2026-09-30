@@ -315,12 +315,16 @@ def e4_exhaustive_small(max_width: int = 3) -> dict:
             "tested_bijection_increment_instances": math.factorial(m) * (m - 1),
         })
 
+    elapsed_seconds = time.perf_counter() - started
     return {
         "max_width": max_width,
         "total_instances": total_instances,
         "all_pass": True,
         "rows": rows,
+        "elapsed_seconds": elapsed_seconds,
     }
+
+
 def e5_truncation_counts(bits=(32, 16, 8), trials=300_000) -> dict:
     rng = random.Random(7)
     out = {}
