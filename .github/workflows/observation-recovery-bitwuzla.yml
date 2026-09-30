@@ -17,6 +17,6 @@ jobs:
       - name: Install Bitwuzla
         run: python -m pip install --disable-pip-version-check bitwuzla==0.9.1
       - name: Print Bitwuzla version
-        run: python -c "import bitwuzla; print(bitwuzla.__version__)"
+        run: python -c "from importlib.metadata import version; print(version('bitwuzla'))"
       - name: Run b=32 boundary
         run: python experiments/splitmix_recovery_bitwuzla.py --bits 32 --lengths 2 3 --timeout-ms 30000
