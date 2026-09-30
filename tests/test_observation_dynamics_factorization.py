@@ -112,6 +112,12 @@ class ObservationDynamicsRegressionTests(unittest.TestCase):
             self.assertEqual(exact_single_cycle_depth(word, bits), expected)
 
 
+    def test_lrs_depth_rejects_non_full_period(self):
+        from experiments.observation_depth_scaling import exact_single_cycle_depth
+
+        with self.assertRaises(ValueError):
+            exact_single_cycle_depth([0, 1, 0, 1], 1)
+
     def test_balanced_word_small_cardinality(self):
         from experiments.observation_depth_scaling import balanced_word
 
