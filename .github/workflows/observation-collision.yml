@@ -1,0 +1,25 @@
+name: observation-collision
+
+on:
+  push:
+    branches:
+      - research/observation-dynamics-factorization-v0.1
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: observation-collision
+  cancel-in-progress: true
+
+jobs:
+  collision-witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Search b=32 length=2 collision
+        run: python experiments/observation_collision_search.py --bits 32 --lengths 2 --samples 4194304 --seed 20260930
