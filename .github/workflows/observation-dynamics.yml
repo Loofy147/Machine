@@ -20,3 +20,5 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_observation_dynamics*.py'
       - name: Run bounded experiment suite
         run: python experiments/observation_dynamics_factorization.py --history-width 6 8 10
+      - name: Run scaling smoke test
+        run: python experiments/observation_depth_scaling.py --balanced-widths 8 10 12 --balanced-bits 1 2 4 8 --trials 1 --prefix-length 32768
