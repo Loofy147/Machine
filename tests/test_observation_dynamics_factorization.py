@@ -67,5 +67,57 @@ class ObservationDynamicsRegressionTests(unittest.TestCase):
         self.assertEqual(information_lower_bound(64, 1), 63)
 
 
+    def test_longest_repeat_depth_matches_partition_depth(self):
+        from experiments.observation_depth_scaling import exact_cyclic_depth
+
+        cases = [
+            ([0, 1, 0, 1], 1),
+            ([0, 0, 1, 1, 0, 1], 1),
+            ([0, 1, 1, 0, 1, 0, 0, 1], 1),
+        ]
+
+        # Each case is checked through an independent direct partition
+        # computation for the full cyclic word.
+        for word, bits in cases:
+            q = 1 << bits
+            n = len(word)
+
+            part = {}
+            labels = []
+            for x in word:
+                part.setdefault(x, len(part))
+                labels.append(part[x])
+
+            previous = None
+            expected = None
+            obs = list(word)
+
+            for depth in range(n):
+                classes = len(set(labels))
+                if previous is not None and classes == previous:
+                    expected = depth - 1
+                    break
+                previous = classes
+                next_obs = obs[1:] + obs[:1]
+                refined = {}
+                new_labels = []
+                for old, nxt in zip(labels, next_obs):
+                    key = (old, nxt)
+                    refined.setdefault(key, len(refined))
+                    new_labels.append(refined[key])
+                labels = new_labels
+                obs = next_obs
+
+            self.assertIsNotNone(expected)
+            self.assertEqual(exact_cyclic_depth(word, bits), expected)
+
+    def test_balanced_word_small_cardinality(self):
+        from experiments.observation_depth_scaling import balanced_word
+
+        word = balanced_word(8, 2, 123)
+        counts = {x: word.count(x) for x in range(4)}
+        self.assertEqual(counts, {0: 2, 1: 2, 2: 2, 3: 2})
+        self.assertEqual(len(word), 8)
+
 if __name__ == "__main__":
     unittest.main()
