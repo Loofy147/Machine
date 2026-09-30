@@ -97,6 +97,16 @@ def has_repeated_cyclic_block(word: list[int], bits: int, length: int) -> bool:
     return False
 
 
+def least_period(word: list[int]) -> int:
+    n = len(word)
+    for p in range(1, n + 1):
+        if n % p:
+            continue
+        if all(word[i] == word[(i + p) % n] for i in range(n)):
+            return p
+    raise AssertionError("every finite cyclic word has a period")
+
+
 def max_repeated_cyclic_block(word: list[int], bits: int) -> int:
     """Return the exact longest repeated cyclic block length.
 
