@@ -1,0 +1,27 @@
+name: observation-recovery-cvc5
+
+on:
+  push:
+    branches:
+      - research/observation-dynamics-factorization-v0.1
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: observation-recovery-cvc5
+  cancel-in-progress: true
+
+jobs:
+  cvc5-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install cvc5
+        run: python -m pip install --disable-pip-version-check cvc5
+      - name: 32-bit collision boundary
+        run: python experiments/splitmix_recovery_cvc5.py --bits 32 --lengths 2 3 --timeout-ms 30000 --fail-on-unknown
