@@ -46,6 +46,40 @@ def mix64(x: int) -> int:
     return x
 
 
+def binary_de_bruijn(order: int) -> list[int]:
+    """Generate a binary de Bruijn cycle of order n.
+
+    The returned cyclic word has length 2^order and contains every
+    order-bit block exactly once.
+    """
+    if order < 1:
+        raise ValueError("order must be positive")
+
+    a = [0] * (2 * order)
+    sequence: list[int] = []
+
+    def db(t: int, p: int) -> None:
+        if t > order:
+            if order % p == 0:
+                sequence.extend(a[1:p + 1])
+            return
+
+        a[t] = a[t - p]
+        db(t + 1, p)
+
+        for j in range(a[t - p] + 1, 2):
+            a[t] = j
+            db(t + 1, t)
+
+    db(1, 1)
+    return sequence
+
+
+def extremal_de_bruijn_depth(order: int) -> int:
+    word = binary_de_bruijn(order)
+    return exact_single_cycle_depth(word, 1)
+
+
 def balanced_word(M: int, b: int, seed: int) -> list[int]:
     if M <= 0 or M & (M - 1):
         raise ValueError("M must be a positive power of two")
