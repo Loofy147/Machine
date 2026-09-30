@@ -1,0 +1,22 @@
+name: observation-dynamics
+
+on:
+  push:
+    branches:
+      - research/observation-dynamics-factorization-v0.1
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run regression tests
+        run: python -m unittest discover -s tests -p 'test_observation_dynamics*.py'
+      - name: Run bounded experiment suite
+        run: python experiments/observation_dynamics_factorization.py --history-width 6 8 10
