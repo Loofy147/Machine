@@ -35,7 +35,7 @@ def mix_smt_full(x: str) -> str:
     return f"(bvxor {z4} (bvlshr {z4} (_ bv31 64)))"
 
 
-def collision_status(bits: int, length: int, timeout_ms: int) -> dict[str, Any]:
+def collision_status(bits: int, length: int, timeout_ms: int, bv_solver: str) -> dict[str, Any]:
     if not 1 <= bits <= 64:
         raise ValueError("bits must be in [1,64]")
     if length < 1:
@@ -45,6 +45,7 @@ def collision_status(bits: int, length: int, timeout_ms: int) -> dict[str, Any]:
     options = Options()
     options.set(Option.PRODUCE_MODELS, True)
     options.set(Option.SAT_SOLVER, "cadical")
+    options.set(Option.BV_SOLVER, bv_solver)
 
     parser = Parser(tm, options)
 
@@ -121,6 +122,7 @@ def main() -> None:
     parser.add_argument("--bits", type=int, nargs="+", default=[32])
     parser.add_argument("--lengths", type=int, nargs="+", default=[2, 3])
     parser.add_argument("--timeout-ms", type=int, default=30000)
+    parser.add_argument("--bv-solver", choices=["bitblast", "prop"], default="bitblast")
     args = parser.parse_args()
 
     for bits in args.bits:
