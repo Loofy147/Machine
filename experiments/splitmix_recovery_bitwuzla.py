@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Bitwuzla QF_BV oracle for truncated SplitMix64 collisions."""
+"""Bitwuzla QF_BV oracle for truncated SplitMix64 collisions.
+
+The formula is emitted as SMT-LIB and parsed by Bitwuzla, avoiding dependence
+on Python enum spelling while preserving the exact fixed-width semantics.
+"""
 
 from __future__ import annotations
 
@@ -8,8 +12,7 @@ import json
 import time
 from typing import Any
 
-import bitwuzla
-from bitwuzla import Kind, Option, Options, TermManager, Bitwuzla
+from bitwuzla import Options, Option, Parser, TermManager
 
 MASK = (1 << 64) - 1
 GAMMA = 0x9E3779B97F4A7C15
@@ -17,54 +20,62 @@ A = 0xBF58476D1CE4E5B9
 B = 0x94D049BB133111EB
 
 
-def bv(tm: TermManager, sort, value: int):
-    return tm.mk_bv_value(sort, value)
-
-
-def mix_bv(tm: TermManager, sort, x):
-    x = tm.mk_term(
-        Kind.BV_XOR,
-        [x, tm.mk_term(Kind.BV_LSHR, [x, bv(tm, sort, 30)])],
+def mix_smt(x: str) -> str:
+    return (
+        f"(bvxor {x} (bvlshr {x} (_ bv30 64)))"
+        f""
     )
-    x = tm.mk_term(Kind.BV_MUL, [x, bv(tm, sort, A)])
-    x = tm.mk_term(
-        Kind.BV_XOR,
-        [x, tm.mk_term(Kind.BV_LSHR, [x, bv(tm, sort, 27)])],
-    )
-    x = tm.mk_term(Kind.BV_MUL, [x, bv(tm, sort, B)])
-    x = tm.mk_term(
-        Kind.BV_XOR,
-        [x, tm.mk_term(Kind.BV_LSHR, [x, bv(tm, sort, 31)])],
-    )
-    return x
 
 
-def model_u64(solver: Bitwuzla, term) -> int:
-    return int(solver.get_value(term).value(16), 16)
+def mix_smt_full(x: str) -> str:
+    z1 = f"(bvxor {x} (bvlshr {x} (_ bv30 64)))"
+    z2 = f"(bvmul {z1} (_ bv{A} 64))"
+    z3 = f"(bvxor {z2} (bvlshr {z2} (_ bv27 64)))"
+    z4 = f"(bvmul {z3} (_ bv{B} 64))"
+    return f"(bvxor {z4} (bvlshr {z4} (_ bv31 64)))"
 
 
 def collision_status(bits: int, length: int, timeout_ms: int) -> dict[str, Any]:
+    if not 1 <= bits <= 64:
+        raise ValueError("bits must be in [1,64]")
+    if length < 1:
+        raise ValueError("length must be positive")
+
     tm = TermManager()
     options = Options()
     options.set(Option.PRODUCE_MODELS, True)
     options.set(Option.SAT_SOLVER, "cadical")
 
-    sort = tm.mk_bv_sort(64)
-    left = tm.mk_const(sort, "left_state")
-    right = tm.mk_const(sort, "right_state")
+    parser = Parser(tm, options)
 
-    solver = Bitwuzla(tm, options)
-
-    # Unsigned symmetry break.
-    solver.assert_formula(tm.mk_term(Kind.BV_ULT, [left, right]))
+    assertions = [
+        "(set-logic QF_BV)",
+        "(set-option :produce-models true)",
+        "(declare-const left_state (_ BitVec 64))",
+        "(declare-const right_state (_ BitVec 64))",
+        "(assert (bvult left_state right_state))",
+    ]
 
     for k in range(length):
-        off = bv(tm, sort, (k + 1) * GAMMA)
-        lstate = tm.mk_term(Kind.BV_ADD, [left, off])
-        rstate = tm.mk_term(Kind.BV_ADD, [right, off])
-        lo = tm.mk_term(Kind.BV_EXTRACT, [mix_bv(tm, sort, lstate)], [bits - 1, 0])
-        ro = tm.mk_term(Kind.BV_EXTRACT, [mix_bv(tm, sort, rstate)], [bits - 1, 0])
-        solver.assert_formula(tm.mk_term(Kind.EQUAL, [lo, ro]))
+        off = (k + 1) * GAMMA & MASK
+        lstate = f"(bvadd left_state (_ bv{off} 64))"
+        rstate = f"(bvadd right_state (_ bv{off} 64))"
+        lo = (
+            f"((_ extract {bits - 1} 0) "
+            f"{mix_smt_full(lstate)})"
+        )
+        ro = (
+            f"((_ extract {bits - 1} 0) "
+            f"{mix_smt_full(rstate)})"
+        )
+        assertions.append(f"(assert (= {lo} {ro}))")
+
+    formula = "".join(assertions)
+
+    parser.parse(formula, True, False)
+    solver = parser.bitwuzla()
+    left = parser.parse_term("left_state")
+    right = parser.parse_term("right_state")
 
     deadline = time.monotonic() + timeout_ms / 1000.0
 
@@ -77,24 +88,31 @@ def collision_status(bits: int, length: int, timeout_ms: int) -> dict[str, Any]:
     result = solver.check_sat()
     elapsed = time.perf_counter() - started
 
-    if str(result) == "sat":
+    status = str(result).lower()
+    common = {
+        "elapsed_seconds": elapsed,
+        "solver": "bitwuzla",
+        "timeout_ms": timeout_ms,
+    }
+
+    if status == "sat":
         return {
             "status": "ambiguous",
-            "states": [model_u64(solver, left), model_u64(solver, right)],
-            "elapsed_seconds": elapsed,
-            "solver": "bitwuzla",
+            "states": [
+                int(solver.get_value(left).value(16), 16),
+                int(solver.get_value(right).value(16), 16),
+            ],
+            **common,
         }
-    if str(result) == "unsat":
+    if status == "unsat":
         return {
             "status": "injective",
-            "elapsed_seconds": elapsed,
-            "solver": "bitwuzla",
+            **common,
         }
     return {
         "status": "unknown",
-        "reason": str(result),
-        "elapsed_seconds": elapsed,
-        "solver": "bitwuzla",
+        "reason": status,
+        **common,
     }
 
 
@@ -107,8 +125,11 @@ def main() -> None:
 
     for bits in args.bits:
         for length in args.lengths:
-            result = collision_status(bits, length, args.timeout_ms)
-            print(json.dumps({"bits": bits, "length": length, **result}))
+            print(json.dumps({
+                "bits": bits,
+                "length": length,
+                **collision_status(bits, length, args.timeout_ms),
+            }))
 
 
 if __name__ == "__main__":
