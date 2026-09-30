@@ -62,11 +62,15 @@ def low_bits(slv, output, bits: int):
     return slv.mkTerm(op, output)
 
 
-def make_solver(timeout_ms: int):
+def make_solver(timeout_ms: int, bitblast: str, bv_sat_solver: str,
+                 bv_abstraction: bool):
     slv = cvc5.Solver()
     slv.setLogic(SOLVER_LOGIC)
     slv.setOption("produce-models", "true")
     slv.setOption("tlimit-per", str(timeout_ms))
+    slv.setOption("bitblast", bitblast)
+    slv.setOption("bv-sat-solver", bv_sat_solver)
+    slv.setOption("bv-abstraction", "true" if bv_abstraction else "false")
     return slv
 
 
@@ -94,8 +98,10 @@ def generate_outputs(seed: int, length: int) -> list[int]:
     return out
 
 
-def collision_status(bits: int, length: int, timeout_ms: int) -> dict[str, Any]:
-    slv = make_solver(timeout_ms)
+def collision_status(bits: int, length: int, timeout_ms: int,
+                     bitblast: str, bv_sat_solver: str,
+                     bv_abstraction: bool) -> dict[str, Any]:
+    slv = make_solver(timeout_ms, bitblast, bv_sat_solver, bv_abstraction)
     s1 = slv.mkConst(slv.mkBitVectorSort(64), "left_state")
     s2 = slv.mkConst(slv.mkBitVectorSort(64), "right_state")
 
@@ -124,6 +130,9 @@ def collision_status(bits: int, length: int, timeout_ms: int) -> dict[str, Any]:
         "solver": "cvc5",
         "solver_version": getattr(cvc5, "__version__", "unknown"),
         "solver_logic": SOLVER_LOGIC,
+        "bitblast": bitblast,
+        "bv_sat_solver": bv_sat_solver,
+        "bv_abstraction": bv_abstraction,
     }
 
     if result.isSat():
@@ -147,6 +156,13 @@ def main() -> None:
     parser.add_argument("--bits", type=int, nargs="+", default=[32])
     parser.add_argument("--lengths", type=int, nargs="+", default=[2, 3])
     parser.add_argument("--timeout-ms", type=int, default=30000)
+    parser.add_argument("--bitblast", choices=["lazy", "eager"], default="eager")
+    parser.add_argument(
+        "--bv-sat-solver",
+        choices=["cadical", "kissat", "cryptominisat", "minisat"],
+        default="kissat",
+    )
+    parser.add_argument("--bv-abstraction", action="store_true")
     parser.add_argument("--fail-on-unknown", action="store_true")
     args = parser.parse_args()
 
@@ -156,11 +172,21 @@ def main() -> None:
         "solver_version": getattr(cvc5, "__version__", "unknown"),
         "logic": SOLVER_LOGIC,
         "timeout_ms": args.timeout_ms,
+        "bitblast": args.bitblast,
+        "bv_sat_solver": args.bv_sat_solver,
+        "bv_abstraction": args.bv_abstraction,
     }))
 
     for bits in args.bits:
         for length in args.lengths:
-            result = collision_status(bits, length, args.timeout_ms)
+            result = collision_status(
+                bits,
+                length,
+                args.timeout_ms,
+                args.bitblast,
+                args.bv_sat_solver,
+                args.bv_abstraction,
+            )
             unknown_seen |= result["status"] == "unknown"
             print(json.dumps({
                 "bits": bits,
