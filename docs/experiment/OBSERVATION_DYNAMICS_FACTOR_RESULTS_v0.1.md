@@ -255,3 +255,75 @@ OPEN:
 3. Add scalable cyclic-period algorithms without materializing the full 2^64 observation word.
 4. Add sound bit-vector/SAT/SMT state-recovery experiments for truncated 64-bit streams.
 5. Freeze every future execution with branch, commit, command, seed, parameters, runtime, and raw output.
+
+
+## E10 — scaling and null-model
+
+The method audit reduced exact single-cycle depth to longest repeated cyclic block length, under the full-period guard.
+
+Finite balanced-word null experiments were run at widths w=10,12,14,16,18 with b=1,2,4,8 and three independent shuffles per cell.
+
+Observed depths:
+
+    w=10: b=1 [21,17,17], b=2 [11,9,10], b=4 [4,5,4], b=8 [2,2,2]
+    w=12: b=1 [23,21,20], b=2 [12,12,11], b=4 [5,5,5], b=8 [2,2,3]
+    w=14: b=1 [26,26,25], b=2 [14,14,13], b=4 [6,7,7], b=8 [3,3,3]
+    w=16: b=1 [31,30,30], b=2 [16,16,17], b=4 [7,8,7], b=8 [3,3,4]
+    w=18: b=1 [35,34,35], b=2 [17,16,19], b=4 [8,8,8], b=8 [4,4,4]
+
+The information lower bound is ceil(w/b)-1. The birthday-scale reference is ceil(2w/b)-1.
+
+These measurements are consistent with a birthday-scale regime in this finite null model, but do not establish an asymptotic theorem.
+
+A separate local SplitMix64 prefix probe used N=2^19 consecutive outputs. The exact local repeated-block depths across three seeds were:
+
+    b=1: 35,36,36
+    b=2: 20,18,19
+    b=4: 9,9,8
+    b=8: 4,4,4
+    b=16: 2,2,2
+    b=32: 1,1,1
+
+A same-length iid q-ary comparison gave:
+
+    b=1: 40,36,36
+    b=2: 19,18,17
+    b=4: 9,9,9
+    b=8: 4,5,4
+    b=16: 2,2,2
+    b=32: 1,1,1
+
+These prefix measurements are not global 64-bit values of d_b. They are local statistics and lower-bound evidence when repetitions occur.
+
+## E11 — method correction record
+
+A CI regression initially failed because an LRS test included non-full-period cyclic words. For such words, finite cyclic LRS does not equal the hidden-state prediction/recovery depth: multiple hidden states can share identical infinite futures.
+
+The implementation now exposes `exact_single_cycle_depth`, which explicitly checks full observation period before applying the LRS reduction.
+
+This failure is retained as a methodological correction rather than discarded.
+
+## Current evidence boundary
+
+ESTABLISHED:
+- structural factorization/conjugacy/finite-history mathematics;
+- exact inverse algebra;
+- exact truncation fiber sizes;
+- single-cycle period-to-quotient theorem;
+- LRS-to-depth reduction under full observation period;
+- universal half-period full-period certificate;
+- information-theoretic depth lower bound.
+
+EXPERIMENTALLY_SUPPORTED:
+- successful CI regression on the current branch after correction;
+- exhaustive permutation/increment verification for w<=3;
+- explicit nonfactorization witnesses for b=8,16,32;
+- universal full-period certificate for b=1..63;
+- finite balanced-word scaling measurements;
+- SplitMix64 prefix scaling measurements.
+
+OPEN:
+- exact d_b=r_b for the 64-bit truncated system;
+- practical sound recovery complexity;
+- asymptotic law separating SplitMix64 from the balanced null;
+- whether any exploitable structure produces a depth significantly below the random-like LRS scale.
