@@ -235,21 +235,45 @@ d=r.
 
 If p<M, exact future prediction can still become possible while state recovery remains impossible.
 
-## 14. Cheap full-period certificate for 2^64
+## 14. Universal full-period certificate for 2^64
 
 Every proper divisor of 2^64 divides 2^63.
 
-Therefore one state satisfying
+Therefore, for a single-cycle observation word, one state satisfying
 
 h_b(s) ≠ h_b(s+2^63 mod 2^64)
 
-certifies p_b=2^64.
+certifies
+
+p_b=2^64.
 
 For odd γ,
 
 τ^2^63(s)=s+2^63 mod 2^64.
 
-This proves eventual state recovery for the tested observation width, but does not determine the minimal recovery depth.
+A deterministic machine-checkable witness is:
+
+    s = 0x443CDEF36840FF07
+    s + 2^63 = 0xC43CDEF36840FF07
+
+    mix64(s)       = 0x3A2791A602721CD9
+    mix64(s+2^63)  = 0x8A3DB804F344A45E
+
+Their XOR has least significant bit 1. Hence their low-b observations differ for every b=1,...,63.
+
+Therefore this single witness certifies
+
+    p_b = 2^64
+
+for every b=1,...,63.
+
+Consequently eventual state recovery is finite for every nonempty truncation width. In the single-cycle setting this also gives
+
+    d_b = r_b
+
+for every b=1,...,63.
+
+The certificate does not determine the minimal depth.
 
 ## 15. Implemented experiments
 
@@ -261,6 +285,7 @@ It implements:
 - E2 independent conjugacy consistency;
 - E3 complete-output prediction;
 - E4 cycle/trajectory verification for sampled arbitrary bijections;
+- E4X exhaustive all-bijection verification for w<=3;
 - E5 truncation collision sanity;
 - E6 explicit one-observation nonfactorization witnesses;
 - E7 full-period certificate;
