@@ -321,6 +321,56 @@ for every b=1,...,63.
 
 The certificate does not determine the minimal depth.
 
+## 14A. Balanced-word realization lemma
+
+Let
+
+M=2^n,
+q=2^b,
+R=M/q,
+
+with b≤n.
+
+If f:[M]→[M] is bijective and
+
+h_b(s)=f(s) mod q,
+
+then every symbol in the cyclic observation word occurs exactly R times.
+
+Conversely, every q-ary cyclic word of length M in which every symbol occurs exactly R times can be realized as h_b∘f for some bijection f.
+
+Construction: for each symbol a, its M/q positions are assigned bijectively to the M/q full outputs congruent to a modulo q.
+
+Therefore the set of possible truncated observation words induced by arbitrary bijections is exactly the set of balanced words with equal symbol multiplicities.
+
+Moreover, a uniformly random bijection induces the uniform distribution over these balanced words: every balanced word has exactly (R!)^q bijective lifts.
+
+This gives the correct finite-width null model for arbitrary random bijective scramblers.
+
+## 14B. History depth equals longest repeated cyclic block
+
+For a single-cycle system with cyclic observation word a of period M, let LRS(a) be the maximum length of a repeated cyclic substring occurring at two distinct starting positions.
+
+Then
+
+[
+oxed{
+d = operatorname{LRS}(a).
+}
+]
+
+Reason: H_k distinguishes every state exactly when every cyclic block of length k+1 is unique. Thus the smallest k with unique blocks satisfies k+1=LRS(a)+1.
+
+When the observation period is M,
+
+[
+oxed{r=d=operatorname{LRS}(a).}
+]
+
+This converts the exact history problem into a classical repeated-substring problem.
+
+For random strings, the expected longest repeated-substring length has first-order scale 2 log_{|Σ|} M + O(1). This is used only as a null-model heuristic here; the balanced-word model and the fixed SplitMix64 word remain distinct objects.
+
 ## 15. Implemented experiments
 
 The repository implementation is experiments/observation_dynamics_factorization.py.
