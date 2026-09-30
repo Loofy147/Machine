@@ -125,7 +125,18 @@ def max_repeated_cyclic_block(word: list[int], bits: int) -> int:
     return best
 
 
-def exact_cyclic_depth(word: list[int], bits: int) -> int:
+def exact_single_cycle_depth(word: list[int], bits: int) -> int:
+    """Return exact prediction/recovery depth when the word has full period.
+
+    For a single-cycle hidden system with full observation period, this equals
+    the longest repeated cyclic block length. Periodicity is checked explicitly
+    so the reduction cannot be misapplied to a non-full-period observation.
+    """
+    period = least_period(word)
+    if period != len(word):
+        raise ValueError(
+            "LRS-to-depth reduction requires full observation period"
+        )
     return max_repeated_cyclic_block(word, bits)
 
 
@@ -193,7 +204,7 @@ def run_balanced_scaling(widths, bits_list, trials: int) -> list[ScalingRow]:
                 continue
             for trial in range(trials):
                 word = balanced_word(M, b, 50_000 + 1000 * w + 100 * b + trial)
-                depth = exact_cyclic_depth(word, b)
+                depth = exact_single_cycle_depth(word, b)
                 rows.append(
                     ScalingRow(
                         width=w,
