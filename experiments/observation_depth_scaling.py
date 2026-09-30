@@ -111,38 +111,36 @@ def exact_cyclic_depth(word: list[int], bits: int) -> int:
 
 
 def sampled_prefix_depth(word: list[int], bits: int) -> int | None:
-    """Return local depth from a linear prefix, or None if not found.
+    """Return exact repeated-block depth for a linear prefix.
 
-    The result is the largest repeated-window length observed before the
-    first globally unique window length in this prefix.
+    If the returned depth is d, every length-(d+2) block in the prefix is
+    unique while some shorter length-(d+1) block repeats. Therefore this is
+    an exact statistic for the prefix. For the full 2^64 cyclic word it is
+    only a lower-bound witness when a repetition is observed.
     """
     n = len(word)
-    q = 1 << bits
+    if n < 2:
+        return 0
 
-    previous = None
+    q = 1 << bits
     for length in range(1, min(n, max(1, 64 // bits)) + 1):
         codes = []
         code = 0
         high = 1 << (bits * (length - 1))
 
-        if length == 1:
-            codes = word[:]
-        else:
-            for i, value in enumerate(word):
-                if i >= length:
-                    code = (code - word[i - length] * high) * q
-                if i < length - 1:
-                    code = (code << bits) | value
-                else:
-                    code = code * q + value
+        for i, value in enumerate(word):
+            if i < length:
+                code = (code << bits) | value
+                if i == length - 1:
                     codes.append(code)
+            else:
+                code = (code - word[i - length] * high) * q + value
+                codes.append(code)
 
-        distinct = len(set(codes))
-        if distinct == len(codes):
+        if len(set(codes)) == len(codes):
             return length - 1
-        previous = length - 1
 
-    return previous
+    return min(n - 2, max(0, 64 // bits - 1))
 
 
 @dataclass(frozen=True)
