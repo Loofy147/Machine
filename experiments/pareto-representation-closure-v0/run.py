@@ -89,14 +89,24 @@ def forward(succ, s, t, M, cap):
     return False, ticks
 
 
+def native_predecessors(target, M):
+    """Declared direct-fiber primitive for the fixed A/B/C graph family."""
+    if isinstance(M, bool) or not isinstance(M, int) or M < 2:
+        raise ValueError("M must be an integer >= 2")
+    if isinstance(target, bool) or not isinstance(target, int) or not 0 <= target < M:
+        raise ValueError("target must be an integer in [0, M)")
+    sources = [(target - 1) % M, (target - 7) % M]
+    if M % 2:
+        sources.append((target * pow(2, -1, M)) % M)
+    elif target % 2 == 0:
+        sources.extend((target // 2, (target // 2 + M // 2) % M))
+    return sorted(sources)
+
+
 def native_bidi(succ, s, t, M, cap):
-    # Direct predecessor access for the declared graph family.
+    # Explicit access primitive: no reverse index is built in the query path.
     if s == t:
         return True, 0
-    rev = [[] for _ in range(M)]
-    for u, v in all_edges(succ, M):
-        rev[v].append(u)
-
     fq, bq = deque([s]), deque([t])
     fs, bs = {s}, {t}
     ticks = 0
@@ -115,8 +125,11 @@ def native_bidi(succ, s, t, M, cap):
                     fq.append(v)
         else:
             u = bq.popleft()
-            for v in rev[u]:
-                ticks += 1
+            ticks += 1  # declared direct fiber-lookup event
+            if ticks > cap:
+                return False, ticks
+            for v in native_predecessors(u, M):
+                ticks += 1  # one returned predecessor entry
                 if ticks > cap:
                     return False, ticks
                 if v in fs:
@@ -148,8 +161,11 @@ def reverse_index_bidi(succ, rev, s, t, M, cap):
                     fq.append(v)
         else:
             u = bq.popleft()
+            ticks += 1  # indexed predecessor-bucket lookup event
+            if ticks > cap:
+                return False, ticks
             for v in rev[u]:
-                ticks += 1
+                ticks += 1  # one returned predecessor entry
                 if ticks > cap:
                     return False, ticks
                 if v in fs:
@@ -199,6 +215,39 @@ def run():
     caps = [10, 20, 40, 80, 160, 320, 640]
     seeds = [17, 23, 41]
     Ms = [30, 100, 300]
+
+    # Validate the direct primitive against independently built relation state.
+    # The reverse index is used for this validation only, never inside a
+    # native_bidi query.
+    validation_sizes = [3, 5, *Ms]
+    validation_rows = []
+    for size in validation_sizes:
+        succ_check = make_graph(size)
+        rev_check, _, _ = build_reverse_index(succ_check, size)
+        mismatches = [
+            target for target in range(size)
+            if native_predecessors(target, size) != sorted(rev_check[target])
+        ]
+        validation_rows.append({
+            "M": size,
+            "targets_checked": size,
+            "mismatches": len(mismatches),
+            "mismatch_targets": mismatches,
+        })
+        if mismatches:
+            raise AssertionError(f"direct predecessor mismatch at M={size}: {mismatches}")
+    validation = {
+        "schema": "machine.native-predecessor-primitive-validation.v0.1",
+        "status": "PASS",
+        "validation_only_uses_reverse_index": True,
+        "native_query_constructs_reverse_index": False,
+        "total_target_fibers_checked": sum(row["targets_checked"] for row in validation_rows),
+        "total_mismatches": sum(row["mismatches"] for row in validation_rows),
+        "sizes": validation_rows,
+        "query_cost_boundary": "one direct-fiber access event plus one event per returned predecessor; physical lookup cost remains symbolic",
+    }
+    validation_path = Path(__file__).with_name("NATIVE-PREDECESSOR-VALIDATION-V0.json")
+    validation_path.write_text(json.dumps(validation, indent=2, sort_keys=True) + "\n")
 
     summary = []
     samples = []
@@ -297,7 +346,7 @@ def run():
         json.dump({
             "M_values": Ms, "seeds": seeds, "caps": caps,
             "resource_meta": resource_meta,
-            "tick_definition": "one candidate-edge examination; policy lookup counts separately",
+            "tick_definition": "one structural tick per forward edge examination, one predecessor-bucket/fiber lookup event, and one event per returned predecessor; equal tick weights are an abstract convention, not physical calibration",
         }, f, indent=2)
 
     print(json.dumps(frontier, indent=2))
