@@ -1,0 +1,123 @@
+{
+  "schema": "machine.substrate-resource-contract.v0.2",
+  "status": "FROZEN_COMPARISON_CONTRACT",
+  "scope": "P-07 normalized resource comparison; not a repository-wide production profile selection",
+  "axes": {
+    "A_r": {
+      "name": "state_read_addressing",
+      "allowed_profiles": ["A0_OPAQUE", "A1_RANDOM_ACCESS", "A2_SPECIALIZED_INDEX"],
+      "required": true
+    },
+    "A_w": {
+      "name": "state_write_update_addressing",
+      "allowed_profiles": ["W0_NONE", "W1_GENERIC_CELL_WRITE", "W2_STRUCTURED_UPDATE"],
+      "required": true
+    },
+    "T": {"name": "semantic_transition_access", "required": true},
+    "D": {"name": "derived_state_policy", "required": true},
+    "tau": {
+      "name": "timing_information_boundary",
+      "allowed": [
+        "T0_TARGET_BEFORE_PREPROCESSING",
+        "T1_TARGET_AFTER_TARGET_OBLIVIOUS_PREPROCESSING",
+        "T2_TARGET_BEFORE_TARGET_DEPENDENT_PREPROCESSING"
+      ],
+      "required": true
+    },
+    "B_off": {
+      "name": "offline_construction_work",
+      "required": true,
+      "units": "declared structural event counters; no scalar conversion across event classes"
+    },
+    "R_extra": {
+      "name": "persistent_representation",
+      "required": true,
+      "units": "bytes",
+      "disclosure": "report total resident profile bytes and derive extra bytes against the baseline delta table"
+    },
+    "B_on": {
+      "name": "online_work",
+      "required": true,
+      "units": "declared structural event counters; vector-valued"
+    },
+    "M": {
+      "name": "mutation",
+      "allowed": ["M0_STATIC", "M1_BATCHED", "M2_DYNAMIC"],
+      "required": true
+    },
+    "K": {
+      "name": "correctness_observability",
+      "required": true,
+      "semantic_reference": "exact labeled predecessor fiber F(u) from the current delta"
+    }
+  },
+  "event_counters": {
+    "state_reads": "generic state reads performed online",
+    "state_writes": "generic state writes performed online",
+    "offline_state_reads": "generic state reads during initial construction",
+    "offline_state_writes": "generic state writes during initial construction",
+    "scan_entries": "relation/container entries inspected online",
+    "output_entries": "labeled predecessor entries returned",
+    "hash_probes": "hash table probes online",
+    "hash_writes": "hash slot writes online",
+    "offline_hash_probes": "hash probes during initial hash-index construction",
+    "offline_hash_writes": "hash writes during initial hash-index construction",
+    "link_writes": "fiber link/head updates online",
+    "offline_link_writes": "fiber link/head writes during initial construction",
+    "overlay_writes": "overlay metadata writes online",
+    "initial_build_entries": "entries processed by the initial CSR constructor",
+    "rebuild_entries": "entries processed by M1 rebuild publication",
+    "compaction_entries": "entries processed by overlay compaction",
+    "shift_entries": "CSR payload entries shifted by generic mutation",
+    "offset_writes": "CSR offset cells rewritten by generic mutation"
+  },
+  "comparison_profiles": {
+    "A1_RW_CSR": {
+      "A_r": "A1_RANDOM_ACCESS",
+      "A_w": "W1_GENERIC_CELL_WRITE",
+      "M": "M2_DYNAMIC",
+      "representation": "exact contiguous inverse CSR with fixed capacity S*Sigma",
+      "specialized_inverse_operation": false
+    },
+    "P07_HASH": {
+      "A_r": "A2_SPECIALIZED_INDEX",
+      "A_w": "W2_STRUCTURED_UPDATE",
+      "M": "M2_DYNAMIC",
+      "representation": "per-target fiber buckets plus membership hash table",
+      "specialized_inverse_operation": "profile interface, not used to infer production necessity"
+    },
+    "P07_CSR_REBUILD_M1": {
+      "A_r": "A1_RANDOM_ACCESS",
+      "A_w": "W1_GENERIC_CELL_WRITE",
+      "M": "M1_BATCHED",
+      "representation": "contiguous CSR rebuilt at each publication boundary"
+    },
+    "P07_CSR_OVERLAY": {
+      "A_r": "A1_RANDOM_ACCESS",
+      "A_w": "W1_GENERIC_CELL_WRITE",
+      "M": "M2_DYNAMIC",
+      "representation": "immutable CSR base plus latest-update overlay and explicit compaction"
+    }
+  },
+  "fixed_experimental_envelope": {
+    "capacity": "S*Sigma",
+    "cases": 24,
+    "system_families": [[31, 4], [63, 5], [127, 4], [255, 6]],
+    "epochs_per_case": 20,
+    "updates_per_epoch": 25,
+    "queries_per_epoch": 20,
+    "target_distribution": "same fixed query trace generated from initial in-degree quartiles plus top 5 percent stratum",
+    "production_trace": false,
+    "overlay_compaction_threshold": "max(16, floor(S*Sigma/4))",
+    "rebuild_publication": "after each update epoch and before its query batch"
+  },
+  "rules": {
+    "same_trace": "All profiles in a case receive byte-identical initial delta, update trace, and query trace.",
+    "dynamic_consistency": "A1_RW_CSR, P07_HASH, and P07_CSR_OVERLAY must validate affected fibers and representation invariants after every committed update.",
+    "batched_consistency": "P07_CSR_REBUILD_M1 is only required to validate after rebuild publication; it is not an M2 equivalence claim.",
+    "no_free_rebuild": "rebuild and compaction events are charged explicitly to the profile that performs them.",
+    "no_scalarization": "event-counter dimensions remain separate; wall-clock is reported separately and never converted into structural units.",
+    "no_production_inference": "synthetic workload results remain scenario evidence, not production workload evidence.",
+    "classification": "This contract supports resource-vector comparison only; it does not select a universal profile."
+  }
+}

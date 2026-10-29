@@ -1,0 +1,60 @@
+name: Predecessor Frontier Integration v0.1
+
+on:
+  push:
+    branches:
+      - integration/predecessor-frontier-contract-v0.1
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile experiment runners
+        run: |
+          python -m py_compile \
+            experiments/machine-substrate-resource-contract-v0/validate_contract.py \
+            experiments/machine-substrate-resource-contract-v0/validate_instances.py \
+            experiments/machine-substrate-primitive-closure-v0/run_primitive_closure.py \
+            experiments/machine-substrate-m2-representation-closure-v0/run_m2_representation_closure.py \
+            experiments/machine-substrate-m2-exact-csr-closure-v0/run_exact_csr_closure.py \
+            experiments/pareto-representation-closure-v0/run.py \
+            experiments/pareto-representation-closure-v0/test_native_predecessor.py \
+            experiments/pareto-representation-closure-v0/general_graph_validation.py \
+            experiments/pareto-representation-closure-v0/test_general_graph_predecessor.py \
+            experiments/pareto-representation-closure-v0/run_general_graph_validation.py \
+            experiments/predecessor-frontier-integration-v0/cost_model.py \
+            experiments/predecessor-frontier-integration-v0/test_cost_model.py \
+            experiments/predecessor-frontier-integration-v0/run_cost_normalization.py \
+            experiments/predecessor-frontier-integration-v0/verify_integration.py
+      - name: Run strict contract and experiment gate
+        run: python experiments/predecessor-frontier-integration-v0/verify_integration.py
+      - name: Upload current-run evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: predecessor-frontier-integration-v0.1
+          if-no-files-found: error
+          path: |
+            experiments/predecessor-frontier-integration-v0/RESULTS-INTEGRATION-V0.1.json
+            experiments/predecessor-frontier-integration-v0/COST-NORMALIZATION-V0.1.json
+            experiments/machine-substrate-resource-contract-v0/VALIDATION-V0.1.json
+            experiments/machine-substrate-resource-contract-v0/INSTANCE-VALIDATION-V0.1.json
+            experiments/machine-substrate-primitive-closure-v0/RESULTS-V0.1.json
+            experiments/pareto-representation-closure-v0/PARETO-FRONTIER-V0.csv
+            experiments/pareto-representation-closure-v0/SUMMARY-V0.csv
+            experiments/pareto-representation-closure-v0/RESOURCE-METADATA-V0.json
+            experiments/pareto-representation-closure-v0/REPRESENTATIVE-SAMPLES-V0.csv
+            experiments/pareto-representation-closure-v0/NATIVE-PREDECESSOR-VALIDATION-V0.json
+            experiments/pareto-representation-closure-v0/GENERAL-GRAPH-PREDECESSOR-VALIDATION-V0.json
