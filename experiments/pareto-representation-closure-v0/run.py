@@ -259,12 +259,12 @@ def run():
         all_qs = [q for seed in seeds for q in queries(M, seed=seed)]
 
         solvers = {
-            "forward": lambda s, t, c, succ=succ, M=M: forward(succ, s, t, M, c)[0],
-            "native_bidi": lambda s, t, c, succ=succ, M=M: native_bidi(succ, s, t, M, c)[0],
+            "forward": lambda s, t, c, succ=succ, M=M: forward(succ, s, t, M, c),
+            "native_bidi": lambda s, t, c, succ=succ, M=M: native_bidi(succ, s, t, M, c),
             "reverse_index": lambda s, t, c, succ=succ, rev=rev, M=M:
-                reverse_index_bidi(succ, rev, s, t, M, c)[0],
+                reverse_index_bidi(succ, rev, s, t, M, c),
             "policy": lambda s, t, c, succ=succ, table=table, M=M:
-                policy_lookup(succ, table, s, t, M, c)[0],
+                policy_lookup(succ, table, s, t, M, c),
         }
 
         for name, solver in solvers.items():
