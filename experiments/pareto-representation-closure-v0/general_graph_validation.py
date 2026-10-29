@@ -38,7 +38,7 @@ class GraphFixture:
 
 
 def adversarial_fixture() -> GraphFixture:
-    # 8 is isolated; 7 has zero indegree; 1 and 9 have zero outdegree.
+    # 8 is isolated; 7 has zero indegree; 1 and 8 have zero outdegree.
     edges = (
         Edge(0, 0, "loop-at-0"),
         Edge(0, 1, "parallel-alpha"),
