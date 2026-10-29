@@ -8,11 +8,12 @@ Machine is a research repository for machine-native substrate design, active-fro
 
 - **Default branch:** main, commit 2d5f6bd0513ecd2d9f29f395d4d95c90849b2648.
 - **Integration:** [PR #26 — predecessor-frontier contract and evidence gate](https://github.com/Loofy147/Machine/pull/26) is **open and unmerged**. Its latest head has a successful integration CI run. Claims are limited to the documented finite fixtures and cost model.
-- **Important unresolved blocker:** [Issue #22 — v0.4 runner imports an unlocated core module](https://github.com/Loofy147/Machine/issues/22). Do not treat the v0.4 record as independently reproducible until the exact dependency is recovered and its canonical regression and comparison suite are rerun.
+- **v0.4 restoration:** draft [PR #29](https://github.com/Loofy147/Machine/pull/29) restores the exact hash-verified core module. Its canonical regression and exact n=3 comparison suite pass; the wider n=4 and matched-graph runs remain historical pending separate reproduction. [Issue #22](https://github.com/Loofy147/Machine/issues/22) remains open until review/merge.
+- **General-graph property gate:** draft [PR #28](https://github.com/Loofy147/Machine/pull/28) checks 120 deterministic sparse/medium/dense multigraphs with 2,376 predecessor-fiber checks and 2,376 backward-reachability queries; CI reports zero mismatches. It is stacked behind PR #26.
 - **Research state:** substantive source, harnesses, and evidence are distributed across named research branches. Many PRs are intentionally stacked on research branches rather than targeted at main.
 - **Main branch:** currently a governance/documentation baseline, not a runnable release. It has no tracked test/CI configuration, package/build definition, or repository license.
 
-Read the [repository-wide audit snapshot](docs/REPOSITORY-WIDE-AUDIT-2026-10-29.md) for the branch/PR inventory, evidence status, reproducibility gaps, risks, and recommended work order.
+Read the [repository-wide audit snapshot](docs/REPOSITORY-WIDE-AUDIT-2026-10-29.md) and [branch-role/PR-dependency ledger](docs/research/BRANCH-ROLE-AND-PR-DEPENDENCY-LEDGER-v0.1.md) for the branch inventory, dependency order, evidence status, reproducibility gaps, and recommended work order.
 
 ## Start here
 
@@ -20,13 +21,14 @@ Read the [repository-wide audit snapshot](docs/REPOSITORY-WIDE-AUDIT-2026-10-29.
 2. [Experiment protocol v0.1 — initial freeze candidate](docs/experiment/EXPERIMENT_PROTOCOL_v0.1_INITIAL_FREEZE_CANDIDATE.md) — a design candidate, not an empirical result.
 3. [Statistical comparison plan v0.1](docs/experiment/STATISTICAL_COMPARISON_PLAN_v0.1.md) — pre-registration candidate; confirmatory thresholds and freeze obligations remain explicit.
 4. [Architecture convergence link](docs/ARCHITECTURE_CONVERGENCE_LINK_v0.1.md) — how bounded findings can propagate to the wider architecture without automatically adopting research code.
+5. [Branch roles and PR dependencies](docs/research/BRANCH-ROLE-AND-PR-DEPENDENCY-LEDGER-v0.1.md) — exact branch-head identity, alias groups, stacked PRs, and safe propagation order.
 
 ## Main research lines
 
 These links identify workstreams; they do not mean their code or claims have been adopted into main.
 
 - [Machine substrate primitive closure](https://github.com/Loofy147/Machine/tree/research/machine-substrate-primitive-closure-v0) — contract, representation, mutation-coupling, and closure experiments. Related work remains under review in [PR #10](https://github.com/Loofy147/Machine/pull/10).
-- [Active-frontier verification](https://github.com/Loofy147/Machine/tree/research/active-frontier-adversarial-v0) — Dijkstra/UCS stopping-boundary research. Its v0.4 runner has an unresolved source-dependency blocker in [Issue #22](https://github.com/Loofy147/Machine/issues/22).
+- [Active-frontier verification](https://github.com/Loofy147/Machine/tree/research/active-frontier-adversarial-v0) — Dijkstra/UCS stopping-boundary research. Exact v0.4 core restoration is proposed in [PR #29](https://github.com/Loofy147/Machine/pull/29); only the canonical fixture and n=3 suite are freshly reproduced by that gate.
 - [Observation-dynamics factorization](https://github.com/Loofy147/Machine/tree/research/observation-dynamics-factorization-v0.1) — SplitMix64 and finite observation dynamics; the current draft has solver jobs returning UNKNOWN/TIMEOUT and does not promote them to proofs. See [PR #24](https://github.com/Loofy147/Machine/pull/24).
 - [HSDCR full-finding line](https://github.com/Loofy147/Machine/tree/research/hsdcr-full-finding-v0) — composition-reduction evidence and a draft handoff. See [PR #23](https://github.com/Loofy147/Machine/pull/23).
 - [Substrate interpreter line](https://github.com/Loofy147/Machine/tree/research/substrate-interpreter-v0) — separately versioned experimental specifications; v0.1–v0.3 are not interchangeable without a recorded disposition.
