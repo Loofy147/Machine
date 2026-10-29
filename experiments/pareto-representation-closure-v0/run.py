@@ -178,14 +178,14 @@ def policy_lookup(succ, table, s, t, M, cap):
     return False, ticks
 
 
-def min_required_cap(solver, query, M, upper=20000):
+def min_required_cap(solver, query, upper=20000):
     s, t = query
     lo, hi = 0, upper
-    if not solver(s, t, M, hi)[0]:
+    if not solver(s, t, hi)[0]:
         return float("inf")
     while lo < hi:
         mid = (lo + hi) // 2
-        if solver(s, t, M, mid)[0]:
+        if solver(s, t, mid)[0]:
             hi = mid
         else:
             lo = mid + 1
@@ -268,7 +268,7 @@ def run():
         }
 
         for name, solver in solvers.items():
-            costs = [min_required_cap(solver, q, M) for q in all_qs]
+            costs = [min_required_cap(solver, q) for q in all_qs]
             frontier.append({
                 "M": M,
                 "method": name,
