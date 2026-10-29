@@ -1,0 +1,26 @@
+name: Observation Solver Version Contract
+
+on:
+  push:
+    branches:
+      - fix/pin-observation-solver-versions-v0.1
+  pull_request:
+    branches:
+      - research/observation-dynamics-factorization-v0.1
+
+permissions:
+  contents: read
+
+jobs:
+  solver-version-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile and run dependency contract regression
+        run: |
+          python -m py_compile experiments/test_solver_workflow_contract.py
+          python -m unittest experiments.test_solver_workflow_contract -v
