@@ -25,7 +25,7 @@ Machine owns machine-native substrate research and frontier evidence. It must co
 
 Any candidate exported toward Open-System-One must carry repository + ref/commit + path + experiment/evidence provenance and a stated status.
 
-Current canonical Machine main ref pinned during convergence audit:
+Machine main ref observed during the convergence audit on 2026-10-02 (historical snapshot; not the current main head at the 2026-10-29 repository audit):
 1626bac2f5c478294afa4b9463f694608c322117.
 
-The substrate-interpreter research branch remains experimental and separately versioned.
+The current main ref must be read from GitHub rather than inferred from this historical pointer. The substrate-interpreter research branch remains experimental and separately versioned.
