@@ -23,6 +23,8 @@ class GraphFixture:
     name: str
     state_count: int
     edges: tuple[Edge, ...]
+    family: str = "fixed"
+    seed: int | None = None
 
     def __post_init__(self) -> None:
         if self.state_count < 1:
