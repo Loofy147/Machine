@@ -12,7 +12,7 @@ from pathlib import Path
 from general_graph_validation import validate_generated_sweep
 
 ROOT = Path(__file__).resolve().parent
-REPO_ROOT = ROOT.parent.parent.parent
+REPO_ROOT = ROOT.parent.parent
 OUTPUT = ROOT / "GENERAL-GRAPH-PREDECESSOR-PROPERTY-SWEEP-V0.1.json"
 
 
