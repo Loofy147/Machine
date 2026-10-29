@@ -31,6 +31,9 @@ jobs:
             experiments/machine-substrate-m2-representation-closure-v0/run_m2_representation_closure.py \
             experiments/machine-substrate-m2-exact-csr-closure-v0/run_exact_csr_closure.py \
             experiments/pareto-representation-closure-v0/run.py \
+            experiments/predecessor-frontier-integration-v0/cost_model.py \
+            experiments/predecessor-frontier-integration-v0/test_cost_model.py \
+            experiments/predecessor-frontier-integration-v0/run_cost_normalization.py \
             experiments/predecessor-frontier-integration-v0/verify_integration.py
       - name: Run strict contract and experiment gate
         run: python experiments/predecessor-frontier-integration-v0/verify_integration.py
@@ -41,6 +44,7 @@ jobs:
           if-no-files-found: error
           path: |
             experiments/predecessor-frontier-integration-v0/RESULTS-INTEGRATION-V0.1.json
+            experiments/predecessor-frontier-integration-v0/COST-NORMALIZATION-V0.1.json
             experiments/machine-substrate-resource-contract-v0/VALIDATION-V0.1.json
             experiments/machine-substrate-resource-contract-v0/INSTANCE-VALIDATION-V0.1.json
             experiments/machine-substrate-primitive-closure-v0/RESULTS-V0.1.json

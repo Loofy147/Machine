@@ -99,6 +99,26 @@ def main() -> None:
     )
     require(instance_validation.get("status") == "PASS", "v0.1 contract instance validator did not pass")
 
+    test_dir = ROOT / "experiments/predecessor-frontier-integration-v0"
+    unit_tests = subprocess.run(
+        [sys.executable, "-m", "unittest", "discover", "-s", str(test_dir), "-p", "test_cost_model.py", "-v"],
+        cwd=ROOT, text=True, capture_output=True, check=False,
+    )
+    require(
+        unit_tests.returncode == 0,
+        "cost-model unit tests failed\n" + unit_tests.stdout + "\n" + unit_tests.stderr,
+    )
+    cost_normalization = execute_json(
+        "experiments/predecessor-frontier-integration-v0/run_cost_normalization.py"
+    )
+    require(cost_normalization.get("status") == "PASS", "cost normalization sweep failed")
+    require(cost_normalization.get("no_default_scalar_costs") is True, "cost model introduced ungrounded default weights")
+    require(len(cost_normalization.get("query_sweep", [])) == 11, "unexpected cost-model query sweep size")
+    require(len(cost_normalization.get("representation_footprint_sweep", [])) == 3, "unexpected footprint sweep size")
+    for row in cost_normalization["query_sweep"]:
+        vectors = row["events"]
+        require(len({v["output_entries"] for v in vectors.values()}) == 1, "profiles returned different output cardinality")
+
     primitive = execute_json(
         "experiments/machine-substrate-primitive-closure-v0/run_primitive_closure.py"
     )
@@ -172,6 +192,9 @@ def main() -> None:
         instances_v02_path,
         ROOT / "experiments/machine-substrate-resource-contract-v0/validate_contract.py",
         ROOT / "experiments/machine-substrate-resource-contract-v0/validate_instances.py",
+        ROOT / "experiments/predecessor-frontier-integration-v0/cost_model.py",
+        ROOT / "experiments/predecessor-frontier-integration-v0/test_cost_model.py",
+        ROOT / "experiments/predecessor-frontier-integration-v0/run_cost_normalization.py",
         ROOT / "experiments/machine-substrate-primitive-closure-v0/run_primitive_closure.py",
         ROOT / "experiments/machine-substrate-m2-representation-closure-v0/run_m2_representation_closure.py",
         ROOT / "experiments/machine-substrate-m2-exact-csr-closure-v0/run_exact_csr_closure.py",
@@ -228,6 +251,16 @@ def main() -> None:
             "all_pairs_policy": "LOWER SAMPLED ONLINE BUDGET; HIGHER OFFLINE WORK AND STORAGE",
             "rows": frontier_checks,
         },
+        "cost_normalization": {
+            "status": cost_normalization["status"],
+            "unit_tests": "PASS",
+            "unit_test_count": 10,
+            "query_sweep_cases": len(cost_normalization["query_sweep"]),
+            "representation_footprint_cases": len(cost_normalization["representation_footprint_sweep"]),
+            "scalar_default_costs": False,
+            "specialized_access_cost": "SYMBOLIC / CALLER-SUPPLIED",
+            "physical_cost_winner": "OPEN",
+        },
         "source_sha256": {str(path.relative_to(ROOT)): sha256(path) for path in source_paths},
         "classification": {
             "absolute_computability_advantage": "NOT ESTABLISHED",
@@ -235,13 +268,13 @@ def main() -> None:
             "opaque_forward_without_relation_access": "ACCESS EXTENSION REQUIRED UNDER DECLARED MODEL",
             "resource_bounded_online_frontier_shift": "SUPPORTED BUT CONTRACT-AND-COST-MODEL BOUND",
             "canonical_repository_wide_substrate": "OPEN",
-            "native_predecessor_access_cost_normalization": "OPEN",
+            "native_predecessor_access_cost_normalization": "SYMBOLIC BREAK-EVEN CONDITIONS ADDED; PHYSICAL ACCESS COST REMAINS OPEN",
             "production_profile_selection": "OPEN",
         },
         "limits": [
             "Finite deterministic fixtures only; no general closure theorem.",
             "The Pareto runner uses its declared structural tick model; unlike event classes are not converted to a scalar cost.",
-            "The dedicated predecessor operation's physical latency/access cost is not normalized by this experiment.",
+            "The dedicated predecessor operation's physical latency/access cost is not empirically normalized; only symbolic break-even conditions are added.",
             "Local historical results are not substituted for this run's branch/commit-bound output.",
         ],
     }
@@ -255,6 +288,7 @@ def main() -> None:
         "dynamic_representation": "PASS",
         "exact_csr": "PASS",
         "pareto_frontier": "PASS",
+        "cost_normalization": "PASS",
         "result_path": str(OUT.relative_to(ROOT)),
     }, indent=2))
 
