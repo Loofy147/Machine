@@ -1,0 +1,52 @@
+{
+  "schema": "context-contract-distribution-input.v0.1",
+  "anchor": {
+    "project": "alpha",
+    "region": "eu"
+  },
+  "anchor_update": {
+    "goal": "demo"
+  },
+  "contexts": [
+    {
+      "id": "spec",
+      "facts": {"project": "alpha", "goal": "ship"},
+      "needs": {"deadline": null}
+    },
+    {
+      "id": "calendar",
+      "facts": {"project": "alpha", "deadline": "fri"},
+      "needs": {"budget": null}
+    },
+    {
+      "id": "budget-sheet",
+      "facts": {"project": "alpha", "budget": "10k"},
+      "needs": {"goal": "ship"}
+    },
+    {
+      "id": "legacy-notes",
+      "facts": {"project": "beta", "deadline": "mon"},
+      "needs": {"goal": "ship"}
+    },
+    {
+      "id": "research",
+      "facts": {"project": "alpha", "region": "eu", "sources": "12"},
+      "needs": {"goal": "ship"}
+    },
+    {
+      "id": "eu-compliance",
+      "facts": {"region": "eu", "rules": "gdpr"},
+      "needs": {"sources": "12"}
+    },
+    {
+      "id": "us-compliance",
+      "facts": {"region": "us", "rules": "ccpa"},
+      "needs": {"sources": "12"}
+    },
+    {
+      "id": "tests",
+      "facts": {"project": "alpha", "goal": "ship", "coverage": "80"},
+      "needs": {"rules": null}
+    }
+  ]
+}

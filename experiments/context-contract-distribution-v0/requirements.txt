@@ -1,0 +1,2 @@
+# Exact dependency version used for the recorded local verification.
+networkx==3.6.1
