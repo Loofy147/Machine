@@ -129,6 +129,32 @@ def main() -> None:
         "native-predecessor unit tests failed\n" + pareto_tests.stdout + "\n" + pareto_tests.stderr,
     )
 
+    general_graph_tests = subprocess.run(
+        [sys.executable, "-m", "unittest", "discover", "-s", str(pareto_test_dir), "-p", "test_general_graph_predecessor.py", "-v"],
+        cwd=ROOT, text=True, capture_output=True, check=False,
+    )
+    require(
+        general_graph_tests.returncode == 0,
+        "general-graph adversarial tests failed\n" + general_graph_tests.stdout + "\n" + general_graph_tests.stderr,
+    )
+    general_graph_validation = execute_json(
+        "experiments/pareto-representation-closure-v0/run_general_graph_validation.py"
+    )
+    general_graph_validation_path = pareto_test_dir / "GENERAL-GRAPH-PREDECESSOR-VALIDATION-V0.json"
+    persisted_general_graph_validation = json.loads(
+        general_graph_validation_path.read_text(encoding="utf-8")
+    )
+    require(persisted_general_graph_validation == general_graph_validation, "general-graph report differs from persisted evidence")
+    require(general_graph_validation.get("status") == "PASS", "general-graph validation did not pass")
+    require(general_graph_validation.get("fixture_count") == 4, "unexpected general-graph fixture count")
+    require(general_graph_validation.get("state_count_total") == 45, "unexpected general-graph state count")
+    require(general_graph_validation.get("target_fibers_checked") == 45, "unexpected general-graph target-fiber count")
+    require(general_graph_validation.get("backward_reachability_queries_checked") == 45, "unexpected general-graph query count")
+    require(general_graph_validation.get("total_semantic_mismatches") == 0, "general-graph semantic mismatch")
+    require(general_graph_validation.get("query_path_builds_reverse_index") is False, "general-graph query path builds the reverse index")
+    require(general_graph_validation.get("arbitrary_graph_native_fiber_implementation") == "NOT CLAIMED", "general-graph scope overclaims a native primitive")
+    require(general_graph_validation.get("disconnected_fixture_count", 0) >= 1, "disconnected graph fixture missing")
+
     primitive = execute_json(
         "experiments/machine-substrate-primitive-closure-v0/run_primitive_closure.py"
     )
@@ -216,6 +242,9 @@ def main() -> None:
         ROOT / "experiments/machine-substrate-m2-exact-csr-closure-v0/run_exact_csr_closure.py",
         ROOT / "experiments/pareto-representation-closure-v0/run.py",
         ROOT / "experiments/pareto-representation-closure-v0/test_native_predecessor.py",
+        ROOT / "experiments/pareto-representation-closure-v0/general_graph_validation.py",
+        ROOT / "experiments/pareto-representation-closure-v0/test_general_graph_predecessor.py",
+        ROOT / "experiments/pareto-representation-closure-v0/run_general_graph_validation.py",
     ]
     checked_out_commit_result = subprocess.run(
         ["git", "rev-parse", "HEAD"],
@@ -294,6 +323,20 @@ def main() -> None:
             "query_time_reverse_index_build": False,
             "structural_tick_model": "one lookup event plus output entries; equal tick weights are not physical calibration",
         },
+        "general_graph_adversarial_validation": {
+            "status": general_graph_validation["status"],
+            "fixtures": general_graph_validation["fixture_count"],
+            "states": general_graph_validation["state_count_total"],
+            "edges": general_graph_validation["edge_count_total"],
+            "target_fibers_checked": general_graph_validation["target_fibers_checked"],
+            "backward_reachability_queries_checked": general_graph_validation["backward_reachability_queries_checked"],
+            "semantic_mismatches": general_graph_validation["total_semantic_mismatches"],
+            "parallel_endpoint_pairs": general_graph_validation["parallel_endpoint_pairs"],
+            "self_loop_edges": general_graph_validation["self_loop_edges"],
+            "query_path_reverse_index_build": False,
+            "arbitrary_graph_native_fiber_implementation": "NOT CLAIMED",
+            "physical_access_cost": "OPEN / SYMBOLIC",
+        },
         "source_sha256": {str(path.relative_to(ROOT)): sha256(path) for path in source_paths},
         "classification": {
             "absolute_computability_advantage": "NOT ESTABLISHED",
@@ -324,6 +367,7 @@ def main() -> None:
         "pareto_frontier": "PASS",
         "cost_normalization": "PASS",
         "native_predecessor_implementation": "PASS",
+        "general_graph_adversarial_validation": "PASS",
         "result_path": str(OUT.relative_to(ROOT)),
     }, indent=2))
 
