@@ -136,10 +136,6 @@ def dialogue_to_context(dialogue: dict[str, Any]) -> ContractContext:
                         # MultiWOZ documents alternative valid surface forms in a list.
                         # Canonical JSON keeps all aliases without depending on list order.
                         frame_facts[key] = json.dumps(values, ensure_ascii=False, separators=(",", ":"))
-            # Each annotated frame state is the current state snapshot for that
-            # service. Replacing avoids carrying forward stale values after correction.
-            facts_by_service[service] = frame_facts
-
             requested: set[str] = set()
             raw_requests = state.get("requested_slots", [])
             if isinstance(raw_requests, list):
@@ -147,7 +143,18 @@ def dialogue_to_context(dialogue: dict[str, Any]) -> ContractContext:
                     key = _qualify_slot(service, raw_slot)
                     if key:
                         requested.add(key)
-            requested_by_service[service] = requested
+
+            # MultiWOZ may include inactive empty frames for services unrelated
+            # to the current turn. Do not let them erase a previous state snapshot.
+            active_intent = str(state.get("active_intent", "NONE")).strip().upper()
+            if active_intent != "NONE" or frame_facts or requested:
+                facts_by_service[service] = frame_facts
+
+            # Requests express annotated user demand across the dialogue. Preserve
+            # those observations and later remove any request key present in final
+            # facts. Since system responses are excluded, this is a state-schema
+            # proxy, not proof that a request was never answered in natural language.
+            requested_by_service.setdefault(service, set()).update(requested)
 
     facts: dict[str, str] = {}
     for service in sorted(facts_by_service):
