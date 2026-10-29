@@ -107,3 +107,25 @@ Local environment: Python 3.13.5, NumPy 2.3.5, NetworkX 3.6.1, scikit-learn 1.8.
 | B3 | 30 anchor updates; 3 updates broke selected contexts; 0 infeasible repairs; 0 bound violations; mean repair churn 1.3 vs reoptimization churn 1.3; mean utility regret 2.0 | One finite anchor-drift trace only |
 
 **Claim status:** EXPERIMENTALLY_SUPPORTED for these fixed seeds, pools and dependency versions. These tests do not validate actual business/legal contracts, establish production performance, or prove general theorems. The workflow uploads `REAL-DATASET-STRESS-RESULTS.json` as commit-specific evidence, including environment metadata and per-case metrics.
+
+
+## 10. Actual MultiWOZ 2.2 dialogue-corpus benchmark
+
+The actual-data runner is `experiments/context-contract-distribution-v0/stress_test_multiwoz.py`. It uses the official `budzianowski/multiwoz` repository at immutable commit `fe0c8e65cfcd8462bd33c86e35f21addc84ca82b`, and downloads only the MultiWOZ 2.2 **test** shards. The upstream data README documents a `dialogues_*.json` schema containing dialogue turns, per-service frames, belief-state slot values, and requested slots: [MultiWOZ 2.2 data documentation](https://github.com/budzianowski/multiwoz/blob/fe0c8e65cfcd8462bd33c86e35f21addc84ca82b/data/MultiWOZ_2.2/README.md). The repository describes MultiWOZ as a fully labelled human-human task-oriented dialogue corpus and distinguishes corrected dataset versions: [upstream repository README](https://github.com/budzianowski/multiwoz/blob/fe0c8e65cfcd8462bd33c86e35f21addc84ca82b/README.md).
+
+Source locking:
+- `test/dialogues_001.json`, expected Git blob SHA-1 `fd420005cc9dc259892f541b001d9d48608bd38d`.
+- `test/dialogues_002.json`, expected Git blob SHA-1 `8ce97bc17acc3d1105d92d8d936520b8c93892ba`.
+- The runner computes and records SHA-256 for each downloaded byte stream, and verifies Git's canonical blob hash before parsing.
+
+Mapping contract:
+1. One dialogue ID becomes one context.
+2. Only USER turn frames contribute state; SYSTEM frames are excluded to avoid leaking answer content into the state/need representation.
+3. Each frame's current `state.slot_values` replaces the previous snapshot for that service. A fully qualified slot key maps to a compact, sorted JSON string of the normalized distinct annotated value aliases, preserving all alternatives and eliminating source-list order dependence.
+4. `state.requested_slots` supplies the need keys. Local slot names are qualified with their service. Requests present in the final facts are removed from outstanding needs. No synthetic needs or random feature bins are introduced.
+5. Utility is explicitly a proxy equal to the number of distinct populated belief-state slots. It is not a claim about commercial value.
+6. A small number of fact-bearing dialogue contexts are held out of the candidate pool and used to derive partial anchors from their real values. An alternate real-data subset uses only contexts with both populated facts and unresolved annotated requests; no requests are fabricated to create scarcity.
+
+The CI result `MULTIWOZ-REAL-DATA-RESULTS.json` records dataset hashes, dialogue/context counts, graph density, selected-context and utility measures, a separately recomputed encoded-weight matching objective, raw-fact validation, a policy reconfiguration walk, anchor-update repair measurements, the scarce-request subset, versions, and runtime.
+
+**Interpretation boundary:** this is genuinely dataset-derived rather than a simulated feature table, but a dialogue is still a deterministic proxy for a contract context. MultiWOZ contains English task-oriented travel/service conversations, not business contracts or legal obligations. Passing establishes finite planner behavior on the pinned corpus; it does not establish production suitability, general optimality beyond the stated matching objective, or real-world contract semantics. Actual-data CI status is reported only after the pinned source has passed download integrity checks and the benchmark exits successfully.

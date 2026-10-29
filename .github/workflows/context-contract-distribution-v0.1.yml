@@ -23,7 +23,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -34,14 +34,16 @@ jobs:
       - name: Install planner dependency
         working-directory: experiments/context-contract-distribution-v0
         run: python -m pip install -r requirements.txt
-      - name: Compile module and runners
+      - name: Compile planner, actual-data loader, and runners
         run: |
           python -m py_compile \
             experiments/context-contract-distribution-v0/context_contract_distribution.py \
             experiments/context-contract-distribution-v0/run_demo.py \
             experiments/context-contract-distribution-v0/test_context_contract_distribution.py \
-            experiments/context-contract-distribution-v0/stress_test_real_datasets.py
-      - name: Run contract and matching properties
+            experiments/context-contract-distribution-v0/stress_test_real_datasets.py \
+            experiments/context-contract-distribution-v0/stress_test_multiwoz.py \
+            experiments/context-contract-distribution-v0/test_multiwoz_context_benchmark.py
+      - name: Run contract and context-conversion tests
         working-directory: experiments/context-contract-distribution-v0
         run: python -m unittest -v
       - name: Execute demo and validate emitted plan invariants
@@ -62,15 +64,20 @@ jobs:
               assert selected.isdisjoint(excluded)
               assert plan["input_digest_sha256"]
           PY
-      - name: Install pinned real-dataset benchmark dependencies
+      - name: Install supplementary synthetic-control dependencies
         working-directory: experiments/context-contract-distribution-v0
         run: python -m pip install -r requirements-benchmark.txt
-      - name: Run fixed-seed real-dataset and scarce-supply stress battery
+      - name: Run supplementary synthetic-control stress suites
         working-directory: experiments/context-contract-distribution-v0
         env:
           PYTHONHASHSEED: "0"
         run: python stress_test_real_datasets.py
-      - name: Upload plan and stress-test evidence
+      - name: Run actual MultiWOZ 2.2 dialogue-corpus benchmark
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: python stress_test_multiwoz.py --output MULTIWOZ-REAL-DATA-RESULTS.json
+      - name: Upload planner and dataset-derived evidence
         uses: actions/upload-artifact@v4
         with:
           name: context-contract-distribution-v0.1
@@ -78,3 +85,4 @@ jobs:
           path: |
             experiments/context-contract-distribution-v0/DEMO-PLAN-RESULTS.json
             experiments/context-contract-distribution-v0/REAL-DATASET-STRESS-RESULTS.json
+            experiments/context-contract-distribution-v0/MULTIWOZ-REAL-DATA-RESULTS.json
