@@ -31,6 +31,7 @@ jobs:
             experiments/machine-substrate-m2-representation-closure-v0/run_m2_representation_closure.py \
             experiments/machine-substrate-m2-exact-csr-closure-v0/run_exact_csr_closure.py \
             experiments/pareto-representation-closure-v0/run.py \
+            experiments/pareto-representation-closure-v0/test_native_predecessor.py \
             experiments/predecessor-frontier-integration-v0/cost_model.py \
             experiments/predecessor-frontier-integration-v0/test_cost_model.py \
             experiments/predecessor-frontier-integration-v0/run_cost_normalization.py \
@@ -52,3 +53,4 @@ jobs:
             experiments/pareto-representation-closure-v0/SUMMARY-V0.csv
             experiments/pareto-representation-closure-v0/RESOURCE-METADATA-V0.json
             experiments/pareto-representation-closure-v0/REPRESENTATIVE-SAMPLES-V0.csv
+            experiments/pareto-representation-closure-v0/NATIVE-PREDECESSOR-VALIDATION-V0.json

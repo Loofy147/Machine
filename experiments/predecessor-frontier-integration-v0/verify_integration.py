@@ -119,6 +119,16 @@ def main() -> None:
         vectors = row["events"]
         require(len({v["output_entries"] for v in vectors.values()}) == 1, "profiles returned different output cardinality")
 
+    pareto_test_dir = ROOT / "experiments/pareto-representation-closure-v0"
+    pareto_tests = subprocess.run(
+        [sys.executable, "-m", "unittest", "discover", "-s", str(pareto_test_dir), "-p", "test_native_predecessor.py", "-v"],
+        cwd=ROOT, text=True, capture_output=True, check=False,
+    )
+    require(
+        pareto_tests.returncode == 0,
+        "native-predecessor unit tests failed\n" + pareto_tests.stdout + "\n" + pareto_tests.stderr,
+    )
+
     primitive = execute_json(
         "experiments/machine-substrate-primitive-closure-v0/run_primitive_closure.py"
     )
@@ -146,6 +156,12 @@ def main() -> None:
 
     pareto = execute_json("experiments/pareto-representation-closure-v0/run.py")
     require(isinstance(pareto, list), "Pareto runner must emit a frontier list")
+    native_validation_path = ROOT / "experiments/pareto-representation-closure-v0/NATIVE-PREDECESSOR-VALIDATION-V0.json"
+    native_validation = json.loads(native_validation_path.read_text(encoding="utf-8"))
+    require(native_validation.get("status") == "PASS", "direct predecessor primitive validation failed")
+    require(native_validation.get("native_query_constructs_reverse_index") is False, "native query still constructs reverse index")
+    require(native_validation.get("total_target_fibers_checked") == 438, "unexpected direct-fiber validation count")
+    require(native_validation.get("total_mismatches") == 0, "direct primitive disagrees with relation reference")
     methods = {"forward", "native_bidi", "reverse_index", "policy"}
     require(len(pareto) == 12, "unexpected number of Pareto frontier rows")
     by_m: dict[int, dict[str, dict[str, Any]]] = {}
@@ -199,6 +215,7 @@ def main() -> None:
         ROOT / "experiments/machine-substrate-m2-representation-closure-v0/run_m2_representation_closure.py",
         ROOT / "experiments/machine-substrate-m2-exact-csr-closure-v0/run_exact_csr_closure.py",
         ROOT / "experiments/pareto-representation-closure-v0/run.py",
+        ROOT / "experiments/pareto-representation-closure-v0/test_native_predecessor.py",
     ]
     result = {
         "schema": "machine.predecessor-frontier-integration.v0.1",
@@ -261,6 +278,13 @@ def main() -> None:
             "specialized_access_cost": "SYMBOLIC / CALLER-SUPPLIED",
             "physical_cost_winner": "OPEN",
         },
+        "native_predecessor_implementation": {
+            "status": native_validation["status"],
+            "target_fibers_checked": native_validation["total_target_fibers_checked"],
+            "mismatches": native_validation["total_mismatches"],
+            "query_time_reverse_index_build": False,
+            "structural_tick_model": "one lookup event plus output entries; equal tick weights are not physical calibration",
+        },
         "source_sha256": {str(path.relative_to(ROOT)): sha256(path) for path in source_paths},
         "classification": {
             "absolute_computability_advantage": "NOT ESTABLISHED",
@@ -275,6 +299,7 @@ def main() -> None:
             "Finite deterministic fixtures only; no general closure theorem.",
             "The Pareto runner uses its declared structural tick model; unlike event classes are not converted to a scalar cost.",
             "The dedicated predecessor operation's physical latency/access cost is not empirically normalized; only symbolic break-even conditions are added.",
+            "The Pareto frontier is a declared structural-tick model and does not assign real hardware latency to lookup events.",
             "Local historical results are not substituted for this run's branch/commit-bound output.",
         ],
     }
@@ -289,6 +314,7 @@ def main() -> None:
         "exact_csr": "PASS",
         "pareto_frontier": "PASS",
         "cost_normalization": "PASS",
+        "native_predecessor_implementation": "PASS",
         "result_path": str(OUT.relative_to(ROOT)),
     }, indent=2))
 

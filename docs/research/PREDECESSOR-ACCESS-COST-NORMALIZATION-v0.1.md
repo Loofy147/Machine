@@ -85,3 +85,12 @@ The integration gate adds 10 unit tests covering dimensions, unknown profiles, o
 - **EXPERIMENTALLY_SUPPORTED:** predecessor representation closure in tested finite settings, preserved by the integration gate.
 - **OPEN:** physical implementation-specific (c_f), (c_r), and (c_p); canonical Machine primitive set; production winner under real query/update rates.
 - **NOT ESTABLISHED:** absolute computability advantage or universal superiority of a named mechanism.
+
+
+## Follow-up audit: hidden query-time construction corrected
+
+The inherited Pareto runner initially rebuilt reverse adjacency inside every `native_bidi` query while reporting no offline build or storage for that profile. Those builds were omitted from its query tick counter. Earlier frontier values from that runner are historical and overly favorable for the native profile; they are not normalized physical-cost evidence.
+
+The integration follow-up replaces that hidden build with an explicit direct-fiber primitive for the declared A/B/C graph family. It charges one direct-fiber access event and each returned predecessor entry. The reverse-index profile separately charges one bucket-access event and each returned entry. Equal structural tick weights are an explicit abstract comparison convention; they do not claim that physical native access and memory lookup have equal latency. Symbolic physical weights remain separate in `cost_model.py`.
+
+A regression test checks every target fiber against a reverse index for M in {3, 5, 30, 100, 300}, preserving duplicate predecessor sources from different labeled operations. Another test patches full edge enumeration and index construction to fail if either is called by the native query path.
