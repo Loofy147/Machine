@@ -15,7 +15,7 @@ from stress_test_multiwoz import (
 
 
 class MultiWOZConversionTests(unittest.TestCase):
-    def test_extracts_real_schema_belief_state_and_unresolved_requested_slots(self):
+    def test_extracts_real_schema_belief_state_and_requested_slots_absent_from_facts(self):
         dialogue = {
             "dialogue_id": "SNG00001.json",
             "services": ["hotel"],

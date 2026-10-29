@@ -12,7 +12,7 @@ This is an **experimental prototype**, not a production contract authority or re
 
 ## Actual-data benchmark: MultiWOZ 2.2
 
-`stress_test_multiwoz.py` downloads the pinned MultiWOZ 2.2 test shards from the official `budzianowski/multiwoz` repository, verifies each Git blob hash, and uses actual dialogue IDs, per-service belief-state slot values, and unresolved requested slots. One dialogue becomes one context; anchors come from held-out real dialogue states. No feature discretization or synthetic needs are used.
+`stress_test_multiwoz.py` downloads the pinned MultiWOZ 2.2 test shards from the official `budzianowski/multiwoz` repository, verifies each Git blob hash, and uses actual dialogue IDs, per-service belief-state slot values, and annotated requested-slot keys absent from final facts. One dialogue becomes one context; anchors come from held-out real dialogue states. No feature discretization or synthetic needs are used.
 
     python -m pip install -r requirements.txt
     python -m unittest -v

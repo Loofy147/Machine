@@ -124,8 +124,33 @@ Mapping contract:
 3. Each observed active/current frame's `state.slot_values` replaces the previous snapshot for that service. An inactive empty frame for an unrelated service does not erase earlier state. A fully qualified slot key maps to a compact, sorted JSON string of the normalized distinct annotated value aliases, preserving all alternatives and eliminating source-list order dependence.
 4. `state.requested_slots` supplies the need keys, accumulated across user turns. Local slot names are qualified with their service. Keys present in the final facts are removed from the resulting need set. No synthetic needs or random feature bins are introduced. Because system responses are excluded from facts, an annotated request absent from final user belief state is not proof that the system failed to answer it; it is a state-schema proxy only.
 5. Utility is explicitly a proxy equal to the number of distinct populated belief-state slots. It is not a claim about commercial value.
-6. A small number of fact-bearing dialogue contexts are held out of the candidate pool and used to derive partial anchors from their real values. An alternate real-data subset uses only contexts with both populated facts and unresolved annotated requests; no requests are fabricated to create scarcity.
+6. A small number of fact-bearing dialogue contexts are held out of the candidate pool and used to derive partial anchors from their real values. An alternate real-data subset uses only contexts with both populated facts and requested-slot keys absent from final facts; no requests are fabricated to create scarcity.
 
 The CI result `MULTIWOZ-REAL-DATA-RESULTS.json` records dataset hashes, dialogue/context counts, graph density, selected-context and utility measures, a separately recomputed encoded-weight matching objective, raw-fact validation, a policy reconfiguration walk, anchor-update repair measurements, the scarce-request subset, versions, and runtime.
 
 **Interpretation boundary:** this is genuinely dataset-derived rather than a simulated feature table, but a dialogue is still a deterministic proxy for a contract context. MultiWOZ contains English task-oriented travel/service conversations, not business contracts or legal obligations. Passing establishes finite planner behavior on the pinned corpus; it does not establish production suitability, general optimality beyond the stated matching objective, or real-world contract semantics. Actual-data CI status is reported only after the pinned source has passed download integrity checks and the benchmark exits successfully.
+
+
+### 10.1 Observed execution record
+
+**Status: PASS — commit `b22600d31e4afec73b5fbba4a02909858dedc989`, GitHub Actions run [40939263622](https://github.com/Loofy147/Machine/actions/runs/40939263622).**
+
+The complete workflow ran 25 unit/property tests, 8 supplementary synthetic-control suites, and all 5 MultiWOZ checks successfully. Runtime for the corpus benchmark itself was approximately 4.36 seconds after loading the data.
+
+| Measure | Observed result | Interpretation |
+|---|---:|---|
+| Pinned test split | 1,000 dialogues | Both source shards passed Git blob integrity verification |
+| Candidate contexts | 996 | Four actual dialogue contexts held out as real anchor sources |
+| Initial anchor | 3 annotated slot facts | Values taken from one held-out dialogue |
+| Anchor-filtered candidates | 524 | Eligible under the partial anchor |
+| Compatibility graph | 1,432 edges | Fact-consistent pairs with at least one annotated need/fact key match |
+| Exact planner result | 188 contexts / 94 pairs | Every selected context was paired once; raw facts and anchor were independently rechecked |
+| Utility proxy | 1,520 | Number of populated annotated slot facts across selected contexts |
+| Greedy edge baseline | 1,451 | The exact matching result was 69 utility points higher, about 4.8% for this run |
+| Policy reconfiguration | 3 moves | Slot-count vs request-priority policies selected different sets; the walk remained feasible |
+| Anchor replacements | 3 | Zero infeasible pair-drop repairs and zero (2k) repair-bound violations |
+| Request-focused subset | 250 contexts; 144 eligible; 160 edges; 28 selected | Sample limited to real contexts with facts and request keys absent from final annotated facts |
+
+The exact-objective reference agreed with the planner on both total utility and selected-context count. The emitted JSON artifact includes full input provenance, file sizes/hashes, environment versions, selected-set metrics, anchor-update details, and each check's outcome.
+
+The approximately 4.8% uplift is specific to this fixed corpus, conversion rule, anchor, and utility proxy. It is not a general performance guarantee. The request-focused subset is built from actual annotation keys but does not assert that a system response failed to fulfill them in natural language.

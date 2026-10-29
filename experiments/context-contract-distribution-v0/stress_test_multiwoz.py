@@ -446,8 +446,8 @@ def run_benchmark(
     _log(f"[{'PASS' if anchor_ok else 'FAIL'}] replacement anchors derived from held-out real dialogues preserve bounded pair-drop repair")
     _log(f"   {len(updates)} updates; repair infeasible {sum(not x['repair_feasible'] for x in updates)}; bound violations {sum(not x['repair_bound_holds'] for x in updates)}")
 
-    # A scarce-supply subset is made by selecting actual dialogues with at least one
-    # fact and one unresolved requested slot. No need is fabricated or randomly added.
+    # A scarce-supply subset uses actual contexts with facts and at least one
+    # requested-slot key absent from final facts. No need is fabricated.
     scarce_source = [context for context in pool if context.facts and context.needs]
     scarce_pool = rng.sample(scarce_source, min(250, len(scarce_source)))
     scarce_anchor_source = anchor_sources[-1]
@@ -460,7 +460,7 @@ def run_benchmark(
     scarce_valid, scarce_detail = independently_validate_plan(scarce_plan, {c.context_id: c for c in scarce_pool}, scarce_anchor)
     scarce_ok &= scarce_valid
     _log(f"[{'PASS' if scarce_ok else 'FAIL'}] actual-data scarce-supply subset: {scarce_detail}")
-    _log(f"   {len(scarce_pool)} contexts with observed facts and unresolved actual requests; eligible {scarce_graph.number_of_nodes()}, edges {scarce_graph.number_of_edges()}, selected {len(scarce_plan.selected_contexts)}")
+    _log(f"   {len(scarce_pool)} contexts with observed facts and requested-slot keys absent from final facts; eligible {scarce_graph.number_of_nodes()}, edges {scarce_graph.number_of_edges()}, selected {len(scarce_plan.selected_contexts)}")
 
     checks = [
         {"name": "full_test_split_plan_raw_fact_validation", "passed": independent_ok, "details": independent_detail},
@@ -496,7 +496,7 @@ def run_benchmark(
             "dialogues_loaded": len(dialogues),
             "contexts_after_limit": len(contexts),
             "contexts_with_facts": contexts_with_facts,
-            "contexts_with_unresolved_requests": contexts_with_needs,
+            "contexts_with_requested_slots_absent_from_final_facts": contexts_with_needs,
             "unique_services_in_source": dict(sorted(service_counts.items())),
             "held_out_anchor_dialogues": [context.context_id for context in anchor_sources],
             "initial_anchor_fact_count": len(anchor),
@@ -525,7 +525,7 @@ def run_benchmark(
         },
         "anchor_updates": updates,
         "scarce_request_pool": {
-            "source": "contexts with real facts and at least one unresolved dataset-annotated requested slot",
+            "source": "contexts with actual facts and at least one annotated requested-slot key absent from final facts",
             "contexts": len(scarce_pool),
             "eligible": scarce_graph.number_of_nodes(),
             "edges": scarce_graph.number_of_edges(),
