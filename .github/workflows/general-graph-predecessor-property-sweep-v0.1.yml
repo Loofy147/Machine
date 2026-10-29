@@ -1,0 +1,62 @@
+name: General Graph Predecessor Property Sweep v0.1
+
+on:
+  push:
+    branches:
+      - research/general-graph-predecessor-property-suite-v0.1
+  pull_request:
+    branches:
+      - integration/predecessor-frontier-contract-v0.1
+
+permissions:
+  contents: read
+
+jobs:
+  graph-property-sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile source and tests
+        run: |
+          python -m py_compile \
+            experiments/pareto-representation-closure-v0/general_graph_validation.py \
+            experiments/pareto-representation-closure-v0/test_general_graph_predecessor.py \
+            experiments/pareto-representation-closure-v0/test_general_graph_property_sweep.py \
+            experiments/pareto-representation-closure-v0/run_general_graph_property_sweep.py
+      - name: Existing adversarial regression suite
+        run: python -m unittest discover -s experiments/pareto-representation-closure-v0 -p test_general_graph_predecessor.py -v
+      - name: Generated graph property tests
+        run: python -m unittest discover -s experiments/pareto-representation-closure-v0 -p test_general_graph_property_sweep.py -v
+      - name: Generate reproducible sweep evidence
+        run: python experiments/pareto-representation-closure-v0/run_general_graph_property_sweep.py --seeds-per-family 40
+      - name: Verify evidence is complete and source-bound
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          root = Path("experiments/pareto-representation-closure-v0")
+          result = json.loads((root / "GENERAL-GRAPH-PREDECESSOR-PROPERTY-SWEEP-V0.1.json").read_text())
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          assert result["status"] == "PASS"
+          assert result["fixture_count"] == 120, result["fixture_count"]
+          assert result["family_counts"] == {"dense": 40, "medium": 40, "sparse": 40}
+          assert result["total_semantic_mismatches"] == 0
+          assert result["target_fibers_checked"] == result["state_count_total"]
+          assert result["backward_reachability_queries_checked"] == result["state_count_total"]
+          assert result["source_commit"] == head, (result["source_commit"], head)
+          assert result["query_path_builds_reverse_index"] is False
+          assert result["arbitrary_graph_native_fiber_implementation"] == "NOT CLAIMED"
+          print(json.dumps({"status":"PASS", "source_commit":head, "fixtures":result["fixture_count"], "states":result["state_count_total"], "edges":result["edge_count_total"], "fibers":result["target_fibers_checked"], "queries":result["backward_reachability_queries_checked"]}, indent=2))
+          PY
+      - name: Upload property-sweep evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: general-graph-predecessor-property-sweep-v0.1
+          if-no-files-found: error
+          path: experiments/pareto-representation-closure-v0/GENERAL-GRAPH-PREDECESSOR-PROPERTY-SWEEP-V0.1.json
