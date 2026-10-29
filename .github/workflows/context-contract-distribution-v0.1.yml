@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install pinned solver dependency
+      - name: Install planner dependency
         working-directory: experiments/context-contract-distribution-v0
         run: python -m pip install -r requirements.txt
       - name: Compile module and runners
@@ -39,7 +39,8 @@ jobs:
           python -m py_compile \
             experiments/context-contract-distribution-v0/context_contract_distribution.py \
             experiments/context-contract-distribution-v0/run_demo.py \
-            experiments/context-contract-distribution-v0/test_context_contract_distribution.py
+            experiments/context-contract-distribution-v0/test_context_contract_distribution.py \
+            experiments/context-contract-distribution-v0/stress_test_real_datasets.py
       - name: Run contract and matching properties
         working-directory: experiments/context-contract-distribution-v0
         run: python -m unittest -v
@@ -61,9 +62,19 @@ jobs:
               assert selected.isdisjoint(excluded)
               assert plan["input_digest_sha256"]
           PY
-      - name: Upload plan evidence
+      - name: Install pinned real-dataset benchmark dependencies
+        working-directory: experiments/context-contract-distribution-v0
+        run: python -m pip install -r requirements-benchmark.txt
+      - name: Run fixed-seed real-dataset and scarce-supply stress battery
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: python stress_test_real_datasets.py
+      - name: Upload plan and stress-test evidence
         uses: actions/upload-artifact@v4
         with:
           name: context-contract-distribution-v0.1
           if-no-files-found: error
-          path: experiments/context-contract-distribution-v0/DEMO-PLAN-RESULTS.json
+          path: |
+            experiments/context-contract-distribution-v0/DEMO-PLAN-RESULTS.json
+            experiments/context-contract-distribution-v0/REAL-DATASET-STRESS-RESULTS.json

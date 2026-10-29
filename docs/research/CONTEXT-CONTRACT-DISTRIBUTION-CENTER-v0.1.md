@@ -87,3 +87,23 @@ Do not wire this to a live control plane yet. Before promotion:
 4. Add persisted registry, approvals, idempotent plan IDs, and append-only decision/evidence records.
 5. Test stale-anchor handling, context-version conflicts, malformed inputs, and realistic portfolio scale.
 6. Define a separate authorization/dispatch gateway. The optimizer must remain a planner, not an unrestricted authority to enact selected contracts.
+
+
+## 9. Real-dataset stress battery (fixed seed 2026)
+
+A fixed-seed stress runner is located at `experiments/context-contract-distribution-v0/stress_test_real_datasets.py`. It loads the bundled Wine (178×13), Diabetes (442×10), Breast Cancer (569×30), and Digits (1797×64) feature matrices; generated context pools remain synthetic partial observations. Each continuous feature is discretized into three quantile bins, then context facts, needs and anchors are sampled. The bottleneck follow-up makes supply scarcer using Zipf-skewed observed features and more needs.
+
+Local environment: Python 3.13.5, NumPy 2.3.5, NetworkX 3.6.1, scikit-learn 1.8.0; seed 2026; `PYTHONHASHSEED=0`. The repeatable run completed all eight suite gates in about 7.9 seconds. Per-case numerical metrics remained stable on repeated local runs after the sampled matching edges were sorted; timings naturally vary.
+
+| Suite | Observed result | Interpretation boundary |
+|---|---|---|
+| H1 | 16 cases; 0 objective mismatches; 0 invalid swarms; mean uplift over greedy edge-pair baseline 4.3% | Matching-reference comparison over synthetic contexts derived from four bundled datasets |
+| H2 | 3 adversarial anchor cases passed | Includes an impossible anchor and restrictive full-row anchors |
+| H3 | 12 walks; 7 non-trivial; 0 stuck; 0 non-pair moves; 0 incorrect path lengths | Finite feasible-family reconfiguration checks |
+| H4 | 40 anchor updates; 0 infeasible repairs; 0 bound violations; mean repair churn 3.9 vs reoptimization churn 2.7; mean utility regret 8.0 | Repair is feasible, not necessarily optimal; churn/regret depend on the generated trace |
+| H5 | At matrix sizes 4, 8, 12, 16, 20, 24, fixed-sign matrices were singular in 1, 4, 7, 3, 2, 2 of 25 trials respectively; random modular encoding was singular in 0 of 150 trials | No singular random samples in a finite test is not a guarantee; matching remains the decision mechanism |
+| B1 | 6 scarce-supply cases; 0 objective mismatches; 0 invalid swarms; selected fraction 86–100%; mean uplift over greedy edge-pair baseline 14.8% | Synthetic scarcity is non-trivial in at least one case; some other cases still match every eligible context |
+| B2 | 18 walks; 16 non-trivial; 0 stuck; 0 non-pair moves; 0 incorrect path lengths; mean 4.6 moves on non-trivial walks | Weight changes selection while feasibility is tested after each move |
+| B3 | 30 anchor updates; 3 updates broke selected contexts; 0 infeasible repairs; 0 bound violations; mean repair churn 1.3 vs reoptimization churn 1.3; mean utility regret 2.0 | One finite anchor-drift trace only |
+
+**Claim status:** EXPERIMENTALLY_SUPPORTED for these fixed seeds, pools and dependency versions. These tests do not validate actual business/legal contracts, establish production performance, or prove general theorems. The workflow uploads `REAL-DATASET-STRESS-RESULTS.json` as commit-specific evidence, including environment metadata and per-case metrics.
