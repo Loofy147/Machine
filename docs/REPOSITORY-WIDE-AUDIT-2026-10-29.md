@@ -183,3 +183,29 @@ For each workstream, record exact branch + head SHA, exact command, dependency v
 ## 7. Revalidation trigger
 
 Re-run this audit after PR #26 is merged/closed, issue #22 is resolved, issue #5's branch/spec ledger is committed, or the default branch receives executable code/CI changes. Until then, this document records a dated state, not a timeless declaration about the repository.
+
+
+## 8. Revalidation addendum — 2026-10-29, after remediation work
+
+This addendum supplements the original audit snapshot above; it does not rewrite its point-in-time counts or make the PRs canonical.
+
+### v0.4 source restoration
+
+- The historical pack was recovered and SHA-256 verified: 68e065bff5ca06aaf180ebf062088e98764358454c6e3c2accfa291025b6b315.
+- Its core.py source hash is 0f4129bf2f80682da0f90f85144fcb58dd74493bf47f72f005ba99031dc38673 and matches the archive manifest.
+- Draft PR #29 restores that exact file adjacent to the existing runner and adds source-bound regression coverage.
+- [Latest PR CI](https://github.com/Loofy147/Machine/actions/runs/40932623994) passes: three test cases, canonical post-edge regression, and the exact n=3 enumeration. The 233,472 n=3 schedule runs reproduce the historical weighted_n3 result object exactly.
+- The current repository runner and canonical fixture are not byte-identical to the copies in the historical pack; both hash identities are tracked separately. The n=4 exhaustive run, random n=4 schedules, and matched simple/multigraph suite have not been freshly reproduced by this gate.
+- Issue #22 remains open until PR #29 is reviewed and merged; this does not upgrade all historic v0.4 claims.
+
+### General-graph predecessor property sweep
+
+- Draft PR #28 adds generated sparse, medium, and dense graph families: 120 fixtures, 2,376 states, 15,585 labeled edges, 2,376 target-fiber checks, and 2,376 backward-reachability queries.
+- [Latest PR CI](https://github.com/Loofy147/Machine/actions/runs/40930765250) passes with zero semantic mismatches. The provider remains supplied; no universal native predecessor implementation or physical-cost advantage is claimed.
+- PR #28 is stacked behind PR #26 and must be revalidated after the base integration is merged/rebased.
+
+### Branch and PR inventory refresh
+
+After PRs #27, #28, and #29 were opened, the live branch inventory showed 36 refs and 29 distinct head commits, with 12 open PRs. The new branch-role and PR-dependency ledger is available in docs/research/BRANCH-ROLE-AND-PR-DEPENDENCY-LEDGER-v0.1.md on the audit branch and records the current grouping and safe order.
+
+PR #26, PR #27, PR #28, and PR #29 remain open and unmerged. Main remains at 2d5f6bd0513ecd2d9f29f395d4d95c90849b2648. No branch was deleted and no research line was silently promoted.
