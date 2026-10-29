@@ -1,0 +1,43 @@
+{
+  "schema": "machine.v04-source-provenance.v0.1",
+  "status": "SOURCE_RECOVERED_N3_REPRODUCED",
+  "historical_pack": {
+    "filename": "bidirectional_grounded_research_pack_v4.zip",
+    "sha256": "68e065bff5ca06aaf180ebf062088e98764358454c6e3c2accfa291025b6b315",
+    "manifest_path_in_pack": "bidirectional_grounded_research_pack/SHA256SUMS_v4",
+    "manifest_sha256": "45bd5243b30c8d0715a62d6fa35cbc29833c46d2a0c1ad600845e06ddd7b6db6",
+    "core_path_in_pack": "bidirectional_grounded_research_pack/core.py",
+    "core_sha256": "0f4129bf2f80682da0f90f85144fcb58dd74493bf47f72f005ba99031dc38673"
+  },
+  "restored_repository_path": "experiments/bidirectional-grounded-v0.4/core.py",
+  "historical_bindings": {
+    "run_v0_4.py": "fda87949728e25cda2073eafd6f7c4e2984af714e0c98c7c93fcfec8e2ce48f6",
+    "RESULTS-V0.4.json": "39dba82d7c66b606f005aa78d8ef00174d6be2a2a271012d32c61c359dc7b253",
+    "canonical_postedge_regression_v4.json": "91b7edab17681d7757cfab9edfa8199191c6ae488f1c71e728c6713c439f3f7c"
+  },
+  "current_repository_bindings": {
+    "core.py": "0f4129bf2f80682da0f90f85144fcb58dd74493bf47f72f005ba99031dc38673",
+    "run_v0_4.py": "8fb20db1f8a3bee9c127209e0a32412e10386c625e81b1ceeb98677a5bfa3c63",
+    "RESULTS-V0.4.json": "39dba82d7c66b606f005aa78d8ef00174d6be2a2a271012d32c61c359dc7b253",
+    "canonical_postedge_regression_v4.json": "23929aa9c6a36270b2c5e0a6d310ea4fe69add954c7efbc9008985e44c5304cc"
+  },
+  "reproduced_scope": {
+    "canonical_post_edge_regression": "PASS",
+    "weighted_n3_exact_enumeration": "PASS",
+    "schedule_runs": 233472,
+    "active_guard_failures": 0,
+    "naive_finite_failures": 3840,
+    "historical_weighted_n3_metrics_exact_match": true
+  },
+  "not_reproduced_by_this_gate": [
+    "exhaustive weighted n=4 graph space",
+    "random n=4 all-schedule stress",
+    "matched simple/multigraph sweep"
+  ],
+  "non_claims": [
+    "universal active-guard correctness",
+    "arbitrary-heuristic correctness",
+    "physical performance advantage",
+    "all historical v0.4 outputs independently reproduced"
+  ]
+}

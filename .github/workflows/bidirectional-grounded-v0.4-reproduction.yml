@@ -1,0 +1,64 @@
+name: Bidirectional Grounded v0.4 Source Reproduction
+
+on:
+  push:
+    branches:
+      - fix/restore-v04-core-repro-v0.1
+      - research/active-frontier-adversarial-v0
+  pull_request:
+    branches:
+      - research/active-frontier-adversarial-v0
+      - research/active-frontier-program-v0
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v04-reproduction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile recovered core and reproduction harness
+        run: |
+          python -m py_compile \
+            experiments/bidirectional-grounded-v0.4/core.py \
+            experiments/bidirectional-grounded-v0.4/run_v0_4.py \
+            experiments/bidirectional-grounded-v0.4/test_v04_reproducibility.py \
+            experiments/bidirectional-grounded-v0.4/reproduce_v04_n3.py
+      - name: Canonical post-edge regression and source hashes
+        run: python -m unittest discover -s experiments/bidirectional-grounded-v0.4 -p test_v04_reproducibility.py -v
+      - name: Reproduce exact historical v0.4 weighted n=3 suite
+        run: |
+          python experiments/bidirectional-grounded-v0.4/reproduce_v04_n3.py \
+            --out "$RUNNER_TEMP/v04-n3-reproduction.json"
+      - name: Assert receipt is tied to exact checkout
+        run: |
+          python - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          receipt_path = Path(os.environ["RUNNER_TEMP"]) / "v04-n3-reproduction.json"
+          receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          assert receipt["status"] == "PASS"
+          assert receipt["source_commit"] == head
+          assert receipt["matched_historical_weighted_n3"] is True
+          assert receipt["result"]["schedule_runs"] == 233472
+          assert receipt["result"]["active_guard_failures"] == 0
+          assert receipt["result"]["naive_finite_failures"] == 3840
+          print(json.dumps({"status": "PASS", "source_commit": head, "suite": "weighted_n3", "schedule_runs": receipt["result"]["schedule_runs"]}, indent=2))
+          PY
+      - name: Upload source-bound reproduction receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: bidirectional-grounded-v0.4-n3-reproduction
+          if-no-files-found: error
+          path: ${{ runner.temp }}/v04-n3-reproduction.json
