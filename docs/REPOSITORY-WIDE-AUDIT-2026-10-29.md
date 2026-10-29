@@ -206,6 +206,6 @@ This addendum supplements the original audit snapshot above; it does not rewrite
 
 ### Branch and PR inventory refresh
 
-After PRs #27, #28, and #29 were opened, the live branch inventory showed 36 refs and 29 distinct head commits, with 12 open PRs. The new branch-role and PR-dependency ledger is available in docs/research/BRANCH-ROLE-AND-PR-DEPENDENCY-LEDGER-v0.1.md on the audit branch and records the current grouping and safe order.
+After PRs #27–#30 were opened, the live branch inventory showed 37 refs and 30 distinct head commits, with 13 open PRs. The branch-role and PR-dependency ledger is available in docs/research/BRANCH-ROLE-AND-PR-DEPENDENCY-LEDGER-v0.1.md on the audit branch and records the current grouping and safe order.
 
-PR #26, PR #27, PR #28, and PR #29 remain open and unmerged. Main remains at 2d5f6bd0513ecd2d9f29f395d4d95c90849b2648. No branch was deleted and no research line was silently promoted.
+PRs #26–#30 remain open and unmerged. Main remains at 2d5f6bd0513ecd2d9f29f395d4d95c90849b2648. No branch was deleted and no research line was silently promoted.
