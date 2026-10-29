@@ -107,6 +107,34 @@ class MultiWOZConversionTests(unittest.TestCase):
         self.assertEqual(set(context.needs), {"train-price"})
         self.assertNotIn("train-trainid", context.needs)
 
+    def test_inactive_empty_service_frame_does_not_erase_prior_state_or_request(self):
+        context = dialogue_to_context({
+            "dialogue_id": "SNG00004.json",
+            "turns": [
+                {"speaker": "USER", "frames": [{
+                    "service": "hotel",
+                    "state": {
+                        "active_intent": "find_hotel",
+                        "requested_slots": ["phone"],
+                        "slot_values": {"hotel-area": ["north"]},
+                    },
+                }]},
+                {"speaker": "USER", "frames": [
+                    {
+                        "service": "hotel",
+                        "state": {"active_intent": "NONE", "requested_slots": [], "slot_values": {}},
+                    },
+                    {
+                        "service": "train",
+                        "state": {"active_intent": "find_train", "requested_slots": [], "slot_values": {"train-destination": ["Ely"]}},
+                    },
+                ]},
+            ],
+        })
+        self.assertEqual(context.facts["hotel-area"], '["north"]')
+        self.assertEqual(context.facts["train-destination"], '["ely"]')
+        self.assertIn("hotel-phone", context.needs)
+
     def test_multiwoz_list_valued_aliases_are_canonicalized_as_an_order_independent_set(self):
         self.assertEqual(_scalar_values([" 20:00 ", "after 19:45", "20:00", None]), ["20:00", "after 19:45".casefold()])
         self.assertEqual(_scalar_values(["expensive", "CHEAP"]), ["cheap", "expensive"])

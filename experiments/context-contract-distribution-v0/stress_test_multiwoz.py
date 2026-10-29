@@ -342,21 +342,52 @@ def run_benchmark(
     _log(f"[{'PASS' if objective_ok else 'FAIL'}] planner objective equals separately recomputed encoded-weight matching objective")
     _log(f"   eligible {graph.number_of_nodes()}, edges {graph.number_of_edges()}, selected {len(plan.selected_contexts)}, utility {plan.total_utility}; greedy-edge utility {greedy_utility}; planner {plan_seconds:.2f}s")
 
-    # A second objective uses only actual annotated unresolved request counts. The
-    # selected sets and their transition path are checked on a real-data subpool.
+    # Reconfiguration must be non-trivial to count as a positive test. Search
+    # deterministic real-data subpools/anchors until the two data-derived utility
+    # policies actually produce different selected sets; never pass on a zero-step walk.
     walk_pool_source = [context for context in pool if context.facts or context.needs]
-    walk_pool = rng.sample(walk_pool_source, min(60, len(walk_pool_source)))
-    walk_anchor_source = next((item for item in anchor_sources[1:] if len(item.facts) >= 1), anchor_sources[0])
-    walk_anchor = anchor_from_context(walk_anchor_source, rng)
-    facts_policy = [ContractContext(c.context_id, c.facts, c.needs, utility=len(c.facts)) for c in walk_pool]
-    requests_policy = [ContractContext(c.context_id, c.facts, c.needs, utility=len(c.needs)) for c in walk_pool]
-    p_facts = plan_distribution(facts_policy, walk_anchor)
-    p_requests = plan_distribution(requests_policy, walk_anchor)
-    walk_graph = build_compatibility_graph(walk_pool, walk_anchor)
-    walk = family_walk(walk_graph, set(p_facts.selected_contexts), set(p_requests.selected_contexts))
-    walk_ok = walk["connected"] and walk["all_moves_are_two_context"] and walk["optimal_path_length"]
-    _log(f"[{'PASS' if walk_ok else 'FAIL'}] real-context swarm reconfiguration between slot-coverage and unresolved-request utility policies")
-    _log(f"   subpool {len(walk_pool)}, transitions {len(walk['moves'])}, non-trivial {walk['nontrivial']}, checked subsets {walk['checked_sets']}")
+    walk: dict[str, Any] = {
+        "connected": False,
+        "moves": [],
+        "checked_sets": 0,
+        "all_moves_are_two_context": False,
+        "optimal_path_length": False,
+        "nontrivial": False,
+    }
+    walk_pool: list[ContractContext] = []
+    walk_attempts = 0
+    walk_found_difference = False
+    for attempt in range(1, 21):
+        walk_attempts = attempt
+        walk_pool = rng.sample(walk_pool_source, min(80, len(walk_pool_source)))
+        walk_anchor_source = anchor_sources[attempt % len(anchor_sources)]
+        walk_anchor = anchor_from_context(walk_anchor_source, rng)
+        facts_policy = [ContractContext(c.context_id, c.facts, c.needs, utility=len(c.facts)) for c in walk_pool]
+        # Requests receive priority, while observed slot count remains a deterministic
+        # tie-breaker. Both quantities come from the actual annotated dialogue.
+        requests_policy = [
+            ContractContext(c.context_id, c.facts, c.needs, utility=100 * len(c.needs) + len(c.facts))
+            for c in walk_pool
+        ]
+        p_facts = plan_distribution(facts_policy, walk_anchor)
+        p_requests = plan_distribution(requests_policy, walk_anchor)
+        first = set(p_facts.selected_contexts)
+        target = set(p_requests.selected_contexts)
+        if first == target:
+            continue
+        walk_found_difference = True
+        walk_graph = build_compatibility_graph(walk_pool, walk_anchor)
+        walk = family_walk(walk_graph, first, target)
+        break
+    walk_ok = (
+        walk_found_difference
+        and walk["connected"]
+        and walk["nontrivial"]
+        and walk["all_moves_are_two_context"]
+        and walk["optimal_path_length"]
+    )
+    _log(f"[{'PASS' if walk_ok else 'FAIL'}] non-trivial real-context reconfiguration between facts- and request-priority policies")
+    _log(f"   attempts {walk_attempts}, subpool {len(walk_pool)}, different selected sets {walk_found_difference}, transitions {len(walk['moves'])}, connected {walk['connected']}, checked subsets {walk['checked_sets']}")
 
     # Anchor updates use other held-out real dialogue states. Repair drops each old
     # selected pair touching a context excluded by the new real anchor.

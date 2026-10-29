@@ -121,8 +121,8 @@ Source locking:
 Mapping contract:
 1. One dialogue ID becomes one context.
 2. Only USER turn frames contribute state; SYSTEM frames are excluded to avoid leaking answer content into the state/need representation.
-3. Each frame's current `state.slot_values` replaces the previous snapshot for that service. A fully qualified slot key maps to a compact, sorted JSON string of the normalized distinct annotated value aliases, preserving all alternatives and eliminating source-list order dependence.
-4. `state.requested_slots` supplies the need keys. Local slot names are qualified with their service. Requests present in the final facts are removed from outstanding needs. No synthetic needs or random feature bins are introduced.
+3. Each observed active/current frame's `state.slot_values` replaces the previous snapshot for that service. An inactive empty frame for an unrelated service does not erase earlier state. A fully qualified slot key maps to a compact, sorted JSON string of the normalized distinct annotated value aliases, preserving all alternatives and eliminating source-list order dependence.
+4. `state.requested_slots` supplies the need keys, accumulated across user turns. Local slot names are qualified with their service. Keys present in the final facts are removed from the resulting need set. No synthetic needs or random feature bins are introduced. Because system responses are excluded from facts, an annotated request absent from final user belief state is not proof that the system failed to answer it; it is a state-schema proxy only.
 5. Utility is explicitly a proxy equal to the number of distinct populated belief-state slots. It is not a claim about commercial value.
 6. A small number of fact-bearing dialogue contexts are held out of the candidate pool and used to derive partial anchors from their real values. An alternate real-data subset uses only contexts with both populated facts and unresolved annotated requests; no requests are fabricated to create scarcity.
 
