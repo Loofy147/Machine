@@ -1,6 +1,8 @@
 # Pareto Representation Closure v0 — Results
 
-**Status:** EXPERIMENTALLY_SUPPORTED / LOCAL REPLAY / NOT YET CI-VERIFIED
+**Status:** HISTORICAL SNAPSHOT — SUPERSEDED FOR NATIVE-PREDECESSOR TICK COUNTS
+
+> **Audit correction (2026-10-29):** The original `native_bidi` implementation rebuilt reverse adjacency inside each query, while omitting that construction from both offline and online costs. The tables below are retained as provenance for the original exploratory run, but their native-predecessor resource point is not valid under full accounting. Use the current-commit CI artifact and `NATIVE-PREDECESSOR-VALIDATION-V0.json` for the corrected structural-tick experiment.
 **Branch:** `research/evidence-disposition-v0`
 **Code:** `experiments/pareto-representation-closure-v0/run.py`
 

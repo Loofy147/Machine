@@ -217,10 +217,19 @@ def main() -> None:
         ROOT / "experiments/pareto-representation-closure-v0/run.py",
         ROOT / "experiments/pareto-representation-closure-v0/test_native_predecessor.py",
     ]
+    checked_out_commit_result = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT, text=True, capture_output=True, check=True,
+    )
+    checked_out_commit = checked_out_commit_result.stdout.strip()
+    require(len(checked_out_commit) == 40, "could not establish exact checked-out commit SHA")
+
     result = {
         "schema": "machine.predecessor-frontier-integration.v0.1",
         "status": "PASS",
-        "source_commit": os.environ.get("GITHUB_SHA", "LOCAL_UNPINNED"),
+        "source_commit": checked_out_commit,
+        "github_event_sha": os.environ.get("GITHUB_SHA", "LOCAL_UNSET"),
+        "checkout_ref": os.environ.get("GITHUB_REF", "LOCAL_UNSET"),
         "python": sys.version.split()[0],
         "contract": {
             "v0.1_validation": "PASS",
