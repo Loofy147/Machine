@@ -23,6 +23,8 @@ class GraphFixture:
     name: str
     state_count: int
     edges: tuple[Edge, ...]
+    family: str = "fixed"
+    seed: int | None = None
 
     def __post_init__(self) -> None:
         if self.state_count < 1:
@@ -270,6 +272,167 @@ def validate_suite() -> dict:
         "interpretation_limit": (
             "Finite contract verification of a supplied fiber provider; not proof "
             "of a universal direct-predecessor algorithm or cost advantage."
+        ),
+        "fixtures": graph_rows,
+    }
+
+
+def generated_sweep_fixtures(seeds_per_family: int = 40) -> tuple[GraphFixture, ...]:
+    """Generate deterministic sparse, medium, and dense directed multigraphs.
+
+    Each graph deliberately includes a parallel labeled edge pair, a self-loop,
+    a zero-indegree state with an outgoing edge, and a separate isolated state.
+    Random edges never enter the zero-indegree state or touch the isolated state.
+    The returned fixtures are inputs to a finite differential test, not evidence
+    of a universal native predecessor implementation.
+    """
+    if isinstance(seeds_per_family, bool) or not isinstance(seeds_per_family, int):
+        raise ValueError("seeds_per_family must be a positive integer")
+    if seeds_per_family < 1 or seeds_per_family > 500:
+        raise ValueError("seeds_per_family must be in [1, 500]")
+
+    families = (("sparse", 0.04), ("medium", 0.22), ("dense", 0.62))
+    graphs: list[GraphFixture] = []
+    for family_index, (family, probability) in enumerate(families):
+        for ordinal in range(seeds_per_family):
+            seed = 20261029 + family_index * 100_000 + ordinal
+            rng = random.Random(seed)
+            state_count = 5 + ((seed * 7 + ordinal * 13) % 28)
+            prefix = f"sweep-{family}-seed-{seed}-n-{state_count}"
+            zero_indegree = state_count - 2
+            isolated = state_count - 1
+            edges: list[Edge] = [
+                Edge(0, 0, f"{prefix}-forced-self-loop"),
+                Edge(0, 1, f"{prefix}-forced-parallel-alpha"),
+                Edge(0, 1, f"{prefix}-forced-parallel-beta"),
+                Edge(zero_indegree, 1, f"{prefix}-forced-zero-indegree-source"),
+            ]
+
+            # The random subgraph ranges over [0, state_count-3]. This keeps
+            # zero_indegree free of incoming edges and isolated completely unused.
+            for source in range(state_count - 2):
+                for target in range(state_count - 2):
+                    if rng.random() < probability:
+                        label = f"{prefix}-edge-{source}-{target}-{len(edges)}"
+                        edges.append(Edge(source, target, label))
+                        if rng.random() < 0.12:
+                            edges.append(Edge(source, target, label + "-parallel"))
+
+            graphs.append(GraphFixture(
+                name=prefix,
+                state_count=state_count,
+                edges=tuple(edges),
+                family=family,
+                seed=seed,
+            ))
+    return tuple(graphs)
+
+
+def validate_generated_sweep(seeds_per_family: int = 40) -> dict:
+    """Differentially test every target fiber and reverse-reachability query."""
+    graph_rows = []
+    total_states = total_edges = total_fibers = total_queries = 0
+    total_mismatches = total_parallel_pairs = total_parallel_excess = 0
+    total_loops = total_zero_indegree = total_isolated = 0
+    family_counts = {name: 0 for name in ("sparse", "medium", "dense")}
+
+    for graph in generated_sweep_fixtures(seeds_per_family):
+        reference = build_reference_reverse_index(graph)
+        provider = DeclaredFiberProvider(build_declared_fiber_rows(graph))
+        mismatches = 0
+
+        for target in range(graph.state_count):
+            if Counter(provider.predecessors(target)) != Counter(reference[target]):
+                mismatches += 1
+            if backward_reachable(provider, target) != backward_reachable_reference(
+                reference, target
+            ):
+                mismatches += 1
+
+        indegree = [len(row) for row in reference]
+        outdegree = [0] * graph.state_count
+        endpoint_counts = Counter((edge.source, edge.target) for edge in graph.edges)
+        for edge in graph.edges:
+            outdegree[edge.source] += 1
+        parallel_pairs = sum(count > 1 for count in endpoint_counts.values())
+        parallel_excess = sum(max(0, count - 1) for count in endpoint_counts.values())
+        loops = sum(edge.source == edge.target for edge in graph.edges)
+        zero_indegree = [state for state, degree in enumerate(indegree) if degree == 0]
+        isolated_states = [
+            state for state in range(graph.state_count)
+            if indegree[state] == 0 and outdegree[state] == 0
+        ]
+
+        if len({edge.label for edge in graph.edges}) != len(graph.edges):
+            mismatches += 1
+        if not parallel_pairs or not loops or not zero_indegree or not isolated_states:
+            mismatches += 1
+
+        if mismatches:
+            raise AssertionError(f"{graph.name}: {mismatches} property-sweep mismatches")
+        if provider.lookup_calls < graph.state_count * 2:
+            raise AssertionError(f"{graph.name}: provider lookup counter undercounts")
+        if provider.returned_entries < len(graph.edges):
+            raise AssertionError(f"{graph.name}: returned-edge counter undercounts")
+
+        graph_rows.append({
+            "name": graph.name,
+            "family": graph.family,
+            "seed": graph.seed,
+            "state_count": graph.state_count,
+            "edge_count": len(graph.edges),
+            "target_fibers_checked": graph.state_count,
+            "backward_reachability_queries_checked": graph.state_count,
+            "semantic_mismatches": mismatches,
+            "parallel_endpoint_pairs": parallel_pairs,
+            "parallel_edge_excess": parallel_excess,
+            "self_loop_edges": loops,
+            "zero_indegree_states": zero_indegree,
+            "isolated_states": isolated_states,
+            "weak_component_count": weak_component_count(graph),
+            "provider_lookup_calls": provider.lookup_calls,
+            "provider_returned_entries": provider.returned_entries,
+        })
+        family_counts[graph.family] += 1
+        total_states += graph.state_count
+        total_edges += len(graph.edges)
+        total_fibers += graph.state_count
+        total_queries += graph.state_count
+        total_mismatches += mismatches
+        total_parallel_pairs += parallel_pairs
+        total_parallel_excess += parallel_excess
+        total_loops += loops
+        total_zero_indegree += len(zero_indegree)
+        total_isolated += len(isolated_states)
+
+    return {
+        "schema": "machine.general-graph-predecessor-property-sweep.v0.1",
+        "status": "PASS",
+        "seed_scheme": "seed=20261029+family_index*100000+ordinal",
+        "seeds_per_family": seeds_per_family,
+        "family_counts": family_counts,
+        "fixture_count": len(graph_rows),
+        "state_count_total": total_states,
+        "edge_count_total": total_edges,
+        "target_fibers_checked": total_fibers,
+        "backward_reachability_queries_checked": total_queries,
+        "total_semantic_mismatches": total_mismatches,
+        "parallel_endpoint_pairs": total_parallel_pairs,
+        "parallel_edge_excess": total_parallel_excess,
+        "self_loop_edges": total_loops,
+        "zero_indegree_state_count": total_zero_indegree,
+        "isolated_state_count": total_isolated,
+        "disconnected_fixture_count": sum(
+            row["weak_component_count"] > 1 for row in graph_rows
+        ),
+        "reference_index_builds_for_validation": len(graph_rows),
+        "query_path_builds_reverse_index": False,
+        "arbitrary_graph_native_fiber_implementation": "NOT CLAIMED",
+        "physical_access_cost": "SYMBOLIC / CALLER-SUPPLIED; no default scalar lookup cost",
+        "interpretation_limit": (
+            "Finite deterministic differential validation of a supplied fiber provider. "
+            "It is not proof of a universal direct-predecessor algorithm, computational "
+            "advantage, or physical-cost winner."
         ),
         "fixtures": graph_rows,
     }
