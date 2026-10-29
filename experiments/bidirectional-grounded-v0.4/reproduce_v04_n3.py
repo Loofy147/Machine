@@ -15,9 +15,9 @@ ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent.parent
 SOURCE_SHA256 = {
     "core.py": "0f4129bf2f80682da0f90f85144fcb58dd74493bf47f72f005ba99031dc38673",
-    "run_v0_4.py": "fda87949728e25cda2073eafd6f7c4e2984af714e0c98c7c93fcfec8e2ce48f6",
+    "run_v0_4.py": "8fb20db1f8a3bee9c127209e0a32412e10386c625e81b1ceeb98677a5bfa3c63",
     "RESULTS-V0.4.json": "39dba82d7c66b606f005aa78d8ef00174d6be2a2a271012d32c61c359dc7b253",
-    "canonical_postedge_regression_v4.json": "91b7edab17681d7757cfab9edfa8199191c6ae488f1c71e728c6713c439f3f7c",
+    "canonical_postedge_regression_v4.json": "23929aa9c6a36270b2c5e0a6d310ea4fe69add954c7efbc9008985e44c5304cc",
 }
 EXPECTED_N3 = {
     "graph_states": 4096,
