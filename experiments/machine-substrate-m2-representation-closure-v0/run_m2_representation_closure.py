@@ -210,9 +210,11 @@ def run():
     cases = 0
     work_a1 = 0
     work_a2 = 0
+    updates_total = 0
 
     for family, (n, k) in enumerate(configs):
         for rep in range(20):
+            updates_total += max(12, n * 2)
             ok, work = one_case(n, k, 20260928 + family * 1000 + rep)
             cases += 1
             if not ok:
@@ -225,6 +227,7 @@ def run():
         "schema": "machine.substrate-m2-representation-closure.v0.1",
         "status": "EXECUTED",
         "cases": cases,
+        "updates_total": updates_total,
         "failures": failures,
         "semantic_and_invariant_failures": failures,
         "aggregate_generic_rw_update_work": work_a1,
