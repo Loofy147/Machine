@@ -101,7 +101,7 @@ def make_anchor(bins, k):
     if k == 0:
         return {}
     row = rng.randrange(len(bins))
-    return {f"f{j}": int(bins[row, j]) for j in rng.sample(range(bins.shape[1]), k)}}
+    return {f"f{j}": int(bins[row, j]) for j in rng.sample(range(bins.shape[1]), k)}
 
 
 def graph_for(contexts, anchor):
