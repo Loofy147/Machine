@@ -284,7 +284,7 @@ def bidirectional_dijkstra(
             if u in closedB or d != gB[u]:
                 continue
             closedB.add(u)
-            expanded_B.add(u)
+            expandedB.add(u)
             N += 1
             if u in gF:
                 mu = min(mu, d + gF[u])
