@@ -7,6 +7,7 @@ on:
     paths:
       - experiments/context-contract-distribution-v0/**
       - docs/research/CONTEXT-CONTRACT-DISTRIBUTION-CENTER-v0.1.md
+      - docs/research/MULTIWOZ-ANCHOR-UTILITY-SENSITIVITY.md
       - .github/workflows/context-contract-distribution-v0.1.yml
   pull_request:
     branches:
@@ -15,6 +16,7 @@ on:
     paths:
       - experiments/context-contract-distribution-v0/**
       - docs/research/CONTEXT-CONTRACT-DISTRIBUTION-CENTER-v0.1.md
+      - docs/research/MULTIWOZ-ANCHOR-UTILITY-SENSITIVITY.md
       - .github/workflows/context-contract-distribution-v0.1.yml
 
 permissions:
@@ -34,7 +36,7 @@ jobs:
       - name: Install planner dependency
         working-directory: experiments/context-contract-distribution-v0
         run: python -m pip install -r requirements.txt
-      - name: Compile planner, actual-data loader, and runners
+      - name: Compile planner, actual-data loader, runners, and tests
         run: |
           python -m py_compile \
             experiments/context-contract-distribution-v0/context_contract_distribution.py \
@@ -42,8 +44,10 @@ jobs:
             experiments/context-contract-distribution-v0/test_context_contract_distribution.py \
             experiments/context-contract-distribution-v0/stress_test_real_datasets.py \
             experiments/context-contract-distribution-v0/stress_test_multiwoz.py \
-            experiments/context-contract-distribution-v0/test_multiwoz_context_benchmark.py
-      - name: Run contract and context-conversion tests
+            experiments/context-contract-distribution-v0/stress_test_multiwoz_sensitivity.py \
+            experiments/context-contract-distribution-v0/test_multiwoz_context_benchmark.py \
+            experiments/context-contract-distribution-v0/test_multiwoz_sensitivity.py
+      - name: Run contract, context-conversion, and sensitivity tests
         working-directory: experiments/context-contract-distribution-v0
         run: python -m unittest -v
       - name: Execute demo and validate emitted plan invariants
@@ -77,6 +81,15 @@ jobs:
         env:
           PYTHONHASHSEED: "0"
         run: python stress_test_multiwoz.py --output MULTIWOZ-REAL-DATA-RESULTS.json
+      - name: Run MultiWOZ anchor and utility sensitivity sweep
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: |
+          python stress_test_multiwoz_sensitivity.py \
+            --seed-count 8 \
+            --start-seed 2026 \
+            --output MULTIWOZ-SENSITIVITY-RESULTS.json
       - name: Upload planner and dataset-derived evidence
         uses: actions/upload-artifact@v4
         with:
@@ -86,3 +99,4 @@ jobs:
             experiments/context-contract-distribution-v0/DEMO-PLAN-RESULTS.json
             experiments/context-contract-distribution-v0/REAL-DATASET-STRESS-RESULTS.json
             experiments/context-contract-distribution-v0/MULTIWOZ-REAL-DATA-RESULTS.json
+            experiments/context-contract-distribution-v0/MULTIWOZ-SENSITIVITY-RESULTS.json
