@@ -7,11 +7,11 @@
 
 ## 1. Snapshot counts
 
-- 36 branch references.
-- 29 distinct branch-head commits.
+- 37 branch references after opening PR #30's fix branch.
+- 30 distinct branch-head commits.
 - Four active-frontier refs share one identical commit.
 - Five old research refs share the initial commit.
-- 12 open PRs at the time of this snapshot.
+- 13 open PRs at the refreshed snapshot on 2026-10-29.
 
 These counts describe Git refs, not 29 independent implementations or experiments. Multiple names can point to the same tree. A branch prefix, PR title, or successful historical CI run is not proof that the named work is current, canonical, or merged.
 
@@ -42,6 +42,7 @@ These counts describe Git refs, not 29 independent implementations or experiment
 | research/machine-substrate-crosswalk-v0 | 3c7d5bca90262c867f7063a5506c452daacd54d5 | Substrate contract crosswalk; PR #9 head | Targets bidirectional-substrate-v3; latest inspected CI passed |
 | research/machine-substrate-primitive-closure-v0 | 5db33b068c0973606e08b596a300e99952764aeb | Contract/primitive closure, M2, mutation-coupling and resource-frontier suite; PR #10 head | Targets bidirectional-substrate-v3; multiple workflows passed on inspected head |
 | research/observation-dynamics-factorization-v0.1 | f9107642b533185bd1bcef13622983b0b1eb4b4d | SplitMix64 observation-dynamics draft PR #24 | Structural jobs pass; cvc5/Z3 recovery jobs return UNKNOWN/TIMEOUT. Keep solver-dependent claims open and pin tool versions |
+| fix/pin-observation-solver-versions-v0.1 | 209acc7aff4fe6d824c70fc567d9a8af32a13ada | Pin Z3 5.1.0.0, cvc5 1.4.1, retain Bitwuzla 0.9.1; version-contract CI passed; draft PR #30 | Stacked on PR #24; reproducibility improves, but prior Z3/cvc5 UNKNOWN/TIMEOUT results remain unresolved |
 | research/orchestration-benchmark-2026-09-27 | cdcda922223212ee60edde7b9ab059658c0ab105 | Orchestration benchmark snapshot | Research evidence; refresh before treating results as current |
 | research/substrate-c1c7-verification | 63b07920ca230d3b64a8afc8ef9a32c4f3b66ddf | Substrate conformance verification branch | Historical/verification lineage; tie any reused result to its source and runner |
 | research/substrate-interpreter-v0 | d935495355ac6b827a17d6147d7f38fbcaaeb15f | Separately versioned substrate-interpreter research | Experimental; specification versions must not be treated as interchangeable |
@@ -57,6 +58,7 @@ These counts describe Git refs, not 29 independent implementations or experiment
 | #27 | audit/repository-wide-state-2026-10-29 | main | Documentation-only audit/README | Review as independent docs change |
 | #26 | integration/predecessor-frontier-contract-v0.1 | main | Latest strict integration CI passes | Main integration candidate; claims remain bounded to declared contracts and fixtures |
 | #24 | research/observation-dynamics-factorization-v0.1 | main | Structural checks pass; cvc5/Z3 recovery timeouts | Pin solver versions and keep timeouts as UNKNOWN, not proof |
+| #30 | fix/pin-observation-solver-versions-v0.1 | research/observation-dynamics-factorization-v0.1 | Version-contract CI passes; pins Z3/cvc5 and preserves fail-on-unknown | Merge/rebase only into PR #24's research line; unresolved solver timeouts remain open |
 | #23 | research/hsdcr-full-finding-v0 | research/hsdcr-reassessment-v0 | Composition workflows passed at inspected head | Resolve base-branch claim/spec dispositions before promotion |
 | #21 | research/active-frontier-adversarial-v0 | research/active-frontier-program-v0 | Draft; minimality and scheduling scope still open | Consume #29 first; then evaluate remaining n=2/general scheduler obligations |
 | #20 | research/active-frontier-proof-v0 | research/active-frontier-program-v0 | Draft; formal invariant workstream | Keep distinct from experimental regression results |
