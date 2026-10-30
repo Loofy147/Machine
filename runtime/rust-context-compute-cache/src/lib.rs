@@ -136,7 +136,10 @@ impl CompatibilityCache {
             if context.facts.keys().any(|key| key.trim().is_empty())
                 || context.needs.keys().any(|key| key.trim().is_empty())
             {
-                return Err(format!("context {} has an empty fact or need key", context.id));
+                return Err(format!(
+                    "context {} has an empty fact or need key",
+                    context.id
+                ));
             }
         }
 
@@ -330,11 +333,7 @@ impl CompatibilityCache {
 mod tests {
     use super::*;
 
-    fn context(
-        id: &str,
-        facts: &[(&str, Value)],
-        needs: &[(&str, Value)],
-    ) -> Context {
+    fn context(id: &str, facts: &[(&str, Value)], needs: &[(&str, Value)]) -> Context {
         Context {
             id: id.to_string(),
             facts: facts
@@ -352,11 +351,7 @@ mod tests {
     fn caches_compatible_pair_and_reports_hit_on_repeat() {
         let mut cache = CompatibilityCache::new();
         let contexts = vec![
-            context(
-                "consumer",
-                &[],
-                &[("deadline", Value::Null)],
-            ),
+            context("consumer", &[], &[("deadline", Value::Null)]),
             context(
                 "provider",
                 &[("deadline", Value::String("friday".to_string()))],
@@ -408,10 +403,18 @@ mod tests {
                 &[],
             ),
         ];
-        assert!(cache.build_graph(wrong_value).expect("wrong value graph").edges.is_empty());
+        assert!(cache
+            .build_graph(wrong_value)
+            .expect("wrong value graph")
+            .edges
+            .is_empty());
 
         let bool_vs_integer = vec![
-            context("a", &[("flag", Value::Bool(true))], &[("x", Value::String("v".into()))]),
+            context(
+                "a",
+                &[("flag", Value::Bool(true))],
+                &[("x", Value::String("v".into()))],
+            ),
             context(
                 "b",
                 &[
@@ -421,7 +424,11 @@ mod tests {
                 &[],
             ),
         ];
-        assert!(cache.build_graph(bool_vs_integer).expect("typed graph").edges.is_empty());
+        assert!(cache
+            .build_graph(bool_vs_integer)
+            .expect("typed graph")
+            .edges
+            .is_empty());
 
         let int_vs_float = vec![
             context(
@@ -432,13 +439,20 @@ mod tests {
             context(
                 "b",
                 &[
-                    ("flag", Value::Number(serde_json::Number::from_f64(1.0).unwrap())),
+                    (
+                        "flag",
+                        Value::Number(serde_json::Number::from_f64(1.0).unwrap()),
+                    ),
                     ("x", Value::String("v".into())),
                 ],
                 &[],
             ),
         ];
-        assert!(cache.build_graph(int_vs_float).expect("number type graph").edges.is_empty());
+        assert!(cache
+            .build_graph(int_vs_float)
+            .expect("number type graph")
+            .edges
+            .is_empty());
     }
 
     #[test]
