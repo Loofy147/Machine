@@ -291,6 +291,70 @@ def _anchor_from_context(
     return {key: context.facts[key] for key in sorted(selected)}
 
 
+def schema_intent_contexts(
+    schemas_by_service: dict[str, dict[str, Any]],
+) -> tuple[list[ContractContext], dict[str, Any]]:
+    """Represent each service intent as a schema-level provider/consumer contract.
+
+    `result_slots` are output facts; `required_slots` are
+    required inputs. Slot names are kept exact and intentionally unqualified here:
+    this benchmark tests the schema's declared cross-service parameter interfaces,
+    not dialogue-instance value equality.
+    """
+    contexts: list[ContractContext] = []
+    rows: list[dict[str, Any]] = []
+    for service_name in sorted(schemas_by_service):
+        service = schemas_by_service[service_name]
+        for intent in sorted(
+            service.get("intents", []),
+            key=lambda item: str(item.get("name", "")),
+        ):
+            intent_name = intent.get("name")
+            if not isinstance(intent_name, str) or not intent_name:
+                continue
+            outputs = sorted({
+                slot for slot in (intent.get("result_slots") or [])
+                if isinstance(slot, str) and slot
+            })
+            required = sorted({
+                slot for slot in (intent.get("required_slots") or [])
+                if isinstance(slot, str) and slot
+            })
+            context_id = f"sgd-schema:{service_name}::{intent_name}"
+            contexts.append(
+                ContractContext(
+                    context_id,
+                    facts={slot: None for slot in outputs},
+                    needs={slot: None for slot in required},
+                    utility=len(outputs),
+                )
+            )
+            rows.append({
+                "context_id": context_id,
+                "service": service_name,
+                "intent": intent_name,
+                "result_slot_count": len(outputs),
+                "required_slot_count": len(required),
+            })
+    metadata = {
+        "intent_contexts": len(contexts),
+        "result_slot_count": sum(row["result_slot_count"] for row in rows),
+        "required_slot_count": sum(row["required_slot_count"] for row in rows),
+        "unique_result_slots": len({
+            key for context in contexts for key in context.facts
+        }),
+        "unique_required_slots": len({
+            key for context in contexts for key in context.needs
+        }),
+        "context_rows": rows,
+        "key_policy": (
+            "exact schema slot names shared across service APIs; this is a "
+            "name-level interface hypothesis, not proof of semantic equivalence"
+        ),
+    }
+    return contexts, metadata
+
+
 def run_benchmark(
     schemas_by_service: dict[str, dict[str, Any]],
     dialogues: list[dict[str, Any]],
@@ -298,96 +362,162 @@ def run_benchmark(
     *,
     seed: int = 2026,
 ) -> dict[str, Any]:
+    # Track A: dialogue-instance mapping. Its zero-edge result is retained as a
+    # negative diagnostic; it must not be relabelled as a successful composition.
     mapping_started = time.perf_counter()
-    contexts: list[ContractContext] = []
+    dialogue_contexts: list[ContractContext] = []
     mapping_metadata: list[dict[str, int]] = []
     for dialogue in dialogues:
         context, metadata = dialogue_to_context(dialogue, schemas_by_service)
         if context.facts or context.needs:
-            contexts.append(context)
+            dialogue_contexts.append(context)
             mapping_metadata.append(metadata)
     mapping_seconds = time.perf_counter() - mapping_started
-
-    if len(contexts) < 40:
+    if len(dialogue_contexts) < 40:
         raise ValueError(
-            f"only {len(contexts)} usable SGD contexts; need at least 40"
+            f"only {len(dialogue_contexts)} usable SGD dialogue contexts; need at least 40"
         )
-    fact_bearing = [context for context in contexts if context.facts]
+    fact_bearing = [context for context in dialogue_contexts if context.facts]
     if len(fact_bearing) < 4:
-        raise ValueError("not enough fact-bearing SGD contexts to construct anchors")
+        raise ValueError("not enough fact-bearing SGD dialogue contexts to construct anchors")
 
     rng = random.Random(seed)
     held_out = rng.sample(fact_bearing, 4)
     held_out_ids = {context.context_id for context in held_out}
-    pool = [context for context in contexts if context.context_id not in held_out_ids]
-    anchor = _anchor_from_context(held_out[0], rng)
-    if not anchor:
-        raise ValueError("SGD anchor is empty")
-
-    python_started = time.perf_counter()
-    python_graph = build_compatibility_graph(pool, anchor)
-    python_graph_seconds = time.perf_counter() - python_started
-    python_plan = plan_distribution(pool, anchor, prebuilt_graph=python_graph)
-
-    eligible = [
-        context for context in pool if consistent(context.facts, anchor)
+    dialogue_pool = [
+        context for context in dialogue_contexts
+        if context.context_id not in held_out_ids
     ]
-    with RustCompatibilityCacheClient() as cache:
-        rust_started = time.perf_counter()
-        rust_graph, cold_metrics = cache.build_graph(eligible)
-        rust_graph_seconds = time.perf_counter() - rust_started
-        rust_plan = plan_distribution(pool, anchor, prebuilt_graph=rust_graph)
+    dialogue_anchor = _anchor_from_context(held_out[0], rng)
+    if not dialogue_anchor:
+        raise ValueError("SGD dialogue anchor is empty")
 
-        utility_pool = [
+    dialogue_python_graph = build_compatibility_graph(
+        dialogue_pool, dialogue_anchor
+    )
+    dialogue_python_plan = plan_distribution(
+        dialogue_pool, dialogue_anchor, prebuilt_graph=dialogue_python_graph
+    )
+    dialogue_eligible = [
+        context for context in dialogue_pool
+        if consistent(context.facts, dialogue_anchor)
+    ]
+
+    # Track B: schema-intent composition. Each of the 38 schema intents becomes
+    # one API contract: declared result slots are outputs and required slots are
+    # inputs. This is the appropriate unit for cross-service schema composition.
+    schema_contexts, schema_metadata = schema_intent_contexts(schemas_by_service)
+    if len(schema_contexts) < 10:
+        raise ValueError("the SGD schema contains too few intent contexts")
+    schema_anchor: dict[str, Any] = {}
+    schema_python_started = time.perf_counter()
+    schema_python_graph = build_compatibility_graph(schema_contexts, schema_anchor)
+    schema_python_graph_seconds = time.perf_counter() - schema_python_started
+    schema_python_plan = plan_distribution(
+        schema_contexts, schema_anchor, prebuilt_graph=schema_python_graph
+    )
+    schema_eligible = [
+        context for context in schema_contexts
+        if consistent(context.facts, schema_anchor)
+    ]
+
+    with RustCompatibilityCacheClient() as cache:
+        dialogue_rust_graph, dialogue_cold_metrics = cache.build_graph(
+            dialogue_eligible
+        )
+        dialogue_rust_plan = plan_distribution(
+            dialogue_pool, dialogue_anchor, prebuilt_graph=dialogue_rust_graph
+        )
+
+        schema_rust_started = time.perf_counter()
+        schema_rust_graph, schema_cold_metrics = cache.build_graph(schema_eligible)
+        schema_rust_graph_seconds = time.perf_counter() - schema_rust_started
+        schema_rust_plan = plan_distribution(
+            schema_contexts, schema_anchor, prebuilt_graph=schema_rust_graph
+        )
+
+        schema_utility_contexts = [
             ContractContext(
                 context.context_id,
                 context.facts,
                 context.needs,
                 utility=context.value + 13,
             )
-            for context in pool
+            for context in schema_contexts
         ]
-        warm_graph, warm_metrics = cache.build_graph([
-            context for context in utility_pool
-            if consistent(context.facts, anchor)
-        ])
-        warm_plan = plan_distribution(
-            utility_pool, anchor, prebuilt_graph=warm_graph
-        )
-        utility_python_graph = build_compatibility_graph(utility_pool, anchor)
-        utility_python_plan = plan_distribution(
-            utility_pool, anchor, prebuilt_graph=utility_python_graph
-        )
-
-        second_anchor = _anchor_from_context(held_out[1], rng)
-        python_second_graph = build_compatibility_graph(pool, second_anchor)
-        second_eligible = [
-            context for context in pool
-            if consistent(context.facts, second_anchor)
+        schema_warm_eligible = [
+            context for context in schema_utility_contexts
+            if consistent(context.facts, schema_anchor)
         ]
-        rust_second_graph, second_metrics = cache.build_graph(second_eligible)
-        second_python_plan = plan_distribution(
-            pool, second_anchor, prebuilt_graph=python_second_graph
+        schema_warm_graph, schema_warm_metrics = cache.build_graph(
+            schema_warm_eligible
         )
-        second_rust_plan = plan_distribution(
-            pool, second_anchor, prebuilt_graph=rust_second_graph
+        schema_warm_plan = plan_distribution(
+            schema_utility_contexts,
+            schema_anchor,
+            prebuilt_graph=schema_warm_graph,
+        )
+        schema_utility_python_graph = build_compatibility_graph(
+            schema_utility_contexts, schema_anchor
+        )
+        schema_utility_python_plan = plan_distribution(
+            schema_utility_contexts,
+            schema_anchor,
+            prebuilt_graph=schema_utility_python_graph,
         )
         total_metrics = cache.stats()
 
-    graph_matches = graph_signature(rust_graph) == graph_signature(python_graph)
-    plan_matches = rust_plan.to_dict() == python_plan.to_dict()
-    warm_graph_matches = (
-        graph_signature(warm_graph) == graph_signature(utility_python_graph)
+    dialogue_graph_matches = (
+        graph_signature(dialogue_rust_graph)
+        == graph_signature(dialogue_python_graph)
     )
-    warm_plan_matches = warm_plan.to_dict() == utility_python_plan.to_dict()
-    second_graph_matches = (
-        graph_signature(rust_second_graph) == graph_signature(python_second_graph)
+    dialogue_plan_matches = (
+        dialogue_rust_plan.to_dict() == dialogue_python_plan.to_dict()
     )
-    second_plan_matches = (
-        second_rust_plan.to_dict() == second_python_plan.to_dict()
+    dialogue_raw_valid = independently_validate_plan(
+        dialogue_python_plan, dialogue_pool, dialogue_anchor
     )
-    raw_plan_valid = independently_validate_plan(python_plan, pool, anchor)
-    warm_plan_valid = independently_validate_plan(utility_python_plan, utility_pool, anchor)
+    dialogue_diagnostic = {
+        "status": (
+            "NO_EDGES" if dialogue_python_graph.number_of_edges() == 0
+            else "EDGES_FOUND"
+        ),
+        "registered_contexts": len(dialogue_pool),
+        "anchor_eligible_contexts": len(dialogue_eligible),
+        "compatibility_edges": dialogue_python_graph.number_of_edges(),
+        "selected_pairs": len(dialogue_python_plan.pairs),
+        "selected_contexts": len(dialogue_python_plan.selected_contexts),
+        "python_rust_graph_equal": dialogue_graph_matches,
+        "python_rust_plan_equal": dialogue_plan_matches,
+        "raw_plan_valid": dialogue_raw_valid,
+        "interpretation": (
+            "The sampled dialogue instances are not interchangeable partner "
+            "contracts under the conservative service-qualified slot mapping. "
+            "The empty graph is retained as a negative dataset diagnostic."
+            if dialogue_python_graph.number_of_edges() == 0
+            else "Dialogue-level contexts produced compatibility edges."
+        ),
+    }
+
+    schema_graph_matches = (
+        graph_signature(schema_rust_graph) == graph_signature(schema_python_graph)
+    )
+    schema_plan_matches = (
+        schema_rust_plan.to_dict() == schema_python_plan.to_dict()
+    )
+    schema_raw_valid = independently_validate_plan(
+        schema_python_plan, schema_contexts, schema_anchor
+    )
+    schema_warm_graph_matches = (
+        graph_signature(schema_warm_graph)
+        == graph_signature(schema_utility_python_graph)
+    )
+    schema_warm_plan_matches = (
+        schema_warm_plan.to_dict() == schema_utility_python_plan.to_dict()
+    )
+    schema_warm_raw_valid = independently_validate_plan(
+        schema_utility_python_plan, schema_utility_contexts, schema_anchor
+    )
 
     services_observed = sorted({
         frame.get("service")
@@ -397,34 +527,39 @@ def run_benchmark(
         for frame in turn.get("frames", [])
         if frame.get("service")
     })
-    intents_with_required = sum(
-        bool(intent.get("required_slots"))
-        for service in schemas_by_service.values()
-        for intent in service.get("intents", [])
-    )
+
     checks = {
-        "all_dialogues_mapped_without_schema_misses": len(contexts) > 0,
-        "context_ids_are_unique": len({context.context_id for context in contexts}) == len(contexts),
-        "schemas_cover_all_observed_services": set(services_observed).issubset(schemas_by_service),
-        "slot_keys_are_service_qualified": all(
+        "dialogue_contexts_mapped": len(dialogue_contexts) == len(dialogues),
+        "dialogue_context_ids_unique": (
+            len({context.context_id for context in dialogue_contexts})
+            == len(dialogue_contexts)
+        ),
+        "schemas_cover_all_observed_dialogue_services": (
+            set(services_observed).issubset(schemas_by_service)
+        ),
+        "dialogue_slots_are_service_qualified": all(
             "::" in key
-            for context in contexts
+            for context in dialogue_contexts
             for key in (*context.facts.keys(), *context.needs.keys())
         ),
-        "compatibility_graph_is_nonempty": python_graph.number_of_edges() > 0,
-        "planner_selects_at_least_one_pair": len(python_plan.pairs) > 0,
-        "python_plan_passes_independent_raw_validation": raw_plan_valid,
-        "rust_graph_matches_python": graph_matches,
-        "rust_complete_plan_matches_python": plan_matches,
-        "utility_only_change_hits_whole_graph_cache": bool(warm_metrics["graph_cache_hit"]),
-        "warm_graph_matches_python": warm_graph_matches,
-        "warm_complete_plan_matches_python": warm_plan_matches,
-        "warm_plan_passes_independent_raw_validation": warm_plan_valid,
-        "second_anchor_graph_matches_python": second_graph_matches,
-        "second_anchor_plan_matches_python": second_plan_matches,
-        "pair_cache_reuses_overlap_across_anchor_change": second_metrics["cache_hits"] > 0,
+        "dialogue_rust_graph_matches_python_even_when_empty": dialogue_graph_matches,
+        "dialogue_rust_plan_matches_python_even_when_empty": dialogue_plan_matches,
+        "dialogue_plan_passes_raw_validation": dialogue_raw_valid,
+        "schema_intent_context_count_is_38": schema_metadata["intent_contexts"] == 38,
+        "schema_intent_graph_is_nonempty": schema_python_graph.number_of_edges() > 0,
+        "schema_intent_planner_selects_pairs": len(schema_python_plan.pairs) > 0,
+        "schema_intent_raw_plan_valid": schema_raw_valid,
+        "schema_rust_graph_matches_python": schema_graph_matches,
+        "schema_rust_complete_plan_matches_python": schema_plan_matches,
+        "schema_utility_only_change_hits_whole_graph_cache": bool(
+            schema_warm_metrics["graph_cache_hit"]
+        ),
+        "schema_warm_graph_matches_python": schema_warm_graph_matches,
+        "schema_warm_complete_plan_matches_python": schema_warm_plan_matches,
+        "schema_warm_plan_passes_raw_validation": schema_warm_raw_valid,
     }
-
+    facts_in_contexts = sum(len(context.facts) for context in dialogue_contexts)
+    needs_in_contexts = sum(len(context.needs) for context in dialogue_contexts)
     return {
         "schema": SCHEMA,
         "status": "PASS" if all(checks.values()) else "FAIL",
@@ -439,65 +574,80 @@ def run_benchmark(
         },
         "schema_coverage": {
             "services_in_test_schema": len(schemas_by_service),
-            "observed_services_in_sample": len(services_observed),
+            "observed_services_in_dialogue_sample": len(services_observed),
             "observed_service_names": services_observed,
-            "intents_with_required_slots": intents_with_required,
+            "schema_intent_contexts": schema_metadata["intent_contexts"],
+            "intents_with_required_slots": sum(
+                bool(intent.get("required_slots"))
+                for service in schemas_by_service.values()
+                for intent in service.get("intents", [])
+            ),
         },
-        "mapping": {
-            "contexts_retained": len(contexts),
-            "empty_contexts_excluded": len(dialogues) - len(contexts),
-            "user_state_frames": sum(item["user_state_frames"] for item in mapping_metadata),
-            "requested_need_annotations": sum(item["requested_need_annotations"] for item in mapping_metadata),
-            "required_input_need_annotations": sum(item["required_input_need_annotations"] for item in mapping_metadata),
-            "facts": sum(item["facts"] for item in mapping_metadata),
-            "unresolved_needs": sum(item["unresolved_needs"] for item in mapping_metadata),
+        "dialogue_instance_diagnostic": dialogue_diagnostic,
+        "dialogue_mapping": {
+            "contexts_retained": len(dialogue_contexts),
+            "empty_contexts_excluded": len(dialogues) - len(dialogue_contexts),
+            "user_state_frames": sum(
+                item["user_state_frames"] for item in mapping_metadata
+            ),
+            "requested_need_annotations": sum(
+                item["requested_need_annotations"] for item in mapping_metadata
+            ),
+            "required_input_need_annotations": sum(
+                item["required_input_need_annotations"] for item in mapping_metadata
+            ),
+            "facts": facts_in_contexts,
+            "unresolved_needs": needs_in_contexts,
             "mapping_seconds": round(mapping_seconds, 6),
             "slot_key_policy": "service_name::slot_name",
             "canonical_value_policy": (
-                "use latest USER INFORM canonical_values where available; otherwise "
-                "use the deterministic last state.slot_values lexicalization; preserve "
-                "earlier canonical values when later turns provide only paraphrases"
+                "latest USER INFORM canonical_values preferred; otherwise "
+                "deterministic last state.slot_values lexicalization"
             ),
             "needs_policy": (
-                "union USER requested_slots and missing required_slots for active schema "
-                "intent; remove keys present in final accumulated facts"
+                "USER requested_slots plus schema required_slots absent from "
+                "accumulated user facts"
             ),
-            "facts_scope": "USER state only; SYSTEM service_results are not imported as facts",
+            "facts_scope": "USER state only; SYSTEM service_results excluded",
         },
-        "anchor": {
-            "held_out_context_ids": [context.context_id for context in held_out],
-            "facts": anchor,
-            "eligible_contexts": len(eligible),
-            "compatibility_edges": python_graph.number_of_edges(),
-        },
-        "planner": {
-            "selected_contexts": len(python_plan.selected_contexts),
-            "selected_pairs": len(python_plan.pairs),
-            "utility": python_plan.total_utility,
-            "independent_raw_validation": raw_plan_valid,
+        "schema_intent_composition": {
+            "context_count": schema_metadata["intent_contexts"],
+            "result_slot_count": schema_metadata["result_slot_count"],
+            "required_slot_count": schema_metadata["required_slot_count"],
+            "unique_result_slots": schema_metadata["unique_result_slots"],
+            "unique_required_slots": schema_metadata["unique_required_slots"],
+            "context_rows": schema_metadata["context_rows"],
+            "key_policy": schema_metadata["key_policy"],
+            "anchor": schema_anchor,
+            "eligible_contexts": len(schema_eligible),
+            "compatibility_edges": schema_python_graph.number_of_edges(),
+            "selected_pairs": len(schema_python_plan.pairs),
+            "selected_contexts": len(schema_python_plan.selected_contexts),
+            "total_utility": schema_python_plan.total_utility,
+            "raw_plan_valid": schema_raw_valid,
         },
         "cache": {
-            "cold_graph_path_seconds": round(rust_graph_seconds, 9),
-            "python_graph_path_seconds": round(python_graph_seconds, 9),
-            "cold_metrics": cold_metrics,
-            "utility_only_warm_metrics": warm_metrics,
-            "second_anchor_metrics": second_metrics,
+            "dialogue_graph_metrics": dialogue_cold_metrics,
+            "schema_cold_graph_seconds": round(schema_rust_graph_seconds, 9),
+            "schema_python_graph_seconds": round(schema_python_graph_seconds, 9),
+            "schema_cold_metrics": schema_cold_metrics,
+            "schema_warm_utility_metrics": schema_warm_metrics,
             "total_metrics": total_metrics,
         },
         "checks": checks,
         "checks_passed": sum(bool(value) for value in checks.values()),
         "checks_total": len(checks),
         "interpretation_boundary": (
-            "This is an independent task-oriented dialogue corpus, not a business/legal "
-            "contract dataset. The adapter deliberately qualifies slot keys by service "
-            "to avoid equating homonymous fields across different APIs. User state is "
-            "the evidence source; system service_results are excluded. SGD user states "
-            "include lexical variants; canonical user INFORM actions are preferred, "
-            "but fallback lexical values remain a proxy. The sample includes three "
-            "pinned test shards, not the complete 4,201-dialogue test split."
+            "The sampled dialogue-instance model produced zero compatible pairs "
+            "under conservative service-qualified slots; this negative result is "
+            "reported, not hidden. The positive composition test uses 38 API intent "
+            "schemas, where result_slots are provider outputs and required_slots "
+            "are consumer inputs. Exact slot-name matching across service schemas "
+            "is only a name-level interface hypothesis, not semantic equivalence. "
+            "This is not a business/legal contract dataset. The sample contains "
+            "three pinned test shards (310 dialogues), not the full SGD test split."
         ),
     }
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
