@@ -628,7 +628,9 @@ mod tests {
             cache.build_graph(pairs[0].clone()).expect("hot graph");
         }
         for pair in &pairs[1..] {
-            cache.build_graph(pair.clone()).expect("capacity-pressure graph");
+            cache
+                .build_graph(pair.clone())
+                .expect("capacity-pressure graph");
         }
 
         let after_pressure = cache.total_metrics();
@@ -641,8 +643,14 @@ mod tests {
             graph_hits += result.cache.graph_cache_hits;
             graph_misses += result.cache.graph_cache_misses;
         }
-        assert!(graph_misses > 0, "evicted or rejected graphs must be rebuilt");
-        assert!(graph_hits > 0, "some hot graph entries should remain reusable");
+        assert!(
+            graph_misses > 0,
+            "evicted or rejected graphs must be rebuilt"
+        );
+        assert!(
+            graph_hits > 0,
+            "some hot graph entries should remain reusable"
+        );
         assert!(cache.total_metrics().graph_cache_entries < pairs.len() as u64);
     }
 
