@@ -109,6 +109,7 @@ class RustCompatibilityCacheClient:
         self,
         contexts: Iterable[ContractContext],
     ) -> tuple[nx.Graph, dict[str, Any]]:
+        started = time.perf_counter()
         context_list = sorted(tuple(contexts), key=lambda item: item.context_id)
         payload_contexts = [
             {
@@ -119,9 +120,7 @@ class RustCompatibilityCacheClient:
             for context in context_list
         ]
 
-        started = time.perf_counter()
         result = self._request({"op": "build_graph", "contexts": payload_contexts})
-        elapsed = time.perf_counter() - started
 
         if result.get("schema") != CACHE_PROTOCOL:
             raise RustComputeCacheError(
@@ -196,7 +195,7 @@ class RustCompatibilityCacheClient:
             raise RustComputeCacheError("Rust cache omitted its cache metrics")
         metrics = {
             **cache_metrics,
-            "elapsed_seconds": round(elapsed, 9),
+            "elapsed_seconds": round(time.perf_counter() - started, 9),
             "contexts": len(context_list),
             "edges": graph.number_of_edges(),
         }

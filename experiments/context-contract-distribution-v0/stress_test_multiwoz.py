@@ -359,11 +359,13 @@ def run_benchmark(
                 plan_contexts, plan_anchor, prebuilt_graph=reference_graph
             ), None
 
+        rust_started = time.perf_counter()
         eligible_contexts = [
             context for context in plan_contexts
             if consistent(context.facts, plan_anchor)
         ]
         rust_graph, cache_metrics = rust_cache_client.build_graph(eligible_contexts)
+        cache_metrics["elapsed_seconds"] = round(time.perf_counter() - rust_started, 9)
         graph_matches = graph_signature(rust_graph) == graph_signature(reference_graph)
         reference_plan = plan_distribution(
             plan_contexts, plan_anchor, prebuilt_graph=reference_graph

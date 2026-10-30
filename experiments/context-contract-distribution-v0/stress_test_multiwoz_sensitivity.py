@@ -127,8 +127,6 @@ def run_sensitivity_sweep(
         if not anchor:
             raise ValueError(f"seed {seed} produced an empty anchor")
 
-        eligible = [context for context in pool if consistent(context.facts, anchor)]
-
         slot_python_started = time.perf_counter()
         python_graph = build_compatibility_graph(pool, anchor)
         slot_python_graph_seconds = time.perf_counter() - slot_python_started
@@ -145,7 +143,10 @@ def run_sensitivity_sweep(
         request_cache_metrics: dict[str, Any] | None = None
 
         if rust_cache_client is not None:
+            rust_slot_started = time.perf_counter()
+            eligible = [context for context in pool if consistent(context.facts, anchor)]
             rust_graph, rust_metrics = rust_cache_client.build_graph(eligible)
+            rust_metrics["elapsed_seconds"] = round(time.perf_counter() - rust_slot_started, 9)
             rust_slot_graph_seconds = rust_metrics["elapsed_seconds"]
             rust_slot_graph_equivalent = (
                 graph_signature(rust_graph) == graph_signature(python_graph)
@@ -176,12 +177,16 @@ def run_sensitivity_sweep(
         )
 
         if rust_cache_client is not None:
+            rust_request_started = time.perf_counter()
             request_eligible = [
                 context for context in request_priority_pool
                 if consistent(context.facts, anchor)
             ]
             request_rust_graph, request_cache_metrics = rust_cache_client.build_graph(
                 request_eligible
+            )
+            request_cache_metrics["elapsed_seconds"] = round(
+                time.perf_counter() - rust_request_started, 9
             )
             rust_request_graph_seconds = request_cache_metrics["elapsed_seconds"]
             rust_request_graph_equivalent = (
