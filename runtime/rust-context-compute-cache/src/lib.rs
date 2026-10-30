@@ -204,10 +204,7 @@ impl CompatibilityCache {
             for right_index in (left_index + 1)..contexts.len() {
                 let left = &contexts[left_index];
                 let right = &contexts[right_index];
-                let key = Self::pair_key(
-                    &fingerprints[left_index],
-                    &fingerprints[right_index],
-                );
+                let key = Self::pair_key(&fingerprints[left_index], &fingerprints[right_index]);
 
                 self.pair_lookups = self.pair_lookups.saturating_add(1);
                 let outcome = if let Some(cached) = self.entries.get(&key) {
