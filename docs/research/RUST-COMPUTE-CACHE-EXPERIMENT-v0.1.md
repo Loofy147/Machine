@@ -84,16 +84,95 @@ The slot-count path includes changing eligible-context sets. It is not uniformly
 
 The full CI benchmark deliberately executes both implementations for parity. Its total runtime therefore includes duplicate work and is not evidence that the complete planner request is faster in production.
 
+## Follow-up lifecycle and end-to-end verification (2026-10-30)
+
+**Exact verified head:** `1bf1bb64d35a91475b8497832a02596a167a3210`.  
+**CI:** [run 41009623330](https://github.com/Loofy147/Machine/actions/runs/41009623330).  
+**Evidence:** [artifact 12956722703](https://github.com/Loofy147/Machine/actions/runs/41009623330/artifacts/12956722703).
+
+### Verification gates
+
+- Rust: **9/9** tests passed, including pair/graph TTL expiry, pair-cache capacity eviction, and whole-graph-cache capacity eviction.
+- Python: **34/34** tests passed, including subprocess TTL configuration and graph-key order/utility invariance.
+- Supplementary synthetic controls: **8/8**.
+- Primary MultiWOZ checks: **8/8**.
+- Eight-seed sensitivity and parity checks: **88/88**.
+- Changing-context trace: **41/41** checks across **12/12** snapshots.
+- End-to-end path benchmark: **6/6** checks.
+
+### TTL and bounded-capacity results
+
+The production defaults remain 30 minutes, with approximate weighted capacities of 128 MiB for pair entries and 64 MiB for graph entries. Test processes can override these through `MACHINE_CACHE_TTL_MS`, `MACHINE_CACHE_PAIR_CAPACITY_BYTES`, and `MACHINE_CACHE_GRAPH_CAPACITY_BYTES`; the normal defaults are unchanged.
+
+- With an 80 ms test TTL, a repeated graph first hits the whole-graph cache; after a 180 ms wait, the graph and pair entries expire and the same request recomputes.
+- Pair-cache pressure test: 256-byte pair capacity, 1-byte graph capacity, 20 distinct incompatible pairs. The test confirms bounded entry count and both cache hits and recomputation on the second pass.
+- Graph-cache pressure test: 136-byte graph capacity, 1 MiB pair capacity, 20 distinct small graphs plus a frequently reused graph. The test confirms that the graph cache cannot retain every distinct graph and that some requests must rebuild while hot entries can remain reusable.
+
+These tests validate Moka's configured weighted-cache behavior. They do **not** establish a hard process-RSS ceiling; weighted capacity is an approximate cache-accounting limit, not a memory sandbox.
+
+### Changing-context workload
+
+The lifecycle runner uses 180 actual MultiWOZ-derived contexts and a 12-snapshot deterministic trace:
+- baseline and utility-only change;
+- alternate anchor;
+- add, remove, and replace contexts;
+- one fact mutation, one need mutation, and three-context mutation;
+- restore and repeat the original context set under changed utility;
+- a different set with the same context count.
+
+All 12 snapshots preserved exact Rust/Python graph and plan equality. Aggregate cache results:
+
+| Metric | Result |
+|---|---:|
+| Snapshot checks | 41/41 |
+| Whole-graph cache hits / misses | 3 / 9 |
+| Pair lookups | 137,989 |
+| Pair-cache hits | 118,115 |
+| Pair-cache misses | 19,874 |
+| Pair-cache hit rate | 85.60% |
+
+A single fact mutation invalidated the whole graph and caused exactly 179 pair misses (one changed context paired with 179 unchanged contexts); the other 15,931 pair results were reused. A single need mutation produced the same 179/15,931 split. This demonstrates the intended invalidation granularity for this trace.
+
+### Separate end-to-end planner latency
+
+The new benchmark times two independent request paths; it does not execute Python reference and Rust backend together on every timed request. It uses 1,000 actual MultiWOZ test dialogues, 996 candidate contexts, 524 anchor-eligible contexts, and 1,432 Python-reference edges.
+
+- Python path: full Python graph construction plus exact NetworkX matching.
+- Rust path: Rust cache request, JSON/process transport, NetworkX graph reconstruction, prebuilt-graph validation, and the same exact NetworkX matching.
+- Rust process startup is measured separately; the Rust process remains alive across timed warm requests.
+- Cold and warm paths are reported separately; parity work is outside timed intervals.
+
+**Cold request (one observation):**
+
+| Path | End-to-end request time |
+|---|---:|
+| Python reference | 0.4197 s |
+| Rust, cache-cold (process startup excluded) | 0.4523 s |
+| Rust process startup | 0.00095 s |
+
+The cold Rust request was slower in this single observation. Do not treat one cold sample as a stable performance estimate.
+
+**Seven warm requests:**
+
+| Metric | Python reference | Rust cache + Python matching |
+|---|---:|---:|
+| Median end-to-end | 0.41995 s | 0.26531 s |
+| Mean end-to-end | 0.44667 s | 0.29275 s |
+| p95 (maximum of seven samples) | 0.60175 s | 0.45681 s |
+
+The median Python/Rust ratio was **1.5829×**. All **7/7** timed Rust requests hit the whole-graph cache. Cold graph equality and complete-plan parity passed; representative warm plans at indices 0, 3, and 6 also matched Python exactly.
+
+This is an end-to-end result for the measured planner request path, not a Rust matching speedup: matching and prebuilt-graph validation remain Python/NetworkX. The result is one CI environment, one pinned corpus conversion, and seven warm samples. Independent datasets and production-like concurrency are still needed.
+
 ## Decision and remaining gates
 
-**Decision:** retain as an opt-in experimental backend for repeated graph computations. Do not replace the Python reference or enable Rust by default yet.
+**Decision:** retain as an opt-in experimental backend. The evidence now supports correctness under TTL/capacity pressure, reuse across changing contexts, and a measured warm end-to-end benefit for repeated graph identity. Do not replace the Python reference or enable Rust by default yet.
 
 Remaining work before any promotion:
 
-1. Repeat on independent actual datasets and realistic changing context/anchor traces.
-2. Measure cold start, graph-cache hit, pair-overlap, memory/eviction, TTL expiry, and process-restart behavior under controlled conditions.
-3. Benchmark end-to-end planner latency with parity checks separated from production-path execution; include maximum-weight matching and serialization costs.
-4. Add explicit property tests for graph-cache key order invariance, utility-only reuse, invalidation/version changes, TTL, and capacity eviction.
-5. Evaluate whether the process-local cache is sufficient or a persistent/shared cache is justified.
+1. Repeat the end-to-end comparison across independent real datasets and workload traces with different graph-reuse rates.
+2. Measure actual process RSS, cache admission/eviction rates, concurrency, contention, and process-restart behavior under production-like conditions.
+3. Evaluate whether a process-local cache is sufficient or a persistent/shared cache is justified.
+4. Validate on actual business/legal contract-like data; MultiWOZ remains a travel/service dialogue proxy.
 
-These results establish equivalence and observed graph-build performance only for the current v0.1 contract, this pinned MultiWOZ conversion, and the recorded CI environment. They do not establish production suitability or performance for business/legal contract workloads.
+These results establish equivalence and observed performance only for the current v0.1 contract, pinned MultiWOZ conversion, and recorded CI environment. They do not establish production suitability or performance for business/legal contract workloads.

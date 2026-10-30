@@ -59,3 +59,16 @@ Primary 1,000-dialogue benchmark: all 8/8 checks passed; Rust and Python graphs 
 Do not infer a 6.3× full-planner or production speedup from the warm graph-builder comparison. CI deliberately executes both implementations for equivalence, while the matching solver remains Python. The caches are process-local, have 30-minute TTLs and approximate weighted capacities, and do not survive process restart.
 
 Exact verified head: `1a7734f6520fce5b43bc1a79a1946126dfb90bab`. CI passed 6 Rust tests, 32 Python tests, 8/8 synthetic controls, 8/8 primary MultiWOZ checks, and 88/88 sensitivity checks. Evidence: [run 40993076325](https://github.com/Loofy147/Machine/actions/runs/40993076325), [artifact](https://github.com/Loofy147/Machine/actions/runs/40993076325/artifacts/12950251652).
+
+
+## Follow-up cache lifecycle and planner latency
+
+The final cache follow-up is recorded in [RUST-COMPUTE-CACHE-EXPERIMENT-v0.1.md](RUST-COMPUTE-CACHE-EXPERIMENT-v0.1.md). On the same pinned corpus it passed:
+- 12/12 changing-context snapshots and 41/41 checks;
+- 9/9 Rust tests (including TTL expiry and pair/graph capacity-pressure eviction);
+- 34/34 Python tests;
+- a seven-request end-to-end comparison with 6/6 checks.
+
+The separate request-path benchmark measured a 0.41995 s Python median and a 0.26531 s warm Rust-cache median (1.5829× ratio). The Rust process retained its whole-graph entry across all seven timed requests. A single cold Rust request was slower than Python, so this result applies to repeated graph identity, not cold-start workloads.
+
+CI and artifact for the completed follow-up: [run 41009623330](https://github.com/Loofy147/Machine/actions/runs/41009623330) · [evidence artifact](https://github.com/Loofy147/Machine/actions/runs/41009623330/artifacts/12956722703).
