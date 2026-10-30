@@ -63,6 +63,8 @@ jobs:
             experiments/context-contract-distribution-v0/stress_test_multiwoz_cache_lifecycle.py \
             experiments/context-contract-distribution-v0/benchmark_multiwoz_end_to_end.py \
             experiments/context-contract-distribution-v0/stress_test_multiwoz_runtime_concurrency.py \
+            experiments/context-contract-distribution-v0/stress_test_sgd_independent_corpus.py \
+            experiments/context-contract-distribution-v0/test_sgd_independent_corpus.py \
             experiments/context-contract-distribution-v0/test_multiwoz_context_benchmark.py \
             experiments/context-contract-distribution-v0/test_multiwoz_sensitivity.py
       - name: Run contract, context-conversion, and sensitivity tests
@@ -99,6 +101,13 @@ jobs:
         env:
           PYTHONHASHSEED: "0"
         run: python stress_test_multiwoz.py --rust-cache --output MULTIWOZ-REAL-DATA-RESULTS.json
+      - name: Validate Rust cache on independent Schema-Guided Dialogue corpus
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: |
+          python stress_test_sgd_independent_corpus.py \
+            --output SGD-INDEPENDENT-DATASET-RESULTS.json
       - name: Run MultiWOZ anchor and utility sensitivity sweep
         working-directory: experiments/context-contract-distribution-v0
         env:
@@ -149,3 +158,4 @@ jobs:
             experiments/context-contract-distribution-v0/MULTIWOZ-CACHE-LIFECYCLE-RESULTS.json
             experiments/context-contract-distribution-v0/MULTIWOZ-END-TO-END-CACHE-RESULTS.json
             experiments/context-contract-distribution-v0/MULTIWOZ-RUNTIME-CONCURRENCY-RESULTS.json
+            experiments/context-contract-distribution-v0/SGD-INDEPENDENT-DATASET-RESULTS.json
