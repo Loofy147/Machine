@@ -1,11 +1,42 @@
 use serde_json::json;
 use std::io::{self, BufRead, Write};
-use uws_context_compute_cache::{CompatibilityCache, Request};
+use std::time::Duration;
+use uws_context_compute_cache::{CacheConfig, CompatibilityCache, Request};
+
+fn env_u64(name: &str, default: u64) -> u64 {
+    match std::env::var(name) {
+        Ok(value) => value.parse::<u64>().unwrap_or_else(|error| {
+            eprintln!("invalid {name}={value:?}: {error}");
+            std::process::exit(2);
+        }),
+        Err(std::env::VarError::NotPresent) => default,
+        Err(error) => {
+            eprintln!("could not read {name}: {error}");
+            std::process::exit(2);
+        }
+    }
+}
 
 fn main() {
+    let defaults = CacheConfig::default();
+    let config = CacheConfig {
+        pair_max_capacity_bytes: env_u64(
+            "MACHINE_CACHE_PAIR_CAPACITY_BYTES",
+            defaults.pair_max_capacity_bytes,
+        ),
+        graph_max_capacity_bytes: env_u64(
+            "MACHINE_CACHE_GRAPH_CAPACITY_BYTES",
+            defaults.graph_max_capacity_bytes,
+        ),
+        ttl: Duration::from_millis(env_u64(
+            "MACHINE_CACHE_TTL_MS",
+            defaults.ttl.as_millis() as u64,
+        )),
+    };
+
     let stdin = io::stdin();
     let mut stdout = io::BufWriter::new(io::stdout().lock());
-    let mut cache = CompatibilityCache::new();
+    let mut cache = CompatibilityCache::new_with_config(config);
 
     for line in stdin.lock().lines() {
         let line = match line {

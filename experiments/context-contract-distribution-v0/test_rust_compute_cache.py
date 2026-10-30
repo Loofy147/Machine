@@ -1,3 +1,4 @@
+import time
 import unittest
 
 from context_contract_distribution import (
@@ -75,6 +76,46 @@ class RustComputeCacheTests(unittest.TestCase):
                 rust_graph["a-consumer"]["b-provider"]["weight"],
                 rust_changed["a-consumer"]["b-provider"]["weight"],
             )
+
+    def test_ttl_expiry_invalidates_graph_and_pair_cache_entries(self):
+        contexts = _fixture()
+        with RustCompatibilityCacheClient(
+            environment={"MACHINE_CACHE_TTL_MS": "80"}
+        ) as cache:
+            first_graph, first = cache.build_graph(contexts)
+            self.assertEqual(first["graph_cache_misses"], 1)
+
+            warm_graph, warm = cache.build_graph(contexts)
+            self.assertEqual(graph_signature(warm_graph), graph_signature(first_graph))
+            self.assertTrue(warm["graph_cache_hit"])
+
+            time.sleep(0.18)
+            expired_graph, expired = cache.build_graph(contexts)
+            self.assertEqual(graph_signature(expired_graph), graph_signature(first_graph))
+            self.assertFalse(expired["graph_cache_hit"])
+            self.assertEqual(expired["graph_cache_misses"], 1)
+            self.assertEqual(expired["cache_misses"], expired["pair_lookups"])
+            self.assertGreater(expired["cache_misses"], 0)
+
+    def test_graph_key_is_input_order_invariant_and_utility_independent(self):
+        contexts = _fixture()
+        with RustCompatibilityCacheClient() as cache:
+            first_graph, first = cache.build_graph(contexts)
+            changed_utility_and_order = [
+                ContractContext(
+                    item.context_id,
+                    item.facts,
+                    item.needs,
+                    utility=item.value + 100,
+                )
+                for item in reversed(contexts)
+            ]
+            second_graph, second = cache.build_graph(changed_utility_and_order)
+
+        self.assertEqual(graph_signature(first_graph), graph_signature(second_graph))
+        self.assertFalse(first["graph_cache_hit"])
+        self.assertTrue(second["graph_cache_hit"])
+        self.assertEqual(second["pair_lookups"], 0)
 
     def test_anchor_filter_is_applied_before_rust_pair_work(self):
         contexts = _fixture()

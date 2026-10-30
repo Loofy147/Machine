@@ -60,6 +60,8 @@ jobs:
             experiments/context-contract-distribution-v0/stress_test_real_datasets.py \
             experiments/context-contract-distribution-v0/stress_test_multiwoz.py \
             experiments/context-contract-distribution-v0/stress_test_multiwoz_sensitivity.py \
+            experiments/context-contract-distribution-v0/stress_test_multiwoz_cache_lifecycle.py \
+            experiments/context-contract-distribution-v0/benchmark_multiwoz_end_to_end.py \
             experiments/context-contract-distribution-v0/test_multiwoz_context_benchmark.py \
             experiments/context-contract-distribution-v0/test_multiwoz_sensitivity.py
       - name: Run contract, context-conversion, and sensitivity tests
@@ -106,6 +108,22 @@ jobs:
             --start-seed 2026 \
             --rust-cache \
             --output MULTIWOZ-SENSITIVITY-RESULTS.json
+      - name: Run changing-context Rust cache lifecycle workload
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: |
+          python stress_test_multiwoz_cache_lifecycle.py \
+            --base-size 180 \
+            --output MULTIWOZ-CACHE-LIFECYCLE-RESULTS.json
+      - name: Benchmark separate end-to-end Python and Rust planner paths
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: |
+          python benchmark_multiwoz_end_to_end.py \
+            --repetitions 7 \
+            --output MULTIWOZ-END-TO-END-CACHE-RESULTS.json
       - name: Upload planner and dataset-derived evidence
         uses: actions/upload-artifact@v4
         with:
@@ -116,3 +134,5 @@ jobs:
             experiments/context-contract-distribution-v0/REAL-DATASET-STRESS-RESULTS.json
             experiments/context-contract-distribution-v0/MULTIWOZ-REAL-DATA-RESULTS.json
             experiments/context-contract-distribution-v0/MULTIWOZ-SENSITIVITY-RESULTS.json
+            experiments/context-contract-distribution-v0/MULTIWOZ-CACHE-LIFECYCLE-RESULTS.json
+            experiments/context-contract-distribution-v0/MULTIWOZ-END-TO-END-CACHE-RESULTS.json

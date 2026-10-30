@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 import subprocess
 import time
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 import networkx as nx
 
@@ -31,7 +31,11 @@ class RustComputeCacheError(RuntimeError):
 
 
 class RustCompatibilityCacheClient:
-    def __init__(self, binary: str | Path | None = None) -> None:
+    def __init__(
+        self,
+        binary: str | Path | None = None,
+        environment: Mapping[str, str] | None = None,
+    ) -> None:
         repository_root = Path(__file__).resolve().parents[2]
         default_binary = (
             repository_root
@@ -51,6 +55,9 @@ class RustCompatibilityCacheClient:
                 f"{self.binary}. Build runtime/rust-context-compute-cache first."
             )
 
+        process_environment = os.environ.copy()
+        if environment is not None:
+            process_environment.update(environment)
         self.process = subprocess.Popen(
             [str(self.binary)],
             stdin=subprocess.PIPE,
@@ -59,6 +66,7 @@ class RustCompatibilityCacheClient:
             text=True,
             encoding="utf-8",
             bufsize=1,
+            env=process_environment,
         )
         self.requests = 0
         self.closed = False

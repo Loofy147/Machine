@@ -6,8 +6,23 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::time::Duration;
 
 const CACHE_SCHEMA: &str = "uws-context-pair-compatibility-cache.v0.1";
-const MAX_CAPACITY_BYTES: u64 = 128 * 1024 * 1024;
-const TTL: Duration = Duration::from_secs(30 * 60);
+
+#[derive(Clone, Debug)]
+pub struct CacheConfig {
+    pub pair_max_capacity_bytes: u64,
+    pub graph_max_capacity_bytes: u64,
+    pub ttl: Duration,
+}
+
+impl Default for CacheConfig {
+    fn default() -> Self {
+        Self {
+            pair_max_capacity_bytes: 128 * 1024 * 1024,
+            graph_max_capacity_bytes: 64 * 1024 * 1024,
+            ttl: Duration::from_secs(30 * 60),
+        }
+    }
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Context {
@@ -117,23 +132,31 @@ impl Default for CompatibilityCache {
 
 impl CompatibilityCache {
     pub fn new() -> Self {
+        Self::new_with_config(CacheConfig::default())
+    }
+
+    pub fn new_with_config(config: CacheConfig) -> Self {
+        let pair_capacity = config.pair_max_capacity_bytes.max(1);
+        let graph_capacity = config.graph_max_capacity_bytes.max(1);
+        let ttl = config.ttl.max(Duration::from_millis(1));
+
         let entries = Cache::builder()
-            .max_capacity(MAX_CAPACITY_BYTES)
+            .max_capacity(pair_capacity)
             .weigher(|key: &[u8; 64], value: &CacheValue| {
                 key.len()
                     .saturating_add(value.weight_bytes as usize)
                     .min(u32::MAX as usize) as u32
             })
-            .time_to_live(TTL)
+            .time_to_live(ttl)
             .build();
         let graphs = Cache::builder()
-            .max_capacity(64 * 1024 * 1024)
+            .max_capacity(graph_capacity)
             .weigher(|key: &[u8; 32], value: &GraphCacheValue| {
                 key.len()
                     .saturating_add(value.weight_bytes as usize)
                     .min(u32::MAX as usize) as u32
             })
-            .time_to_live(TTL)
+            .time_to_live(ttl)
             .build();
 
         Self {
@@ -573,6 +596,84 @@ mod tests {
         assert_eq!(service.unmet_needs.len(), 1);
         assert_eq!(service.unmet_needs[0].key, "budget");
         assert!(!service.unmet_needs[0].provider_has_key);
+    }
+
+    #[test]
+    fn ttl_expiry_invalidates_pair_and_graph_entries() {
+        let mut cache = CompatibilityCache::new_with_config(CacheConfig {
+            pair_max_capacity_bytes: 1024 * 1024,
+            graph_max_capacity_bytes: 1024 * 1024,
+            ttl: Duration::from_millis(80),
+        });
+        let contexts = vec![
+            context("consumer", &[], &[("deadline", Value::Null)]),
+            context(
+                "provider",
+                &[("deadline", Value::String("friday".to_string()))],
+                &[],
+            ),
+        ];
+
+        let first = cache.build_graph(contexts.clone()).expect("cold graph");
+        assert_eq!(first.cache.graph_cache_misses, 1);
+        let warm = cache.build_graph(contexts.clone()).expect("warm graph");
+        assert!(warm.cache.graph_cache_hit);
+
+        std::thread::sleep(Duration::from_millis(180));
+        let expired = cache.build_graph(contexts).expect("expired graph");
+        assert!(!expired.cache.graph_cache_hit);
+        assert_eq!(expired.cache.graph_cache_misses, 1);
+        assert_eq!(expired.cache.cache_misses, 1);
+    }
+
+    #[test]
+    fn bounded_pair_cache_evicts_under_capacity_pressure() {
+        let mut cache = CompatibilityCache::new_with_config(CacheConfig {
+            pair_max_capacity_bytes: 256,
+            graph_max_capacity_bytes: 1,
+            ttl: Duration::from_secs(60),
+        });
+
+        let pairs: Vec<Vec<Context>> = (0..20)
+            .map(|index| {
+                vec![
+                    context(
+                        &format!("consumer-{index:02}"),
+                        &[("region", Value::String("north".to_string()))],
+                        &[],
+                    ),
+                    context(
+                        &format!("provider-{index:02}"),
+                        &[("region", Value::String("south".to_string()))],
+                        &[],
+                    ),
+                ]
+            })
+            .collect();
+
+        for _ in 0..4 {
+            let hot = cache.build_graph(pairs[0].clone()).expect("hot pair");
+            assert_eq!(hot.edges.len(), 0);
+        }
+        for pair in &pairs[1..] {
+            let result = cache.build_graph(pair.clone()).expect("pressure pair");
+            assert_eq!(result.edges.len(), 0);
+        }
+
+        let before = cache.total_metrics();
+        assert!(before.entries < pairs.len() as u64);
+        assert_eq!(before.graph_cache_entries, 0);
+
+        let mut second_pass_hits = 0;
+        let mut second_pass_misses = 0;
+        for pair in &pairs {
+            let result = cache.build_graph(pair.clone()).expect("second pressure pass");
+            second_pass_hits += result.cache.cache_hits;
+            second_pass_misses += result.cache.cache_misses;
+        }
+        assert!(second_pass_misses > 0, "capacity pressure must cause recomputation");
+        assert!(second_pass_hits > 0, "the bounded cache must retain some useful entries");
+        assert!(cache.total_metrics().entries < pairs.len() as u64);
     }
 
     #[test]
