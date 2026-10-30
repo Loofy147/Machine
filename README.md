@@ -120,8 +120,17 @@ reconfigurability
 - `docs/INTERACTION-OPERATING-MODE.md` — project interaction/evidence discipline
 - `docs/OPEN-QUESTIONS.md` — unresolved questions
 
-The repository remains research-first. Implementation code should be introduced only as an explicitly named experimental substrate with reproducible evidence attached to its claims.
+### Memory research handoff
 
+The corrected memory-under-uncertainty synthesis is maintained on the separate branch:
+
+- Branch: `research/memory-under-uncertainty-v0.1`
+- Document: `docs/MEMORY-UNDER-UNCERTAINTY-RESEARCH-v0.1.md`
+- Status: research synthesis; supplied synthetic tables are **USER_REPORTED** and reproduction remains OPEN.
+
+This branch preserves the distinction between access skew, attention dilution, compressed-state capacity, causal utility, write-time prediction and recoverability. It does not add a universal Memory primitive to the abstract machine.
+
+The repository remains research-first. Implementation code should be introduced only as an explicitly named experimental substrate with reproducible evidence attached to its claims.
 
 ## Immediate reflection target
 
