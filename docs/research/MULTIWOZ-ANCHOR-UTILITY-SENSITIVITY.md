@@ -72,3 +72,23 @@ The final cache follow-up is recorded in [RUST-COMPUTE-CACHE-EXPERIMENT-v0.1.md]
 The separate request-path benchmark measured a 0.41995 s Python median and a 0.26531 s warm Rust-cache median (1.5829× ratio). The Rust process retained its whole-graph entry across all seven timed requests. A single cold Rust request was slower than Python, so this result applies to repeated graph identity, not cold-start workloads.
 
 CI and artifact for the completed follow-up: [run 41009623330](https://github.com/Loofy147/Machine/actions/runs/41009623330) · [evidence artifact](https://github.com/Loofy147/Machine/actions/runs/41009623330/artifacts/12956722703).
+
+
+## Independent SGD corpus and final runtime verification
+
+The final run added a separately pinned Schema-Guided Dialogue sample from `google-research-datasets/dstc8-schema-guided-dialogue` commit `e852981ae34990f4358979625854259302feaa78` (CC-BY-SA-4.0). Three test shards supplied 310 dialogues across 10 observed services.
+
+The dialogue-instance adapter deliberately kept fields service-qualified. It produced 310 mapped contexts and 119 anchor-eligible contexts, but **zero compatibility edges**. Rust and Python agreed on the empty graph and empty plan. This remains a negative result: those dialogue instances are not interchangeable partner contracts under that conservative mapping.
+
+A separate schema-intent model produced a positive result:
+- 38 service-intent contexts;
+- 271 declared result slots and 96 required slots;
+- 87 compatibility edges and 17 selected pairs (34 contexts);
+- exact Rust/Python graph and complete-plan equivalence;
+- utility-only change hit the whole-graph cache.
+
+This is schema-level, exact slot-name matching across service APIs. It tests a name-level interface hypothesis, not semantic equivalence of fields. On this small graph the Rust bridge path (1.70 ms warm) was marginally slower than fresh Python graph construction (1.50 ms); it establishes parity and cache reuse, not a performance advantage.
+
+The same final CI run completed 9/9 Rust tests, 39/39 Python tests, 8/8 synthetic checks, 8/8 primary MultiWOZ checks, 17/17 SGD checks, 88/88 sensitivity checks, 41/41 lifecycle checks, 8/8 runtime concurrency/process-isolation checks, and 6/6 end-to-end checks.
+
+Final run: [41011900858](https://github.com/Loofy147/Machine/actions/runs/41011900858). Evidence artifact: [12958455327](https://github.com/Loofy147/Machine/actions/runs/41011900858/artifacts/12958455327).
