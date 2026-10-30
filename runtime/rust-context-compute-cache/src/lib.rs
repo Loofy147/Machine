@@ -599,6 +599,54 @@ mod tests {
     }
 
     #[test]
+    fn bounded_graph_cache_misses_after_capacity_pressure() {
+        let mut cache = CompatibilityCache::new_with_config(CacheConfig {
+            pair_max_capacity_bytes: 1024 * 1024,
+            graph_max_capacity_bytes: 136,
+            ttl: Duration::from_secs(60),
+        });
+
+        let pairs: Vec<Vec<Context>> = (0..20)
+            .map(|index| {
+                vec![
+                    context(
+                        &format!("graph-consumer-{index:02}"),
+                        &[("region", Value::String("north".to_string()))],
+                        &[],
+                    ),
+                    context(
+                        &format!("graph-provider-{index:02}"),
+                        &[("region", Value::String("south".to_string()))],
+                        &[],
+                    ),
+                ]
+            })
+            .collect();
+
+        // Make the first graph a hot entry, then insert many distinct graphs.
+        for _ in 0..4 {
+            cache.build_graph(pairs[0].clone()).expect("hot graph");
+        }
+        for pair in &pairs[1..] {
+            cache.build_graph(pair.clone()).expect("capacity-pressure graph");
+        }
+
+        let after_pressure = cache.total_metrics();
+        assert!(after_pressure.graph_cache_entries < pairs.len() as u64);
+
+        let mut graph_hits = 0;
+        let mut graph_misses = 0;
+        for pair in &pairs {
+            let result = cache.build_graph(pair.clone()).expect("graph recheck");
+            graph_hits += result.cache.graph_cache_hits;
+            graph_misses += result.cache.graph_cache_misses;
+        }
+        assert!(graph_misses > 0, "evicted or rejected graphs must be rebuilt");
+        assert!(graph_hits > 0, "some hot graph entries should remain reusable");
+        assert!(cache.total_metrics().graph_cache_entries < pairs.len() as u64);
+    }
+
+    #[test]
     fn ttl_expiry_invalidates_pair_and_graph_entries() {
         let mut cache = CompatibilityCache::new_with_config(CacheConfig {
             pair_max_capacity_bytes: 1024 * 1024,
