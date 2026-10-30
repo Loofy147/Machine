@@ -41,3 +41,21 @@ The first full-corpus sensitivity run completed on implementation commit `b43f57
 The two uplift summaries are computed against separate baselines using separate utility functions; their percentage values are **not directly comparable across policies**. The result establishes sensitivity to the selected anchor and objective proxy. It does not validate either utility as business value, and the eight seeds are not an independent sample of datasets or grounds for a confidence interval.
 
 The artifact uploaded for that run contains `MULTIWOZ-SENSITIVITY-RESULTS.json` alongside the original plan and benchmark results: [downloadable evidence artifact](https://github.com/Loofy147/Machine/actions/runs/40953820974/artifacts/12933490425).
+
+## Rust computation-cache experiment
+
+The Rust graph builder and its two-level Moka cache were exercised by the same primary and sensitivity runners. This is a **computation cache**, not the LLM response/token cache. Implementation and limits are documented in [RUST-COMPUTE-CACHE-EXPERIMENT-v0.1.md](RUST-COMPUTE-CACHE-EXPERIMENT-v0.1.md).
+
+Corrected graph-path timings include eligible-context filtering, JSON payload construction, JSON-lines process transport, response parsing, and NetworkX graph reconstruction. They do not include maximum-weight matching; the exact matching algorithm remains Python/NetworkX.
+
+Eight-seed results:
+- Python reference for the repeated request-priority graph: mean 0.1965 s, median 0.2266 s.
+- Rust warm whole-graph cache for the same graph under the alternative utility: mean 0.0312 s, median 0.0349 s; graph-cache hit in 8/8 seeds.
+- Python slot-count graph: mean 0.2238 s, median 0.2523 s. Rust pair/graph path: mean 0.1945 s, median 0.1930 s; individual seeds vary.
+- Across the eight seeds, the pair cache recorded 867,533 lookups, 467,202 hits, and 400,331 misses (53.85% hit rate).
+
+Primary 1,000-dialogue benchmark: all 8/8 checks passed; Rust and Python graphs and complete plans matched. There were 402,030 pair hits and 380,699 pair misses. The initial cold Rust graph build took 0.3909 s versus 0.2472 s for Python, so cold-start performance is worse in this run; the benefit comes from pair reuse across anchors and whole-graph reuse for repeated identical eligible context sets.
+
+Do not infer a 6.3× full-planner or production speedup from the warm graph-builder comparison. CI deliberately executes both implementations for equivalence, while the matching solver remains Python. The caches are process-local, have 30-minute TTLs and approximate weighted capacities, and do not survive process restart.
+
+Exact verified head: `1a7734f6520fce5b43bc1a79a1946126dfb90bab`. CI passed 6 Rust tests, 32 Python tests, 8/8 synthetic controls, 8/8 primary MultiWOZ checks, and 88/88 sensitivity checks. Evidence: [run 40993076325](https://github.com/Loofy147/Machine/actions/runs/40993076325), [artifact](https://github.com/Loofy147/Machine/actions/runs/40993076325/artifacts/12950251652).
