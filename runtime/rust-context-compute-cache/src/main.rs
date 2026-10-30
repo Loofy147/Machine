@@ -21,7 +21,8 @@ fn main() {
         let request: Request = match serde_json::from_str(&line) {
             Ok(request) => request,
             Err(error) => {
-                let response = json!({"ok": false, "error": format!("invalid request JSON: {error}")});
+                let response =
+                    json!({"ok": false, "error": format!("invalid request JSON: {error}")});
                 let _ = writeln!(stdout, "{response}");
                 let _ = stdout.flush();
                 continue;

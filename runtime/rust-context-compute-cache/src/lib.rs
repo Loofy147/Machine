@@ -432,7 +432,7 @@ mod tests {
             context(
                 "b",
                 &[
-                    ("flag", Value::Number(serde_json::Number::from_f64(1.0).unwrap()))],
+                    ("flag", Value::Number(serde_json::Number::from_f64(1.0).unwrap())),
                     ("x", Value::String("v".into())),
                 ],
                 &[],
