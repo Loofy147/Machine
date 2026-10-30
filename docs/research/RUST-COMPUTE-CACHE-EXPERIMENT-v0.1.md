@@ -283,3 +283,30 @@ Do not enable Rust by default yet. Remaining gates:
 4. Decide whether process-local caches are sufficient or a persistent/shared cache is needed.
 
 The SGD dialogue-instance zero-edge result must remain visible: schema-level composition is positive, but the tested dialogue instances themselves did not form partners under service-qualified slot matching. This result must not be generalized into a universal compatibility claim.
+
+
+## Final documentation-head revalidation (2026-10-30)
+
+**Exact verified documentation head:** `99f50904475f5eb572a42384ba0525b82813e0f9`.  
+**CI:** [run 41012177745](https://github.com/Loofy147/Machine/actions/runs/41012177745).  
+**Evidence:** [artifact 12957812453](https://github.com/Loofy147/Machine/actions/runs/41012177745/artifacts/12957812453).
+
+The exact documentation head passed the full workflow: 9/9 Rust tests, 39/39 Python tests, 8/8 synthetic-control checks, 8/8 MultiWOZ primary checks, 17/17 independent SGD checks, 88/88 sensitivity checks, 41/41 lifecycle checks, 8/8 runtime concurrency/process checks, and 6/6 end-to-end checks.
+
+### Final run's SGD measurements
+
+The SGD source is pinned at `google-research-datasets/dstc8-schema-guided-dialogue` commit `e852981ae34990f4358979625854259302feaa78`, with 310 dialogue instances from three test shards.
+
+- Dialogue-instance diagnostic: 310 mapped, four held out, 306 candidates, 119 anchor-eligible, zero edges, zero selected pairs. Rust/Python empty graph and plan were identical. This remains a negative result.
+- Schema-level API-intent model: 38 contexts, 271 result slots, 96 required slots, 87 edges, 17 selected pairs (34 contexts), utility 261. Cold and warm Rust graphs/plans matched Python. Whole-graph cache hit on the utility-only replay.
+- Schema graph timings on this small input: Python cold 2.335 ms, Rust cold 4.092 ms, Rust warm 2.430 ms. The cache removes pair computation on the warm request but the bridge overhead means it is not faster than rebuilding this tiny graph in Python.
+
+### Final run's runtime and latency measurements
+
+- Shared-client concurrency: 64 requests, eight Python caller threads, one initial graph miss and 63 whole-graph hits. The JSON-lines lock makes a single client safe but serializes requests through its one Rust process.
+- Child-process RSS: 212,992 bytes before cache population, 9,904,128 bytes after; observed delta **9,691,136 bytes** (~9.25 MiB). This is a Linux `/proc` observation, not an RSS limit.
+- Four independent Rust processes ran in parallel with isolated cold caches; all produced Python-equivalent graphs. Parallel wall time: **19.146 ms**.
+- Seven warm end-to-end planner requests: Python median **0.478705 s**, Rust-cache path median **0.303137 s**, ratio **1.5792×**; 7/7 Rust requests hit the whole-graph cache.
+- One cold end-to-end observation: Python **0.485434 s**, Rust **0.482816 s** (process startup excluded). Cold results remain a single observation.
+
+Timing varies across workflow runs. The independent SGD result establishes graph/plan parity and a warm graph-cache hit; it does not establish a speed advantage on the small schema-intent graph. The measured warm end-to-end benefit belongs to the repeated 1,000-dialogue MultiWOZ request path in this CI environment.

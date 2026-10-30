@@ -92,3 +92,15 @@ This is schema-level, exact slot-name matching across service APIs. It tests a n
 The same final CI run completed 9/9 Rust tests, 39/39 Python tests, 8/8 synthetic checks, 8/8 primary MultiWOZ checks, 17/17 SGD checks, 88/88 sensitivity checks, 41/41 lifecycle checks, 8/8 runtime concurrency/process-isolation checks, and 6/6 end-to-end checks.
 
 Final run: [41011900858](https://github.com/Loofy147/Machine/actions/runs/41011900858). Evidence artifact: [12958455327](https://github.com/Loofy147/Machine/actions/runs/41011900858/artifacts/12958455327).
+
+
+## Final independent-data and runtime revalidation
+
+The final documentation head `99f50904475f5eb572a42384ba0525b82813e0f9` passed [CI run 41012177745](https://github.com/Loofy147/Machine/actions/runs/41012177745), including the separate SGD result:
+- 310 pinned SGD dialogue instances: **zero** compatibility edges under service-qualified dialogue-slot matching; Rust and Python agreed on the empty graph.
+- 38 schema-intent contexts using result slots as outputs and required slots as inputs: 87 edges, 17 selected pairs, exact Rust/Python plan parity, and whole-graph reuse under utility-only change.
+- Exact slot-name matching across service schemas is a heuristic and does not establish semantic equivalence.
+
+The same run passed 9 Rust tests, 39 Python tests, 17 SGD checks, 41 cache-lifecycle checks, 8 runtime concurrency/process checks, and 6 end-to-end checks. Its seven warm MultiWOZ planner requests measured 0.478705 s Python median versus 0.303137 s Rust-cache median (1.5792×), with 7/7 graph-cache hits.
+
+Evidence artifact: [12957812453](https://github.com/Loofy147/Machine/actions/runs/41012177745/artifacts/12957812453).
