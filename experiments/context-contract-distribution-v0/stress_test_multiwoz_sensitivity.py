@@ -19,8 +19,10 @@ from typing import Any
 from context_contract_distribution import (
     ContractContext,
     build_compatibility_graph,
+    consistent,
     plan_distribution,
 )
+from rust_compute_cache import RustCompatibilityCacheClient, graph_signature
 from stress_test_multiwoz import (
     SOURCE_COMMIT,
     anchor_from_context,
@@ -97,6 +99,7 @@ def run_sensitivity_sweep(
     seed_count: int = 8,
     start_seed: int = 2026,
     anchor_context_count: int = 4,
+    rust_cache_client: RustCompatibilityCacheClient | None = None,
 ) -> dict[str, Any]:
     """Run the same actual corpus against several deterministic anchor samples."""
     if seed_count < 1:
@@ -124,12 +127,37 @@ def run_sensitivity_sweep(
         if not anchor:
             raise ValueError(f"seed {seed} produced an empty anchor")
 
-        graph = build_compatibility_graph(pool, anchor)
-        slot_plan = plan_distribution(pool, anchor)
+        eligible = [context for context in pool if consistent(context.facts, anchor)]
+
+        slot_python_started = time.perf_counter()
+        python_graph = build_compatibility_graph(pool, anchor)
+        slot_python_graph_seconds = time.perf_counter() - slot_python_started
+        slot_plan = plan_distribution(pool, anchor, prebuilt_graph=python_graph)
+        graph = python_graph
+        rust_metrics: dict[str, Any] | None = None
+        rust_slot_graph_seconds: float | None = None
+        rust_slot_graph_equivalent: bool | None = None
+        rust_slot_plan_equivalent: bool | None = None
+        request_python_graph_seconds: float | None = None
+        rust_request_graph_seconds: float | None = None
+        rust_request_graph_equivalent: bool | None = None
+        rust_request_plan_equivalent: bool | None = None
+        request_cache_metrics: dict[str, Any] | None = None
+
+        if rust_cache_client is not None:
+            rust_graph, rust_metrics = rust_cache_client.build_graph(eligible)
+            rust_slot_graph_seconds = rust_metrics["elapsed_seconds"]
+            rust_slot_graph_equivalent = (
+                graph_signature(rust_graph) == graph_signature(python_graph)
+            )
+            rust_plan = plan_distribution(pool, anchor, prebuilt_graph=rust_graph)
+            rust_slot_plan_equivalent = rust_plan.to_dict() == slot_plan.to_dict()
+            if rust_slot_graph_equivalent and rust_slot_plan_equivalent:
+                slot_plan = rust_plan
 
         # This second, explicitly alternative utility gives observed unresolved
-        # requested-slot annotations priority. It changes the objective, not facts,
-        # needs, graph edges, or the source dataset.
+        # requested-slot annotations priority. Facts, needs, and graph structure
+        # remain identical; only the utility values change.
         request_priority_pool = [
             ContractContext(
                 context.context_id,
@@ -139,13 +167,40 @@ def run_sensitivity_sweep(
             )
             for context in pool
         ]
-        request_plan = plan_distribution(request_priority_pool, anchor)
+
+        request_python_started = time.perf_counter()
+        request_python_graph = build_compatibility_graph(request_priority_pool, anchor)
+        request_python_graph_seconds = time.perf_counter() - request_python_started
+        request_plan = plan_distribution(
+            request_priority_pool, anchor, prebuilt_graph=request_python_graph
+        )
+
+        if rust_cache_client is not None:
+            request_eligible = [
+                context for context in request_priority_pool
+                if consistent(context.facts, anchor)
+            ]
+            request_rust_graph, request_cache_metrics = rust_cache_client.build_graph(
+                request_eligible
+            )
+            rust_request_graph_seconds = request_cache_metrics["elapsed_seconds"]
+            rust_request_graph_equivalent = (
+                graph_signature(request_rust_graph) == graph_signature(request_python_graph)
+            )
+            request_rust_plan = plan_distribution(
+                request_priority_pool, anchor, prebuilt_graph=request_rust_graph
+            )
+            rust_request_plan_equivalent = (
+                request_rust_plan.to_dict() == request_plan.to_dict()
+            )
+            if rust_request_graph_equivalent and rust_request_plan_equivalent:
+                request_plan = request_rust_plan
 
         slot_metrics = _measure_policy("populated-slot-count", pool, graph, anchor, slot_plan)
         request_metrics = _measure_policy(
             "requested-slot-priority",
             request_priority_pool,
-            graph,
+            request_python_graph,
             anchor,
             request_plan,
         )
@@ -157,6 +212,18 @@ def run_sensitivity_sweep(
             "request_policy_utility_reconciles": request_metrics["utility_reconciles"],
             "request_policy_dominates_greedy": request_metrics["planner_dominates_greedy_lexicographically"],
         }
+        if rust_cache_client is not None:
+            checks.update({
+                "rust_slot_graph_matches_python": bool(rust_slot_graph_equivalent),
+                "rust_slot_plan_matches_python": bool(rust_slot_plan_equivalent),
+                "rust_request_graph_matches_python": bool(rust_request_graph_equivalent),
+                "rust_request_plan_matches_python": bool(rust_request_plan_equivalent),
+                "utility_only_change_reuses_pair_cache": (
+                    request_cache_metrics is not None
+                    and request_cache_metrics["cache_misses"] == 0
+                    and request_cache_metrics["cache_hits"] == request_cache_metrics["pair_lookups"]
+                ),
+            })
         rows.append({
             "seed": seed,
             "anchor_source_dialogue_id": anchor_sources[0].context_id,
@@ -165,6 +232,25 @@ def run_sensitivity_sweep(
             "candidate_contexts": len(pool),
             "slot_count_policy": slot_metrics,
             "request_priority_policy": request_metrics,
+            "rust_compute_cache": (
+                {
+                    "slot_policy": {
+                        "python_graph_seconds": round(slot_python_graph_seconds, 9),
+                        "rust_graph_seconds": rust_slot_graph_seconds,
+                        "graph_equivalent": rust_slot_graph_equivalent,
+                        "plan_equivalent": rust_slot_plan_equivalent,
+                        "cache": rust_metrics,
+                    },
+                    "request_policy": {
+                        "python_graph_seconds": round(request_python_graph_seconds, 9),
+                        "rust_graph_seconds": rust_request_graph_seconds,
+                        "graph_equivalent": rust_request_graph_equivalent,
+                        "plan_equivalent": rust_request_plan_equivalent,
+                        "cache": request_cache_metrics,
+                    },
+                }
+                if rust_cache_client is not None else None
+            ),
             "selected_set_changed_under_alternative_utility": (
                 set(slot_plan.selected_contexts) != set(request_plan.selected_contexts)
             ),
@@ -196,6 +282,26 @@ def run_sensitivity_sweep(
         "summary": {
             "seed_count": len(rows),
             "all_seed_runs_passed": all(row["passed"] for row in rows),
+            "rust_compute_cache_enabled": rust_cache_client is not None,
+            "rust_slot_graph_seconds": _number_summary([
+                row["rust_compute_cache"]["slot_policy"]["rust_graph_seconds"]
+                for row in rows if row["rust_compute_cache"] is not None
+            ]),
+            "python_slot_graph_seconds": _number_summary([
+                row["rust_compute_cache"]["slot_policy"]["python_graph_seconds"]
+                for row in rows if row["rust_compute_cache"] is not None
+            ]),
+            "rust_request_graph_seconds": _number_summary([
+                row["rust_compute_cache"]["request_policy"]["rust_graph_seconds"]
+                for row in rows if row["rust_compute_cache"] is not None
+            ]),
+            "python_request_graph_seconds": _number_summary([
+                row["rust_compute_cache"]["request_policy"]["python_graph_seconds"]
+                for row in rows if row["rust_compute_cache"] is not None
+            ]),
+            "rust_cache_total": (
+                rust_cache_client.stats() if rust_cache_client is not None else None
+            ),
             "slot_count_uplift_vs_greedy_pct": _number_summary([
                 row["uplift_vs_greedy_pct"] for row in slot_rows
             ]),
@@ -245,6 +351,11 @@ def main() -> None:
     parser.add_argument("--start-seed", type=int, default=2026)
     parser.add_argument("--anchor-context-count", type=int, default=4)
     parser.add_argument(
+        "--rust-cache",
+        action="store_true",
+        help="use and verify the Rust pair-compatibility computation cache",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=Path(__file__).with_name("MULTIWOZ-SENSITIVITY-RESULTS.json"),
@@ -258,13 +369,24 @@ def main() -> None:
     if args.limit:
         contexts = contexts[:args.limit]
     try:
-        result = run_sensitivity_sweep(
-            contexts,
-            provenance,
-            seed_count=args.seed_count,
-            start_seed=args.start_seed,
-            anchor_context_count=args.anchor_context_count,
-        )
+        if args.rust_cache:
+            with RustCompatibilityCacheClient() as rust_cache:
+                result = run_sensitivity_sweep(
+                    contexts,
+                    provenance,
+                    seed_count=args.seed_count,
+                    start_seed=args.start_seed,
+                    anchor_context_count=args.anchor_context_count,
+                    rust_cache_client=rust_cache,
+                )
+        else:
+            result = run_sensitivity_sweep(
+                contexts,
+                provenance,
+                seed_count=args.seed_count,
+                start_seed=args.start_seed,
+                anchor_context_count=args.anchor_context_count,
+            )
     except ValueError as exc:
         parser.error(str(exc))
 

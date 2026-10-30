@@ -31,8 +31,10 @@ import networkx as nx
 from context_contract_distribution import (
     ContractContext,
     build_compatibility_graph,
+    consistent,
     plan_distribution,
 )
+from rust_compute_cache import RustCompatibilityCacheClient, graph_signature
 
 SEED = 2026
 SOURCE_REPO = "https://github.com/budzianowski/multiwoz"
@@ -314,6 +316,7 @@ def run_benchmark(
     provenance: list[dict[str, str]],
     limit: int | None = None,
     anchor_updates: int = 3,
+    rust_cache_client: RustCompatibilityCacheClient | None = None,
 ) -> dict[str, Any]:
     started = time.time()
     rng = random.Random(SEED)
@@ -336,10 +339,52 @@ def run_benchmark(
 
     _log("== MultiWOZ 2.2 actual test-corpus benchmark ==")
     _log(f"source dialogues: {len(dialogues)}; contexts in planner pool: {len(pool)}; anchor facts: {len(anchor)}")
-    t_plan = time.time()
-    plan = plan_distribution(pool, anchor)
-    plan_seconds = time.time() - t_plan
+    t_plan = time.perf_counter()
+    t_graph = time.perf_counter()
     graph = build_compatibility_graph(pool, anchor)
+    python_graph_seconds = time.perf_counter() - t_graph
+    python_plan = plan_distribution(pool, anchor, prebuilt_graph=graph)
+    plan = python_plan
+    plan_seconds = time.perf_counter() - t_plan
+    rust_cache_records: list[dict[str, Any]] = []
+
+    def plan_with_rust_cache(
+        plan_contexts: list[ContractContext],
+        plan_anchor: dict[str, str],
+        reference_graph: nx.Graph,
+        label: str,
+    ) -> tuple[Any, dict[str, Any] | None]:
+        if rust_cache_client is None:
+            return plan_distribution(
+                plan_contexts, plan_anchor, prebuilt_graph=reference_graph
+            ), None
+
+        eligible_contexts = [
+            context for context in plan_contexts
+            if consistent(context.facts, plan_anchor)
+        ]
+        rust_graph, cache_metrics = rust_cache_client.build_graph(eligible_contexts)
+        graph_matches = graph_signature(rust_graph) == graph_signature(reference_graph)
+        reference_plan = plan_distribution(
+            plan_contexts, plan_anchor, prebuilt_graph=reference_graph
+        )
+        rust_plan = plan_distribution(
+            plan_contexts, plan_anchor, prebuilt_graph=rust_graph
+        )
+        plan_matches = rust_plan.to_dict() == reference_plan.to_dict()
+        record = {
+            "label": label,
+            "python_graph_matches_rust": graph_matches,
+            "python_plan_matches_rust": plan_matches,
+            "python_graph_seconds": round(python_graph_seconds, 9) if label == "initial" else None,
+            "rust_graph_seconds": cache_metrics["elapsed_seconds"],
+            "cache": cache_metrics,
+        }
+        rust_cache_records.append(record)
+        return (rust_plan if graph_matches and plan_matches else reference_plan), record
+
+    if rust_cache_client is not None:
+        plan, initial_rust_record = plan_with_rust_cache(pool, anchor, graph, "initial")
     utilities = {context.context_id: context.value for context in pool}
     independent_ok, independent_detail = independently_validate_plan(plan, by_id, anchor)
     ref_utility, ref_count = exact_objective_reference(graph, utilities)
@@ -423,7 +468,9 @@ def run_benchmark(
         repair_all_valid &= repair_feasible
         repair_bound_all_valid &= repair_bound
 
-        replanned = plan_distribution(pool, new_anchor)
+        replanned, rust_update_record = plan_with_rust_cache(
+            pool, new_anchor, new_graph, f"anchor-update-{index}"
+        )
         churn_reopt = len(set(current_plan.selected_contexts) ^ set(replanned.selected_contexts))
         updates.append({
             "step": index,
@@ -440,6 +487,14 @@ def run_benchmark(
             "reoptimized_utility": replanned.total_utility,
             "repair_utility": sum(utilities[node] for node in repaired),
             "reoptimization_utility_regret": replanned.total_utility - sum(utilities[node] for node in repaired),
+            "rust_cache_graph_equivalent": (
+                rust_update_record["python_graph_matches_rust"]
+                if rust_update_record is not None else None
+            ),
+            "rust_cache_plan_equivalent": (
+                rust_update_record["python_plan_matches_rust"]
+                if rust_update_record is not None else None
+            ),
         })
         current_anchor, current_plan, current_graph = new_anchor, replanned, new_graph
     anchor_ok = repair_all_valid and repair_bound_all_valid
@@ -452,8 +507,10 @@ def run_benchmark(
     scarce_pool = rng.sample(scarce_source, min(250, len(scarce_source)))
     scarce_anchor_source = anchor_sources[-1]
     scarce_anchor = anchor_from_context(scarce_anchor_source, rng)
-    scarce_plan = plan_distribution(scarce_pool, scarce_anchor)
     scarce_graph = build_compatibility_graph(scarce_pool, scarce_anchor)
+    scarce_plan, scarce_rust_record = plan_with_rust_cache(
+        scarce_pool, scarce_anchor, scarce_graph, "scarce-request-pool"
+    )
     scarce_utility = {context.context_id: context.value for context in scarce_pool}
     scarce_ref = exact_objective_reference(scarce_graph, scarce_utility)
     scarce_ok = (scarce_plan.total_utility, len(scarce_plan.selected_contexts)) == scarce_ref
@@ -469,6 +526,32 @@ def run_benchmark(
         {"name": "real_anchor_replacement_repair", "passed": anchor_ok, "details": f"{len(updates)} anchor changes; no infeasibility or 2x-bound violation"},
         {"name": "actual_request_scarcity_subset", "passed": scarce_ok, "details": f"{len(scarce_pool)} contexts; oracle={scarce_ref}; {scarce_detail}"},
     ]
+    if rust_cache_client is not None:
+        checks.extend([
+            {
+                "name": "rust_initial_graph_and_plan_match_python",
+                "passed": bool(
+                    rust_cache_records[0]["python_graph_matches_rust"]
+                    and rust_cache_records[0]["python_plan_matches_rust"]
+                ),
+            },
+            {
+                "name": "rust_anchor_update_graphs_and_plans_match_python",
+                "passed": all(
+                    record["python_graph_matches_rust"] and record["python_plan_matches_rust"]
+                    for record in rust_cache_records
+                    if record["label"].startswith("anchor-update-")
+                ),
+            },
+            {
+                "name": "rust_scarcity_graph_and_plan_match_python",
+                "passed": bool(
+                    scarce_rust_record is not None
+                    and scarce_rust_record["python_graph_matches_rust"]
+                    and scarce_rust_record["python_plan_matches_rust"]
+                ),
+            },
+        ])
     contexts_with_facts = sum(bool(context.facts) for context in contexts)
     contexts_with_needs = sum(bool(context.needs) for context in contexts)
     service_counts = Counter(service for dialogue in dialogues for service in dialogue.get("services", []))
@@ -524,6 +607,14 @@ def run_benchmark(
             **walk,
         },
         "anchor_updates": updates,
+        "rust_compute_cache": (
+            {
+                "enabled": True,
+                "cache_builds": rust_cache_records,
+                "total_metrics": rust_cache_client.stats(),
+            }
+            if rust_cache_client is not None else {"enabled": False}
+        ),
         "scarce_request_pool": {
             "source": "contexts with actual facts and at least one annotated requested-slot key absent from final facts",
             "contexts": len(scarce_pool),
@@ -553,6 +644,11 @@ def main() -> None:
     parser.add_argument("--cache-dir", type=Path, default=Path(tempfile.gettempdir()) / "multiwoz-v22-pinned")
     parser.add_argument("--limit", type=int, default=0, help="optional deterministic dialogue limit for smoke tests; default uses the full pinned test split")
     parser.add_argument("--anchor-updates", type=int, default=3)
+    parser.add_argument(
+        "--rust-cache",
+        action="store_true",
+        help="use and verify the Rust pair-compatibility computation cache",
+    )
     parser.add_argument("--output", type=Path, default=Path(__file__).with_name("MULTIWOZ-REAL-DATA-RESULTS.json"))
     args = parser.parse_args()
     if args.limit < 0 or args.anchor_updates < 1:
@@ -560,12 +656,22 @@ def main() -> None:
 
     corpus, provenance = load_corpus(args.cache_dir)
     started = time.time()
-    result = run_benchmark(
-        corpus,
-        provenance,
-        limit=args.limit or None,
-        anchor_updates=args.anchor_updates,
-    )
+    if args.rust_cache:
+        with RustCompatibilityCacheClient() as rust_cache:
+            result = run_benchmark(
+                corpus,
+                provenance,
+                limit=args.limit or None,
+                anchor_updates=args.anchor_updates,
+                rust_cache_client=rust_cache,
+            )
+    else:
+        result = run_benchmark(
+            corpus,
+            provenance,
+            limit=args.limit or None,
+            anchor_updates=args.anchor_updates,
+        )
     result["download_and_load_seconds"] = round(time.time() - started, 3)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
@@ -578,6 +684,15 @@ def main() -> None:
         "eligible_contexts": result["main_plan"]["eligible_contexts"],
         "selected_contexts": result["main_plan"]["selected_contexts"],
         "compatibility_edges": result["main_plan"]["compatibility_edges"],
+        "rust_cache_enabled": result["rust_compute_cache"]["enabled"],
+        "rust_cache_hits": (
+            result["rust_compute_cache"]["total_metrics"]["cache_hits"]
+            if result["rust_compute_cache"]["enabled"] else 0
+        ),
+        "rust_cache_misses": (
+            result["rust_compute_cache"]["total_metrics"]["cache_misses"]
+            if result["rust_compute_cache"]["enabled"] else 0
+        ),
         "runtime_seconds": result["runtime_seconds"],
         "output": str(args.output),
     }, ensure_ascii=False, sort_keys=True))

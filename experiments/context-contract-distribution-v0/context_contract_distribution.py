@@ -392,8 +392,48 @@ def build_compatibility_graph(
     return _build_compatibility_graph(eligible)
 
 
+def _validate_prebuilt_compatibility_graph(
+    graph: nx.Graph, eligible: tuple[ContractContext, ...]
+) -> nx.Graph:
+    """Validate the graph boundary before allowing an alternate builder to plan."""
+    if not isinstance(graph, nx.Graph) or graph.is_directed() or graph.is_multigraph():
+        raise ValueError("prebuilt compatibility graph must be a simple undirected graph")
+
+    context_by_id = {context.context_id: context for context in eligible}
+    expected_ids = set(context_by_id)
+    if set(graph.nodes) != expected_ids:
+        raise ValueError("prebuilt graph nodes must exactly match anchor-eligible contexts")
+
+    for context_id, context in context_by_id.items():
+        if graph.nodes[context_id].get("utility") != context.value:
+            raise ValueError(f"prebuilt graph utility mismatch for {context_id!r}")
+
+    primary_scale = len(eligible) + 1
+    for left, right, attributes in graph.edges(data=True):
+        if left == right or left not in context_by_id or right not in context_by_id:
+            raise ValueError("prebuilt graph contains an invalid edge endpoint")
+        expected_weight = (
+            context_by_id[left].value + context_by_id[right].value
+        ) * primary_scale + 2
+        if type(attributes.get("weight")) is not int or attributes["weight"] != expected_weight:
+            raise ValueError(f"prebuilt graph has an invalid objective weight for {(left, right)!r}")
+        services = attributes.get("services")
+        if not isinstance(services, tuple) or not services:
+            raise ValueError(f"prebuilt graph edge {(left, right)!r} has no service witnesses")
+        for service in services:
+            if not isinstance(service, ServiceWitness):
+                raise ValueError("prebuilt graph service witnesses have an invalid type")
+            if {service.consumer, service.provider} != {left, right}:
+                raise ValueError("prebuilt graph service witness endpoints do not match the edge")
+
+    return graph.copy()
+
+
 def plan_distribution(
-    contexts: Iterable[ContractContext], anchor: Mapping[str, JsonScalar]
+    contexts: Iterable[ContractContext],
+    anchor: Mapping[str, JsonScalar],
+    *,
+    prebuilt_graph: nx.Graph | None = None,
 ) -> DistributionPlan:
     """Compute a maximum-utility, fully paired context distribution.
 
@@ -415,7 +455,11 @@ def plan_distribution(
         for item in context_list if conflicts_by_id[item.context_id]
     )
 
-    graph = _build_compatibility_graph(eligible)
+    graph = (
+        _build_compatibility_graph(eligible)
+        if prebuilt_graph is None
+        else _validate_prebuilt_compatibility_graph(prebuilt_graph, eligible)
+    )
     matching = nx.max_weight_matching(graph, maxcardinality=False, weight="weight")
     normalized_pairs: list[PairPlan] = []
     selected: set[str] = set()
