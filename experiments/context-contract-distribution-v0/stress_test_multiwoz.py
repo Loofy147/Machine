@@ -693,6 +693,10 @@ def main() -> None:
             result["rust_compute_cache"]["total_metrics"]["cache_misses"]
             if result["rust_compute_cache"]["enabled"] else 0
         ),
+        "rust_graph_cache_hits": (
+            result["rust_compute_cache"]["total_metrics"]["graph_cache_hits"]
+            if result["rust_compute_cache"]["enabled"] else 0
+        ),
         "runtime_seconds": result["runtime_seconds"],
         "output": str(args.output),
     }, ensure_ascii=False, sort_keys=True))

@@ -218,10 +218,9 @@ def run_sensitivity_sweep(
                 "rust_slot_plan_matches_python": bool(rust_slot_plan_equivalent),
                 "rust_request_graph_matches_python": bool(rust_request_graph_equivalent),
                 "rust_request_plan_matches_python": bool(rust_request_plan_equivalent),
-                "utility_only_change_reuses_pair_cache": (
+                "utility_only_change_reuses_graph_cache": (
                     request_cache_metrics is not None
-                    and request_cache_metrics["cache_misses"] == 0
-                    and request_cache_metrics["cache_hits"] == request_cache_metrics["pair_lookups"]
+                    and request_cache_metrics["graph_cache_hit"] is True
                 ),
             })
         rows.append({

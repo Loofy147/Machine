@@ -67,6 +67,12 @@ struct CacheValue {
     weight_bytes: u32,
 }
 
+#[derive(Clone, Debug)]
+struct GraphCacheValue {
+    edges: Vec<CachedEdge>,
+    weight_bytes: u32,
+}
+
 #[derive(Clone, Debug, Serialize)]
 pub struct CacheMetrics {
     pub pair_lookups: u64,
@@ -74,6 +80,10 @@ pub struct CacheMetrics {
     pub cache_misses: u64,
     pub entries: u64,
     pub hit_rate: f64,
+    pub graph_cache_hit: bool,
+    pub graph_cache_hits: u64,
+    pub graph_cache_misses: u64,
+    pub graph_cache_entries: u64,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -84,17 +94,19 @@ pub struct BuildResult {
 }
 
 #[derive(Serialize)]
-struct PairKey<'a> {
+struct ContextKey<'a> {
     schema: &'static str,
-    left: &'a Context,
-    right: &'a Context,
+    context: &'a Context,
 }
 
 pub struct CompatibilityCache {
-    entries: Cache<String, CacheValue>,
+    entries: Cache<[u8; 64], CacheValue>,
+    graphs: Cache<[u8; 32], GraphCacheValue>,
     pair_lookups: u64,
     cache_hits: u64,
     cache_misses: u64,
+    graph_cache_hits: u64,
+    graph_cache_misses: u64,
 }
 
 impl Default for CompatibilityCache {
@@ -107,7 +119,16 @@ impl CompatibilityCache {
     pub fn new() -> Self {
         let entries = Cache::builder()
             .max_capacity(MAX_CAPACITY_BYTES)
-            .weigher(|key: &String, value: &CacheValue| {
+            .weigher(|key: &[u8; 64], value: &CacheValue| {
+                key.len()
+                    .saturating_add(value.weight_bytes as usize)
+                    .min(u32::MAX as usize) as u32
+            })
+            .time_to_live(TTL)
+            .build();
+        let graphs = Cache::builder()
+            .max_capacity(64 * 1024 * 1024)
+            .weigher(|key: &[u8; 32], value: &GraphCacheValue| {
                 key.len()
                     .saturating_add(value.weight_bytes as usize)
                     .min(u32::MAX as usize) as u32
@@ -117,9 +138,12 @@ impl CompatibilityCache {
 
         Self {
             entries,
+            graphs,
             pair_lookups: 0,
             cache_hits: 0,
             cache_misses: 0,
+            graph_cache_hits: 0,
+            graph_cache_misses: 0,
         }
     }
 
@@ -143,6 +167,35 @@ impl CompatibilityCache {
             }
         }
 
+        // Fingerprint each immutable context once. The graph-cache key omits
+        // utility, so changing the objective can reuse the complete graph.
+        let fingerprints = contexts
+            .iter()
+            .map(Self::context_fingerprint)
+            .collect::<Result<Vec<_>, _>>()?;
+        let graph_key = Self::graph_key(&fingerprints);
+
+        if let Some(cached) = self.graphs.get(&graph_key) {
+            self.graph_cache_hits = self.graph_cache_hits.saturating_add(1);
+            self.graphs.run_pending_tasks();
+            return Ok(BuildResult {
+                schema: CACHE_SCHEMA.to_string(),
+                edges: cached.edges.clone(),
+                cache: CacheMetrics {
+                    pair_lookups: 0,
+                    cache_hits: 0,
+                    cache_misses: 0,
+                    entries: self.entries.entry_count(),
+                    hit_rate: 1.0,
+                    graph_cache_hit: true,
+                    graph_cache_hits: 1,
+                    graph_cache_misses: 0,
+                    graph_cache_entries: self.graphs.entry_count(),
+                },
+            });
+        }
+
+        self.graph_cache_misses = self.graph_cache_misses.saturating_add(1);
         let before_hits = self.cache_hits;
         let before_misses = self.cache_misses;
         let mut edges = Vec::new();
@@ -151,7 +204,10 @@ impl CompatibilityCache {
             for right_index in (left_index + 1)..contexts.len() {
                 let left = &contexts[left_index];
                 let right = &contexts[right_index];
-                let key = Self::pair_key(left, right)?;
+                let key = Self::pair_key(
+                    &fingerprints[left_index],
+                    &fingerprints[right_index],
+                );
 
                 self.pair_lookups = self.pair_lookups.saturating_add(1);
                 let outcome = if let Some(cached) = self.entries.get(&key) {
@@ -183,6 +239,18 @@ impl CompatibilityCache {
         }
 
         self.entries.run_pending_tasks();
+        let graph_weight = serde_json::to_vec(&edges)
+            .map(|bytes| bytes.len().min(u32::MAX as usize) as u32)
+            .unwrap_or(32);
+        self.graphs.insert(
+            graph_key,
+            GraphCacheValue {
+                edges: edges.clone(),
+                weight_bytes: graph_weight,
+            },
+        );
+        self.graphs.run_pending_tasks();
+
         let call_hits = self.cache_hits.saturating_sub(before_hits);
         let call_misses = self.cache_misses.saturating_sub(before_misses);
         let call_lookups = call_hits.saturating_add(call_misses);
@@ -201,6 +269,10 @@ impl CompatibilityCache {
                 cache_misses: call_misses,
                 entries: self.entries.entry_count(),
                 hit_rate,
+                graph_cache_hit: false,
+                graph_cache_hits: 0,
+                graph_cache_misses: 1,
+                graph_cache_entries: self.graphs.entry_count(),
             },
         })
     }
@@ -218,18 +290,36 @@ impl CompatibilityCache {
             cache_misses: self.cache_misses,
             entries: self.entries.entry_count(),
             hit_rate,
+            graph_cache_hit: false,
+            graph_cache_hits: self.graph_cache_hits,
+            graph_cache_misses: self.graph_cache_misses,
+            graph_cache_entries: self.graphs.entry_count(),
         }
     }
 
-    fn pair_key(left: &Context, right: &Context) -> Result<String, String> {
-        let encoded = serde_json::to_vec(&PairKey {
+    fn context_fingerprint(context: &Context) -> Result<[u8; 32], String> {
+        let encoded = serde_json::to_vec(&ContextKey {
             schema: CACHE_SCHEMA,
-            left,
-            right,
+            context,
         })
-        .map_err(|error| format!("could not canonicalize context pair: {error}"))?;
-        let digest = Sha256::digest(&encoded);
-        Ok(digest.iter().map(|byte| format!("{byte:02x}")).collect())
+        .map_err(|error| format!("could not fingerprint context {}: {error}", context.id))?;
+        Ok(Sha256::digest(&encoded).into())
+    }
+
+    fn graph_key(fingerprints: &[[u8; 32]]) -> [u8; 32] {
+        let mut digest = Sha256::new();
+        digest.update(CACHE_SCHEMA.as_bytes());
+        for fingerprint in fingerprints {
+            digest.update(fingerprint);
+        }
+        digest.finalize().into()
+    }
+
+    fn pair_key(left: &[u8; 32], right: &[u8; 32]) -> [u8; 64] {
+        let mut key = [0_u8; 64];
+        key[..32].copy_from_slice(left);
+        key[32..].copy_from_slice(right);
+        key
     }
 
     fn same_typed_value(left: &Value, right: &Value) -> bool {
@@ -366,7 +456,10 @@ mod tests {
         assert_eq!(first.cache.cache_misses, 1);
         assert_eq!(first.cache.cache_hits, 0);
         assert_eq!(second.cache.cache_misses, 0);
-        assert_eq!(second.cache.cache_hits, 1);
+        assert_eq!(second.cache.cache_hits, 0);
+        assert_eq!(second.cache.graph_cache_hit, true);
+        assert_eq!(second.cache.graph_cache_hits, 1);
+        assert_eq!(second.cache.pair_lookups, 0);
         assert_eq!(first.edges, second.edges);
         assert_eq!(second.edges[0].services[0].needs[0].key, "deadline");
     }
@@ -384,8 +477,10 @@ mod tests {
 
         assert!(first.edges.is_empty());
         assert_eq!(first.cache.cache_misses, 1);
-        assert_eq!(second.cache.cache_hits, 1);
+        assert_eq!(second.cache.cache_hits, 0);
         assert_eq!(second.cache.cache_misses, 0);
+        assert_eq!(second.cache.graph_cache_hit, true);
+        assert_eq!(second.cache.graph_cache_hits, 1);
     }
 
     #[test]

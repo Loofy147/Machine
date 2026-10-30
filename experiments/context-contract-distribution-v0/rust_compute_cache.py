@@ -223,6 +223,8 @@ class RustCompatibilityCacheClient:
             except subprocess.TimeoutExpired:
                 self.process.kill()
                 self.process.wait(timeout=5)
+            if self.process.stdout is not None:
+                self.process.stdout.close()
 
     def __enter__(self) -> "RustCompatibilityCacheClient":
         return self

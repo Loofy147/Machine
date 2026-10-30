@@ -68,8 +68,9 @@ class RustComputeCacheTests(unittest.TestCase):
             rust_changed, warm = cache.build_graph(changed_utility)
             python_changed = build_compatibility_graph(changed_utility, {})
             self.assertEqual(graph_signature(rust_changed), graph_signature(python_changed))
+            self.assertTrue(warm["graph_cache_hit"])
             self.assertEqual(warm["cache_misses"], 0)
-            self.assertEqual(warm["cache_hits"], warm["pair_lookups"])
+            self.assertEqual(warm["pair_lookups"], 0)
             self.assertNotEqual(
                 rust_graph["a-consumer"]["b-provider"]["weight"],
                 rust_changed["a-consumer"]["b-provider"]["weight"],
@@ -115,8 +116,9 @@ class RustComputeCacheTests(unittest.TestCase):
         self.assertEqual(first_graph.number_of_edges(), 0)
         self.assertEqual(second_graph.number_of_edges(), 0)
         self.assertEqual(first["cache_misses"], 1)
-        self.assertEqual(second["cache_hits"], 1)
+        self.assertEqual(second["cache_hits"], 0)
         self.assertEqual(second["cache_misses"], 0)
+        self.assertTrue(second["graph_cache_hit"])
 
 
 if __name__ == "__main__":
