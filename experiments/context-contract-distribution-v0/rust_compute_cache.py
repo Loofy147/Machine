@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import threading
 import time
 from typing import Any, Iterable, Mapping
 
@@ -58,6 +59,7 @@ class RustCompatibilityCacheClient:
         process_environment = os.environ.copy()
         if environment is not None:
             process_environment.update(environment)
+        self._request_lock = threading.Lock()
         self.process = subprocess.Popen(
             [str(self.binary)],
             stdin=subprocess.PIPE,
@@ -72,6 +74,12 @@ class RustCompatibilityCacheClient:
         self.closed = False
 
     def _request(self, payload: dict[str, Any]) -> dict[str, Any]:
+        # A single JSON-lines process has one request/response stream. Serialize
+        # callers so concurrent threads cannot consume each other's responses.
+        with self._request_lock:
+            return self._request_unlocked(payload)
+
+    def _request_unlocked(self, payload: dict[str, Any]) -> dict[str, Any]:
         if self.closed:
             raise RustComputeCacheError("Rust cache client is already closed")
         if self.process.poll() is not None:
@@ -216,22 +224,38 @@ class RustCompatibilityCacheClient:
             raise RustComputeCacheError("Rust cache stats response is malformed")
         return cache
 
-    def close(self) -> None:
-        if self.closed:
-            return
+    def process_memory_bytes(self) -> dict[str, int] | None:
+        """Return Linux child-process RSS/HWM when /proc is available."""
+        status_path = Path("/proc") / str(self.process.pid) / "status"
         try:
-            self._request({"op": "shutdown"})
-        finally:
-            self.closed = True
-            if self.process.stdin is not None:
-                self.process.stdin.close()
+            lines = status_path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return None
+        values: dict[str, int] = {}
+        for line in lines:
+            if line.startswith(("VmRSS:", "VmHWM:", "VmPeak:")):
+                key, raw_value, *_ = line.split()
+                values[key.rstrip(":").lower() + "_bytes"] = int(raw_value) * 1024
+        return values
+
+    def close(self) -> None:
+        # Keep shutdown and pipe closure atomic relative to concurrent callers.
+        with self._request_lock:
+            if self.closed:
+                return
             try:
-                self.process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                self.process.kill()
-                self.process.wait(timeout=5)
-            if self.process.stdout is not None:
-                self.process.stdout.close()
+                self._request_unlocked({"op": "shutdown"})
+            finally:
+                self.closed = True
+                if self.process.stdin is not None:
+                    self.process.stdin.close()
+                try:
+                    self.process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    self.process.kill()
+                    self.process.wait(timeout=5)
+                if self.process.stdout is not None:
+                    self.process.stdout.close()
 
     def __enter__(self) -> "RustCompatibilityCacheClient":
         return self

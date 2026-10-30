@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import time
 import unittest
 
@@ -116,6 +117,99 @@ class RustComputeCacheTests(unittest.TestCase):
         self.assertFalse(first["graph_cache_hit"])
         self.assertTrue(second["graph_cache_hit"])
         self.assertEqual(second["pair_lookups"], 0)
+
+    def test_concurrent_callers_share_one_client_without_response_cross_talk(self):
+        base_contexts = _fixture()
+        variants = []
+        for index in range(4):
+            changed = list(base_contexts)
+            target = changed[index]
+            changed_facts = dict(target.facts)
+            changed_needs = dict(target.needs)
+            if index == 0:
+                changed_facts["region"] = "west"
+            elif index == 1:
+                changed_facts["deadline"] = "saturday"
+            elif index == 2:
+                changed_facts["owner"] = "team-b"
+            else:
+                changed_needs["region"] = None
+            changed[index] = ContractContext(
+                target.context_id,
+                changed_facts,
+                changed_needs,
+                utility=target.value,
+            )
+            variants.append(changed)
+        expected_signatures = [
+            graph_signature(build_compatibility_graph(variant, {}))
+            for variant in variants
+        ]
+
+        def invoke(index):
+            variant_index = index % len(variants)
+            variant = [
+                ContractContext(
+                    item.context_id,
+                    item.facts,
+                    item.needs,
+                    utility=item.value + index,
+                )
+                for item in (
+                    variants[variant_index]
+                    if index % 2 == 0
+                    else reversed(variants[variant_index])
+                )
+            ]
+            graph, metrics = client.build_graph(variant)
+            return index, variant_index, graph_signature(graph), graph, metrics, variant
+
+        with RustCompatibilityCacheClient() as client:
+            with ThreadPoolExecutor(max_workers=8) as pool:
+                results = list(pool.map(invoke, range(64)))
+            stats = client.stats()
+
+        self.assertEqual(len(results), 64)
+        for index, variant_index, signature, graph, _, variant in results:
+            self.assertEqual(
+                signature,
+                expected_signatures[variant_index],
+                f"concurrent response mismatch at request {index}",
+            )
+            self.assertEqual(
+                signature,
+                graph_signature(build_compatibility_graph(variant, {})),
+                f"caller utility/order mismatch at request {index}",
+            )
+            self.assertEqual(graph.number_of_nodes(), len(variant))
+        self.assertEqual(stats["graph_cache_misses"], len(variants))
+        self.assertEqual(stats["graph_cache_hits"], 64 - len(variants))
+
+    def test_cache_state_is_process_local_and_restart_starts_cold(self):
+        contexts = _fixture()
+        with RustCompatibilityCacheClient() as first_client:
+            first_graph, first_metrics = first_client.build_graph(contexts)
+            first_pid = first_client.process.pid
+            first_memory = first_client.process_memory_bytes()
+            self.assertFalse(first_metrics["graph_cache_hit"])
+            if first_memory is not None:
+                self.assertGreater(first_memory.get("vmrss_bytes", 0), 0)
+
+        with RustCompatibilityCacheClient() as restarted_client:
+            restarted_graph, restarted_metrics = restarted_client.build_graph(contexts)
+            restarted_stats = restarted_client.stats()
+            restarted_pid = restarted_client.process.pid
+
+        self.assertEqual(graph_signature(first_graph), graph_signature(restarted_graph))
+        self.assertNotEqual(first_pid, restarted_pid)
+        self.assertFalse(restarted_metrics["graph_cache_hit"])
+        self.assertEqual(restarted_metrics["cache_hits"], 0)
+        self.assertEqual(
+            restarted_metrics["cache_misses"],
+            len(contexts) * (len(contexts) - 1) // 2,
+        )
+        self.assertEqual(restarted_stats["graph_cache_hits"], 0)
+        self.assertEqual(restarted_stats["graph_cache_misses"], 1)
 
     def test_anchor_filter_is_applied_before_rust_pair_work(self):
         contexts = _fixture()
