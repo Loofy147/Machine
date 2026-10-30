@@ -667,12 +667,20 @@ mod tests {
         let mut second_pass_hits = 0;
         let mut second_pass_misses = 0;
         for pair in &pairs {
-            let result = cache.build_graph(pair.clone()).expect("second pressure pass");
+            let result = cache
+                .build_graph(pair.clone())
+                .expect("second pressure pass");
             second_pass_hits += result.cache.cache_hits;
             second_pass_misses += result.cache.cache_misses;
         }
-        assert!(second_pass_misses > 0, "capacity pressure must cause recomputation");
-        assert!(second_pass_hits > 0, "the bounded cache must retain some useful entries");
+        assert!(
+            second_pass_misses > 0,
+            "capacity pressure must cause recomputation"
+        );
+        assert!(
+            second_pass_hits > 0,
+            "the bounded cache must retain some useful entries"
+        );
         assert!(cache.total_metrics().entries < pairs.len() as u64);
     }
 
