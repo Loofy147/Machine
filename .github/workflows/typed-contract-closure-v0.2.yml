@@ -1,0 +1,53 @@
+name: Typed Contract Closure v0.2
+
+on:
+  push:
+    branches:
+      - experiment/context-contract-distribution-center-v0.1
+    paths:
+      - experiments/typed-contract-closure-v0.2/**
+      - .github/workflows/typed-contract-closure-v0.2.yml
+  pull_request:
+    branches:
+      - main
+      - integration/predecessor-frontier-contract-v0.1
+    paths:
+      - experiments/typed-contract-closure-v0.2/**
+      - .github/workflows/typed-contract-closure-v0.2.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile implementation, source runner and tests
+        run: |
+          python -m py_compile \
+            experiments/typed-contract-closure-v0.2/typed_contract_closure.py \
+            experiments/typed-contract-closure-v0.2/run_openapi_corpus.py \
+            experiments/typed-contract-closure-v0.2/test_typed_contract_closure.py
+      - name: Run deterministic contract and planner tests
+        run: |
+          python -m unittest discover \
+            -s experiments/typed-contract-closure-v0.2 \
+            -p 'test_*.py' -v
+      - name: Verify pinned real OpenAPI corpus and mutation controls
+        run: |
+          python experiments/typed-contract-closure-v0.2/run_openapi_corpus.py \
+            --output experiments/typed-contract-closure-v0.2/OPENAPI-CORPUS-RESULTS.json
+      - name: Upload pinned-source verification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: typed-contract-closure-v0.2
+          if-no-files-found: error
+          path: experiments/typed-contract-closure-v0.2/OPENAPI-CORPUS-RESULTS.json
