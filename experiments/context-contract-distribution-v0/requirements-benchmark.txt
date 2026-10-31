@@ -1,0 +1,4 @@
+# Fixed benchmark environment. The datasets are bundled inside scikit-learn.
+numpy==2.3.5
+networkx==3.6.1
+scikit-learn==1.8.0

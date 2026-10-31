@@ -1,0 +1,163 @@
+name: Context Contract Distribution Center v0.1
+
+on:
+  push:
+    branches:
+      - experiment/context-contract-distribution-center-v0.1
+    paths:
+      - experiments/context-contract-distribution-v0/**
+      - experiments/typed-contract-closure-v0.2/**
+      - runtime/rust-context-compute-cache/**
+      - docs/research/CONTEXT-CONTRACT-DISTRIBUTION-CENTER-v0.1.md
+      - docs/research/MULTIWOZ-ANCHOR-UTILITY-SENSITIVITY.md
+      - docs/research/RUST-COMPUTE-CACHE-EXPERIMENT-v0.1.md
+      - .github/workflows/context-contract-distribution-v0.1.yml
+  pull_request:
+    branches:
+      - main
+      - integration/predecessor-frontier-contract-v0.1
+    paths:
+      - experiments/context-contract-distribution-v0/**
+      - experiments/typed-contract-closure-v0.2/**
+      - runtime/rust-context-compute-cache/**
+      - docs/research/CONTEXT-CONTRACT-DISTRIBUTION-CENTER-v0.1.md
+      - docs/research/MULTIWOZ-ANCHOR-UTILITY-SENSITIVITY.md
+      - docs/research/RUST-COMPUTE-CACHE-EXPERIMENT-v0.1.md
+      - .github/workflows/context-contract-distribution-v0.1.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@1.89.0
+        with:
+          components: rustfmt
+      - name: Format, test, and build the Rust computation cache
+        run: |
+          cargo fmt --manifest-path runtime/rust-context-compute-cache/Cargo.toml -- --check
+          cargo test --manifest-path runtime/rust-context-compute-cache/Cargo.toml
+          cargo build --release --manifest-path runtime/rust-context-compute-cache/Cargo.toml
+      - name: Install planner dependency
+        working-directory: experiments/context-contract-distribution-v0
+        run: python -m pip install -r requirements.txt
+      - name: Compile planner, actual-data loader, runners, and tests
+        run: |
+          python -m py_compile \
+            experiments/context-contract-distribution-v0/context_contract_distribution.py \
+            experiments/context-contract-distribution-v0/rust_compute_cache.py \
+            experiments/context-contract-distribution-v0/test_rust_compute_cache.py \
+            experiments/context-contract-distribution-v0/run_demo.py \
+            experiments/context-contract-distribution-v0/test_context_contract_distribution.py \
+            experiments/context-contract-distribution-v0/stress_test_real_datasets.py \
+            experiments/context-contract-distribution-v0/stress_test_multiwoz.py \
+            experiments/context-contract-distribution-v0/stress_test_multiwoz_sensitivity.py \
+            experiments/context-contract-distribution-v0/stress_test_multiwoz_cache_lifecycle.py \
+            experiments/context-contract-distribution-v0/benchmark_multiwoz_end_to_end.py \
+            experiments/context-contract-distribution-v0/stress_test_multiwoz_runtime_concurrency.py \
+            experiments/context-contract-distribution-v0/stress_test_sgd_independent_corpus.py \
+            experiments/context-contract-distribution-v0/test_sgd_independent_corpus.py \
+            experiments/context-contract-distribution-v0/test_multiwoz_context_benchmark.py \
+            experiments/context-contract-distribution-v0/test_multiwoz_sensitivity.py
+      - name: Run contract, context-conversion, and sensitivity tests
+        working-directory: experiments/context-contract-distribution-v0
+        run: python -m unittest -v
+      - name: Execute demo and validate emitted plan invariants
+        working-directory: experiments/context-contract-distribution-v0
+        run: |
+          python run_demo.py > DEMO-PLAN-RESULTS.json
+          python - <<'PY'
+          import json
+          with open("DEMO-PLAN-RESULTS.json", encoding="utf-8") as handle:
+              result = json.load(handle)
+          for key in ("initial_plan", "anchor_update"):
+              assert key in result, key
+          for plan in (result["initial_plan"], result["anchor_update"]["plan"]):
+              selected = set(plan["selected_contexts"])
+              assert len(selected) == 2 * len(plan["pairs"])
+              assert len(selected) == len(plan["selected_contexts"])
+              excluded = {row["context_id"] for row in plan["anchor_exclusions"]}
+              assert selected.isdisjoint(excluded)
+              assert plan["input_digest_sha256"]
+          PY
+      - name: Install supplementary synthetic-control dependencies
+        working-directory: experiments/context-contract-distribution-v0
+        run: python -m pip install -r requirements-benchmark.txt
+      - name: Run supplementary synthetic-control stress suites
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: python stress_test_real_datasets.py
+      - name: Run actual MultiWOZ 2.2 dialogue-corpus benchmark
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: python stress_test_multiwoz.py --rust-cache --output MULTIWOZ-REAL-DATA-RESULTS.json
+      - name: Validate Rust cache on independent Schema-Guided Dialogue corpus
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: |
+          python stress_test_sgd_independent_corpus.py \
+            --output SGD-INDEPENDENT-DATASET-RESULTS.json
+      - name: Run MultiWOZ anchor and utility sensitivity sweep
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: |
+          python stress_test_multiwoz_sensitivity.py \
+            --seed-count 8 \
+            --start-seed 2026 \
+            --rust-cache \
+            --output MULTIWOZ-SENSITIVITY-RESULTS.json
+      - name: Run changing-context Rust cache lifecycle workload
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: |
+          python stress_test_multiwoz_cache_lifecycle.py \
+            --base-size 180 \
+            --output MULTIWOZ-CACHE-LIFECYCLE-RESULTS.json
+      - name: Exercise cache concurrency, process isolation, and RSS
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: |
+          python stress_test_multiwoz_runtime_concurrency.py \
+            --subset-size 160 \
+            --concurrent-requests 64 \
+            --workers 8 \
+            --independent-processes 4 \
+            --output MULTIWOZ-RUNTIME-CONCURRENCY-RESULTS.json
+      - name: Benchmark separate end-to-end Python and Rust planner paths
+        working-directory: experiments/context-contract-distribution-v0
+        env:
+          PYTHONHASHSEED: "0"
+        run: |
+          python benchmark_multiwoz_end_to_end.py \
+            --repetitions 7 \
+            --output MULTIWOZ-END-TO-END-CACHE-RESULTS.json
+      - name: Upload planner and dataset-derived evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: context-contract-distribution-v0.1
+          if-no-files-found: error
+          path: |
+            experiments/context-contract-distribution-v0/DEMO-PLAN-RESULTS.json
+            experiments/context-contract-distribution-v0/REAL-DATASET-STRESS-RESULTS.json
+            experiments/context-contract-distribution-v0/MULTIWOZ-REAL-DATA-RESULTS.json
+            experiments/context-contract-distribution-v0/MULTIWOZ-SENSITIVITY-RESULTS.json
+            experiments/context-contract-distribution-v0/MULTIWOZ-CACHE-LIFECYCLE-RESULTS.json
+            experiments/context-contract-distribution-v0/MULTIWOZ-END-TO-END-CACHE-RESULTS.json
+            experiments/context-contract-distribution-v0/MULTIWOZ-RUNTIME-CONCURRENCY-RESULTS.json
+            experiments/context-contract-distribution-v0/SGD-INDEPENDENT-DATASET-RESULTS.json
