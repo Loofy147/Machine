@@ -537,6 +537,86 @@ class OpenApiAdapterTests(unittest.TestCase):
         self.assertEqual(result.operation_order, ("createCustomer", "getCustomer"))
         self.assertEqual(result.dependencies[0]["semantic_id"], "customer.id")
 
+    def test_generic_path_identifier_is_bound_by_matching_collection_and_response_resources(self):
+        customer = {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}
+        deleted_customer = {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}
+        path_parameter = {
+            "name": "customer", "in": "path", "required": True,
+            "description": "Unique identifier for the object.", "schema": {"type": "string"},
+        }
+        response_schema = {"anyOf": [
+            {"$ref": "#/components/schemas/customer"},
+            {"$ref": "#/components/schemas/deleted_customer"},
+        ]}
+        operation = {
+            "operationId": "retrieveCustomer",
+            "parameters": [path_parameter],
+            "responses": {"200": {"content": {"application/json": {"schema": response_schema}}}},
+        }
+        document = {
+            "openapi": "3.0.3", "info": {"title": "Path-to-resource binding", "version": "1"},
+            "components": {"schemas": {"customer": customer, "deleted_customer": deleted_customer}},
+            "paths": {"/v1/customers/{customer}": {"get": operation}},
+        }
+        compiled = contract_from_openapi(document, "/v1/customers/{customer}", "get")
+        slot = compiled.required_inputs[0]
+        self.assertEqual(slot.semantic_id, "customer.id")
+        self.assertEqual(slot.evidence, "operation_response_resource")
+
+    def test_generic_identifier_does_not_bind_when_path_and_response_resource_disagree(self):
+        account = {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}
+        operation = {
+            "operationId": "retrieveCustomer",
+            "parameters": [{
+                "name": "customer", "in": "path", "required": True,
+                "description": "Unique identifier for the object.", "schema": {"type": "string"},
+            }],
+            "responses": {"200": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/account"}}}}},
+        }
+        document = {
+            "openapi": "3.0.3", "info": {"title": "Mismatched response resource", "version": "1"},
+            "components": {"schemas": {"account": account}},
+            "paths": {"/v1/customers/{customer}": {"get": operation}},
+        }
+        compiled = contract_from_openapi(document, "/v1/customers/{customer}", "get")
+        self.assertIsNone(compiled.required_inputs[0].semantic_id)
+
+    def test_generic_identifier_without_collection_context_is_not_semantic_identity(self):
+        customer = {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}
+        operation = {
+            "operationId": "lookup",
+            "parameters": [{
+                "name": "customer", "in": "path", "required": True,
+                "description": "Unique identifier for the object.", "schema": {"type": "string"},
+            }],
+            "responses": {"200": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/customer"}}}}},
+        }
+        document = {
+            "openapi": "3.0.3", "info": {"title": "No resource path context", "version": "1"},
+            "components": {"schemas": {"customer": customer}},
+            "paths": {"/v1/lookup/{customer}": {"get": operation}},
+        }
+        compiled = contract_from_openapi(document, "/v1/lookup/{customer}", "get")
+        self.assertIsNone(compiled.required_inputs[0].semantic_id)
+
+    def test_path_response_join_requires_identifier_prose(self):
+        customer = {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}
+        operation = {
+            "operationId": "retrieveCustomer",
+            "parameters": [{
+                "name": "customer", "in": "path", "required": True,
+                "description": "The object to retrieve.", "schema": {"type": "string"},
+            }],
+            "responses": {"200": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/customer"}}}}},
+        }
+        document = {
+            "openapi": "3.0.3", "info": {"title": "Missing identifier prose", "version": "1"},
+            "components": {"schemas": {"customer": customer}},
+            "paths": {"/v1/customers/{customer}": {"get": operation}},
+        }
+        compiled = contract_from_openapi(document, "/v1/customers/{customer}", "get")
+        self.assertIsNone(compiled.required_inputs[0].semantic_id)
+
     def test_name_only_identifier_pattern_is_not_promoted_by_an_unrelated_description(self):
         semantic_id, evidence = infer_semantic_id("customer_id", "Used when linking the record.")
         self.assertEqual(semantic_id, "customer.id")

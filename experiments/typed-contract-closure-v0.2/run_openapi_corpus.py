@@ -81,9 +81,9 @@ def evaluate(raw: bytes) -> dict[str, Any]:
         raise AssertionError("Stripe customer resource ID is not declared as a string output")
     if consumed_customer_id.schema.get("type") != "string":
         raise AssertionError("Stripe retrieve-customer path parameter is not declared as a string")
-    if consumed_customer_id.evidence != "description":
+    if consumed_customer_id.evidence != "operation_response_resource":
         raise AssertionError(
-            "expected documented description evidence for the customer path parameter; "
+            "expected matching collection-path and response-resource evidence for the customer path parameter; "
             f"got {consumed_customer_id.evidence!r}"
         )
     if produced_customer_id.evidence != "resource_ref":
@@ -104,8 +104,8 @@ def evaluate(raw: bytes) -> dict[str, Any]:
     if len(complete.dependencies) != 1:
         raise AssertionError(f"expected one documented customer ID dependency: {complete.dependencies}")
 
-    # A stricter mode refuses documented inference where the upstream spec has
-    # no explicit x-semantic-id guarantee.
+    # A stricter mode refuses inferred path/response resource joins where the
+    # upstream spec has no explicit x-semantic-id guarantee.
     strict = plan_closure(
         retrieved.operation_id, operations, authenticated_anchor, require_explicit=True
     )
@@ -138,15 +138,13 @@ def evaluate(raw: bytes) -> dict[str, Any]:
     ):
         raise AssertionError(f"security precondition was not enforced: {unauthenticated.to_dict()}")
 
-    # The name 'customer' itself is not enough: remove its descriptive evidence.
-    no_description_input = replace(consumed_customer_id, semantic_id=None, evidence="unknown", description="")
-    undocumented_retrieval = replace(
-        retrieved,
-        required_inputs=tuple(
-            no_description_input if item is consumed_customer_id else item
-            for item in retrieved.required_inputs
-        ),
-    )
+    # The identifier prose is a required part of the path/response join.
+    # Removing it from the original OpenAPI parameter must remove semantic identity.
+    undocumented_document = json.loads(json.dumps(document))
+    undocumented_parameter = undocumented_document["paths"]["/v1/customers/{customer}"]["get"]["parameters"]
+    customer_parameter = next(item for item in undocumented_parameter if item.get("name") == "customer")
+    customer_parameter["description"] = "The object to retrieve."
+    undocumented_retrieval = _operation(undocumented_document, "/v1/customers/{customer}", "get")
     name_only = plan_closure(
         undocumented_retrieval.operation_id,
         {created.operation_id: created, undocumented_retrieval.operation_id: undocumented_retrieval},

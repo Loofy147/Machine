@@ -8,7 +8,7 @@ Given a target operation, a registry of operations, and externally established a
 
 A candidate dependency must pass all three gates:
 
-1. **Semantic identity:** the input and output refer to the same stable semantic ID. Explicit `x-semantic-id` metadata is strongest. A resource `$ref` (such as `#/components/schemas/customer` exposing a required `id`) and a direct API description such as “the ID of the customer” are accepted as *documented inference*, not as explicit identity. A field name alone (`customer_id`) is not enough to close a dependency.
+1. **Semantic identity:** the input and output refer to the same stable semantic ID. Explicit `x-semantic-id` metadata is strongest. A resource `$ref` (such as `#/components/schemas/customer` exposing a required `id`) and a direct API description such as “the ID of the customer” are accepted as *documented inference*, not as explicit identity. Generic path-parameter prose such as “Unique identifier for the object” is accepted only when the final path collection, `{parameter}` placeholder, and every declared successful response resource schema independently identify the same entity. A field name alone (`customer_id`) is not enough to close a dependency.
 2. **Type assignability:** the producer's whole declared value domain must fit the consumer's accepted domain. The implemented subset checks JSON types, null, enum/const domains, formats, patterns, numeric and size bounds, arrays, and directly declared object properties/required fields. Incompatible or unresolved schemas do not count as matches.
 3. **Prerequisite and security closure:** all required inputs of candidate providers must themselves be closed. Cycles, unresolved required contract fragments, and missing security-scheme preconditions block a plan.
 
@@ -36,9 +36,9 @@ The default expansion budget is 2,000. The planner must not report optimality wh
 - Git blob SHA-1: `9270d090ab4961efd0eb1a751410d210af929e99`
 - Upstream repository license: MIT
 
-The benchmark uses two real operations from that pinned specification: `POST /v1/customers` and `GET /v1/customers/{customer}`. It checks whether the create response's required customer `id` can satisfy the retrieve operation's required path input, which is described as the ID of the customer. The source does not carry an explicit shared `x-semantic-id`; the expected result is therefore `COMPLETE_INFERRED`, not `COMPLETE_EXPLICIT`.
+The benchmark uses two real operations from that pinned specification: `POST /v1/customers` and `GET /v1/customers/{customer}`. It checks whether the create response's required customer `id` can satisfy the retrieve operation's required path input. The parameter prose is generic (“Unique identifier for the object”); the customer entity is established by the `/customers/{customer}` collection/placeholder relationship and the successful response resource references. The source does not carry an explicit shared `x-semantic-id`; the expected result is therefore `COMPLETE_INFERRED`, not `COMPLETE_EXPLICIT`.
 
-The same run executes four negative controls: strict explicit-ID-only mode, a consumer type mutation, a missing auth-scheme precondition, and removal of the path description leaving only a field name. All must be rejected. The runner downloads a public specification only; it does not call Stripe endpoints or use credentials.
+The same run executes four negative controls: strict explicit-ID-only mode, a consumer type mutation, a missing auth-scheme precondition, and removal of semantic description evidence leaving only a field name. Unit controls also reject mismatched path/response entities, absent collection context, and missing identifier prose. All must be rejected. The runner downloads a public specification only; it does not call Stripe endpoints or use credentials.
 
 ```bash
 python -m unittest -v
@@ -51,7 +51,7 @@ The runner uses only the Python standard library. GitHub Actions downloads the p
 
 This is not a complete JSON Schema or OpenAPI implementation. It deliberately blocks or leaves unresolved constructs it does not prove, including external `$ref` targets, composed required request-body objects (`allOf`/`anyOf`/`oneOf` at the body root), conditional/dependent schemas, full regular-expression implication, discriminator semantics, and some advanced array/object constraints. Required-body extraction currently supports directly declared object bodies and top-level required properties; outputs are only fields guaranteed across all declared successful 2xx JSON responses. Non-JSON response representations are outside this benchmark's scope.
 
-Descriptions are narrow semantic evidence, not a substitute for domain-specific ontology validation. A documented description can be stale, ambiguous or wrong. The verifier reports the evidence class so downstream policy can demand explicit IDs where inference risk is unacceptable.
+Descriptions are narrow semantic evidence, not a substitute for domain-specific ontology validation. A documented description can be stale, ambiguous or wrong. The path/response inference requires a unique agreeing resource entity across every successful response and the collection path; otherwise it remains UNKNOWN. The verifier reports the evidence class so downstream policy can demand explicit IDs where inference risk is unacceptable.
 
 The Stripe source validates interface-contract behavior in one API. It does **not** establish cross-provider composition, legal or commercial obligation compatibility, production runtime success, or business value. CUAD/MAUD/ACORD are separate legal-contract research candidates; no legal obligation extraction or clause-composition claim is made in this version.
 

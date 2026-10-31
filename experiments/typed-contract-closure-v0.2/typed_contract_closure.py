@@ -14,7 +14,7 @@ from typing import Any, Mapping
 
 
 SCHEMA_VERSION = "typed-contract-closure.v0.2"
-ALGORITHM_VERSION = "bounded-min-cost-depth-first-closure.v0.2.1"
+ALGORITHM_VERSION = "bounded-min-cost-depth-first-closure.v0.2.2"
 _METHODS = {"get", "put", "post", "delete", "patch", "options", "head", "trace"}
 _ENTITY_NAMES = (
     "payment_intent", "invoice_item", "customer", "invoice", "subscription",
@@ -445,6 +445,117 @@ def _canonical_entity(value: str) -> str | None:
     return None
 
 
+def _canonical_resource_entity(value: str) -> str | None:
+    normalized = _snake(value)
+    if normalized.startswith("deleted_"):
+        normalized = normalized[len("deleted_"):]
+    return _canonical_entity(normalized)
+
+
+def _response_resource_entities(
+    document: Mapping[str, Any], operation: Mapping[str, Any]
+) -> set[str] | None:
+    """Return one unambiguous entity only when every 2xx JSON response names it.
+
+    Response unions are supported when every branch resolves to the same
+    canonical entity (e.g. customer | deleted_customer). Missing or mixed
+    response contracts deliberately produce no inference.
+    """
+    responses = operation.get("responses")
+    if not isinstance(responses, Mapping):
+        return None
+    success_schemas: list[Mapping[str, Any]] = []
+    for code, raw_response in responses.items():
+        if not re.fullmatch(r"2(?:\d\d|XX)", str(code), flags=re.IGNORECASE):
+            continue
+        if not isinstance(raw_response, Mapping):
+            return None
+        response = _resolve_ref(document, raw_response)
+        if response.get("x-unresolved-ref"):
+            return None
+        schema = _content_schema(response.get("content"))
+        if not isinstance(schema, Mapping):
+            return None
+        success_schemas.append(schema)
+    if not success_schemas:
+        return None
+
+    def collect(schema: Mapping[str, Any], seen: frozenset[str] = frozenset()) -> set[str] | None:
+        ref = schema.get("$ref")
+        if isinstance(ref, str):
+            prefix = "#/components/schemas/"
+            if not ref.startswith(prefix) or ref in seen:
+                return None
+            name = ref[len(prefix):].replace("~1", "/").replace("~0", "~")
+            entity = _canonical_resource_entity(name)
+            if entity is None:
+                return None
+            resolved = _resolve_ref(document, schema, seen)
+            if resolved.get("x-unresolved-ref"):
+                return None
+            return {entity}
+
+        branches = [schema[key] for key in ("anyOf", "oneOf", "allOf") if isinstance(schema.get(key), list)]
+        if branches:
+            entities: set[str] = set()
+            for branch_list in branches:
+                for branch in branch_list:
+                    if not isinstance(branch, Mapping):
+                        return None
+                    branch_entities = collect(branch, seen)
+                    if branch_entities is None:
+                        return None
+                    entities.update(branch_entities)
+            return entities if entities else None
+        return None
+
+    per_response: list[set[str]] = []
+    for schema in success_schemas:
+        entities = collect(schema)
+        if not entities or len(entities) != 1:
+            return None
+        per_response.append(entities)
+    common = set.intersection(*per_response)
+    return common if len(common) == 1 else None
+
+
+def _path_collection_entity(path: str, parameter_name: str) -> str | None:
+    """Bind only a final path placeholder beneath a matching plural resource path."""
+    if not path.endswith("{" + parameter_name + "}"):
+        return None
+    prefix = path[: -(len(parameter_name) + 2)].rstrip("/")
+    collection = prefix.rsplit("/", 1)[-1] if prefix else ""
+    entity = _canonical_entity(collection)
+    placeholder_entity = _canonical_entity(parameter_name)
+    if entity and entity == placeholder_entity:
+        return entity
+    return None
+
+
+def _is_generic_object_identifier(description: str) -> bool:
+    text = re.sub(r"\s+", " ", description.lower()).strip()
+    return bool(re.search(r"\b(?:unique\s+)?(?:id|identifier)\s+(?:for|of)\s+(?:the\s+)?object\b", text))
+
+
+def _infer_path_parameter_from_response(
+    document: Mapping[str, Any], path: str, operation: Mapping[str, Any], parameter: Mapping[str, Any]
+) -> tuple[str | None, str]:
+    """Infer a resource ID only when path, prose and success schema agree."""
+    name = parameter.get("name")
+    description = parameter.get("description", "")
+    if not isinstance(name, str) or not isinstance(description, str):
+        return None, "unknown"
+    if parameter.get("in") != "path" or parameter.get("required") is not True:
+        return None, "unknown"
+    if not _is_generic_object_identifier(description):
+        return None, "unknown"
+    path_entity = _path_collection_entity(path, name)
+    response_entities = _response_resource_entities(document, operation)
+    if path_entity and response_entities == {path_entity}:
+        return f"{path_entity}.id", "operation_response_resource"
+    return None, "unknown"
+
+
 def infer_semantic_id(
     name: str, description: str = "", *, scope: str | None = None,
     extensions: Mapping[str, Any] | None = None,
@@ -616,11 +727,21 @@ def contract_from_openapi(document: Mapping[str, Any], path: str, method: str, *
                     "parameter": name, "reference": resolved_schema.get("x-unresolved-ref"),
                 })
             else:
-                required_inputs.append(_make_slot(
+                slot = _make_slot(
                     name, resolved_schema,
                     description=str(parameter.get("description", "")),
                     source_path=f"paths.{path}.{method}.parameters[{index}]",
-                ))
+                )
+                if slot.semantic_id is None:
+                    inferred_id, inferred_evidence = _infer_path_parameter_from_response(
+                        document, path, operation, parameter
+                    )
+                    if inferred_id is not None:
+                        slot = Slot(
+                            slot.name, inferred_id, slot.schema, slot.required,
+                            inferred_evidence, slot.source_path, slot.description,
+                        )
+                required_inputs.append(slot)
         else:
             contract_issues.append({
                 "kind": "contract_schema_unsupported", "location": "required_parameter",

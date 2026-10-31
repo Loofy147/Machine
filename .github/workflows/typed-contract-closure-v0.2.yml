@@ -6,6 +6,7 @@ on:
       - experiment/context-contract-distribution-center-v0.1
     paths:
       - experiments/typed-contract-closure-v0.2/**
+      - docs/research/TYPED-CONTRACT-CLOSURE-OPENAPI-v0.2.md
       - .github/workflows/typed-contract-closure-v0.2.yml
   pull_request:
     branches:
@@ -13,6 +14,7 @@ on:
       - integration/predecessor-frontier-contract-v0.1
     paths:
       - experiments/typed-contract-closure-v0.2/**
+      - docs/research/TYPED-CONTRACT-CLOSURE-OPENAPI-v0.2.md
       - .github/workflows/typed-contract-closure-v0.2.yml
   workflow_dispatch:
 

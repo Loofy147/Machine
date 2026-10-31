@@ -44,7 +44,7 @@ The benchmark is intentionally small and interpretable:
 - Type: string on both sides.
 - Security: both operations declare auth alternatives; the benchmark supplies `bearerAuth` as an external scheme precondition. No token or live request is used.
 
-The link is inferred from a resource reference and a field description. It is **not** explicit machine-readable semantic identity (`x-semantic-id`). Thus the positive outcome is expected to be `COMPLETE_INFERRED`. Strict explicit-ID mode must reject the same link.
+The link is inferred from the provider resource reference and the consumer operation context. The path parameter description is only “Unique identifier for the object.” The adapter binds it to `customer.id` only because (1) the required `{customer}` placeholder is immediately beneath `/customers`, (2) the description explicitly says it is an object identifier, and (3) every declared 2xx JSON response schema resolves to the same canonical customer resource (including the `customer` / `deleted_customer` response union). It is **not** explicit machine-readable semantic identity (`x-semantic-id`). Thus the positive outcome is expected to be `COMPLETE_INFERRED`. Strict explicit-ID mode must reject the same link.
 
 ### Legal-contract datasets: separate future track
 
@@ -77,8 +77,9 @@ The adapter recognizes three usable evidence classes:
 - `explicit`: a non-empty `x-semantic-id` extension;
 - `resource_ref`: an `id` field scoped by a resource component `$ref`;
 - `description`: a narrow phrase in the operation contract, such as “the ID of the customer”.
+- `operation_response_resource`: a generic object-identifier path parameter bound only when its final collection path and every declared successful response resource schema agree on one entity.
 
-`name_only` and `unknown` are retained as diagnostics but are not accepted to close a dependency. There is no embedding similarity or fuzzy field-name matching.
+`name_only` and `unknown` are retained as diagnostics but are not accepted to close a dependency. There is no embedding similarity or fuzzy field-name matching. The operation/path/response join is deliberately strict: a mismatched response entity, missing 2xx JSON schema, multiple resource entities, absent collection path, or non-identifier description yields no semantic identity.
 
 ### 3.3 Type assignability
 
@@ -120,6 +121,8 @@ The test suite covers:
 - dependency cycles;
 - same semantic ID with type mismatch;
 - insufficient name-only evidence rejection;
+- generic object-identifier binding only with matching collection path and response resource;
+- mismatched path/response resource, missing collection context, and missing identifier-prose rejection;
 - required inputs and guaranteed output extraction from OpenAPI;
 - optional-body semantics;
 - unsupported required-body composition, unresolved references and missing path schemas;
@@ -134,7 +137,8 @@ The pinned-source integration runner adds actual-data controls:
 3. reject the same link under explicit-ID-only mode;
 4. reject a type mutation (string output to integer input);
 5. reject a missing auth-scheme precondition;
-6. reject removal of description evidence, leaving only a field name.
+6. reject removal of identifier-description evidence, leaving only a field name.
+7. reject generic identifier linking when path collection and response resource disagree or path context is absent.
 
 The Python-only local suite is deterministic and uses the standard library. The actual full specification download and its pinned hash check run in GitHub Actions; this offline environment could not independently fetch the full 5 MB source file. The integration result must be taken from the pinned-source CI artifact, not claimed from local unit tests.
 
