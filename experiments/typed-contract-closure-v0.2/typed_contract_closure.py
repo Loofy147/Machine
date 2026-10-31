@@ -875,7 +875,7 @@ def _compatible_semantic_slots(provider: Slot, consumer: Slot) -> Compatibility:
         return Compatibility("UNKNOWN", ("semantic_identity_missing",))
     if provider.semantic_id != consumer.semantic_id:
         return Compatibility("INCOMPATIBLE", ("semantic_identity_mismatch",))
-    accepted_evidence = {"explicit", "description", "resource_ref"}
+    accepted_evidence = {"explicit", "description", "resource_ref", "operation_response_resource"}
     if provider.evidence not in accepted_evidence or consumer.evidence not in accepted_evidence:
         return Compatibility("UNKNOWN", ("semantic_evidence_insufficient",))
     return schema_compatibility(provider.schema, consumer.schema)

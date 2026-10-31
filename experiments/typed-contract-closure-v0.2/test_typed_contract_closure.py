@@ -562,6 +562,16 @@ class OpenApiAdapterTests(unittest.TestCase):
         slot = compiled.required_inputs[0]
         self.assertEqual(slot.semantic_id, "customer.id")
         self.assertEqual(slot.evidence, "operation_response_resource")
+        provider = Operation(
+            "createCustomer", "POST", "/v1/customers",
+            outputs=(Slot("id", "customer.id", {"type": "string"}, evidence="resource_ref"),),
+        )
+        plan = plan_closure(
+            "retrieveCustomer", {"createCustomer": provider, "retrieveCustomer": compiled}, anchor={}
+        )
+        self.assertEqual(plan.status, "COMPLETE_INFERRED")
+        self.assertEqual(plan.operation_order, ("createCustomer", "retrieveCustomer"))
+        self.assertEqual(plan.dependencies[0]["consumer_evidence"], "operation_response_resource")
 
     def test_generic_identifier_does_not_bind_when_path_and_response_resource_disagree(self):
         account = {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}
